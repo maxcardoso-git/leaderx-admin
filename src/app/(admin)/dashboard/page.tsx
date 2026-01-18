@@ -5,7 +5,7 @@ import { UsersIcon, ShieldIcon, NetworkIcon, AuditIcon } from '@/components/icon
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="font-heading text-2xl font-semibold text-text-primary">
@@ -17,7 +17,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           label="Total Users"
           value="1,234"
@@ -45,7 +45,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Activity */}
         <Card className="lg:col-span-2">
           <CardHeader title="Recent Activity" subtitle="Latest actions in your organization" />
@@ -98,7 +98,7 @@ export default function DashboardPage() {
       {/* Quick Actions */}
       <Card>
         <CardHeader title="Quick Actions" subtitle="Common tasks you can perform" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
           {quickActions.map((action, index) => (
             <button
               key={index}
