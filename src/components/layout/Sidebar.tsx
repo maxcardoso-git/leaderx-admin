@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -86,17 +87,16 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-[280px] bg-background-alt border-r border-border flex flex-col">
       {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-border">
+      <div className="h-20 flex items-center px-6 border-b border-border">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-gold flex items-center justify-center">
-            <span className="text-background font-heading font-bold text-xl">L</span>
-          </div>
-          <div>
-            <span className="font-heading font-semibold text-lg text-text-primary">
-              LeaderX
-            </span>
-            <span className="block text-xs text-text-muted">Admin Console</span>
-          </div>
+          <Image
+            src="/Logotipo-LeaderX.png"
+            alt="LeaderX"
+            width={180}
+            height={48}
+            className="object-contain"
+            priority
+          />
         </Link>
       </div>
 
