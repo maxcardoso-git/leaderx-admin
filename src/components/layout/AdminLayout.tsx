@@ -29,8 +29,8 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         <TopBar />
 
         {/* Page Content */}
-        <main className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-[1600px] mx-auto animate-fade-in">
+        <main className="flex-1 px-8 py-6 overflow-y-auto">
+          <div className="animate-fade-in">
             {children}
           </div>
         </main>
