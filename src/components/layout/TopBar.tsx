@@ -39,9 +39,9 @@ export function TopBar() {
   const pageTitle = breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard';
 
   return (
-    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-6">
+    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 lg:px-6 min-w-0">
       {/* Left: Breadcrumbs */}
-      <div className="flex flex-col">
+      <div className="flex flex-col min-w-0 flex-shrink-0">
         <h1 className="font-heading text-lg font-semibold text-text-primary">
           {pageTitle}
         </h1>
@@ -68,11 +68,11 @@ export function TopBar() {
       </div>
 
       {/* Right: Search & Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 lg:gap-4 flex-shrink-0">
         {/* Search */}
         <div
-          className={`relative flex items-center transition-all ${
-            searchFocused ? 'w-72' : 'w-60'
+          className={`relative hidden sm:flex items-center transition-all ${
+            searchFocused ? 'w-64 lg:w-72' : 'w-48 lg:w-60'
           }`}
         >
           <SearchIcon
@@ -95,8 +95,9 @@ export function TopBar() {
         </button>
 
         {/* Tenant Selector */}
-        <button className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background-alt border border-border hover:border-border-light transition-colors">
-          <span className="text-sm text-text-primary">Tenant Demo</span>
+        <button className="flex items-center gap-2 px-2 lg:px-3 py-2 rounded-lg bg-background-alt border border-border hover:border-border-light transition-colors">
+          <span className="text-sm text-text-primary hidden sm:inline">Tenant Demo</span>
+          <span className="text-sm text-text-primary sm:hidden">Demo</span>
           <ChevronDownIcon size={16} className="text-text-muted" />
         </button>
       </div>
