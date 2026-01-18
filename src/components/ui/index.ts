@@ -8,3 +8,4 @@ export * from './Modal';
 export * from './Card';
 export * from './Pagination';
 export * from './Avatar';
+export * from './LanguageSelector';

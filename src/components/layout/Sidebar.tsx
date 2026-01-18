@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   DashboardIcon,
   UsersIcon,
@@ -17,52 +18,52 @@ import {
 } from '../icons';
 
 interface NavItem {
-  label: string;
+  key: string;
   href?: string;
   icon: React.ReactNode;
-  children?: { label: string; href: string }[];
+  children?: { key: string; href: string }[];
 }
 
-const navigation: NavItem[] = [
+const navigationConfig: NavItem[] = [
   {
-    label: 'Dashboard',
+    key: 'dashboard',
     href: '/dashboard',
     icon: <DashboardIcon size={20} />,
   },
   {
-    label: 'Identity',
+    key: 'identity',
     icon: <UsersIcon size={20} />,
     children: [
-      { label: 'Users', href: '/identity/users' },
-      { label: 'Roles & Permissions', href: '/identity/roles' },
+      { key: 'users', href: '/identity/users' },
+      { key: 'roles', href: '/identity/roles' },
     ],
   },
   {
-    label: 'Network',
+    key: 'network',
     icon: <NetworkIcon size={20} />,
     children: [
-      { label: 'Nodes', href: '/network/nodes' },
-      { label: 'Hierarchy', href: '/network/hierarchy' },
+      { key: 'nodes', href: '/network/nodes' },
+      { key: 'hierarchy', href: '/network/hierarchy' },
     ],
   },
   {
-    label: 'Governance',
+    key: 'governance',
     icon: <GovernanceIcon size={20} />,
     children: [
-      { label: 'Policies', href: '/governance/policies' },
-      { label: 'Rules', href: '/governance/rules' },
+      { key: 'policies', href: '/governance/policies' },
+      { key: 'rules', href: '/governance/rules' },
     ],
   },
   {
-    label: 'Audit',
+    key: 'audit',
     icon: <AuditIcon size={20} />,
     children: [
-      { label: 'Compliance', href: '/audit/compliance' },
-      { label: 'Reports', href: '/audit/reports' },
+      { key: 'compliance', href: '/audit/compliance' },
+      { key: 'reports', href: '/audit/reports' },
     ],
   },
   {
-    label: 'Settings',
+    key: 'settings',
     href: '/settings',
     icon: <SettingsIcon size={20} />,
   },
@@ -70,13 +71,14 @@ const navigation: NavItem[] = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>(['Identity']);
+  const [expandedItems, setExpandedItems] = useState<string[]>(['identity']);
+  const t = useTranslations('nav');
 
-  const toggleExpanded = (label: string) => {
+  const toggleExpanded = (key: string) => {
     setExpandedItems((prev) =>
-      prev.includes(label)
-        ? prev.filter((item) => item !== label)
-        : [...prev, label]
+      prev.includes(key)
+        ? prev.filter((item) => item !== key)
+        : [...prev, key]
     );
   };
 
@@ -103,12 +105,12 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         <ul className="space-y-1">
-          {navigation.map((item) => (
-            <li key={item.label}>
+          {navigationConfig.map((item) => (
+            <li key={item.key}>
               {item.children ? (
                 <>
                   <button
-                    onClick={() => toggleExpanded(item.label)}
+                    onClick={() => toggleExpanded(item.key)}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
                       isParentActive(item.children)
                         ? 'bg-background-hover text-gold'
@@ -117,16 +119,16 @@ export function Sidebar() {
                   >
                     <span className="flex items-center gap-3">
                       {item.icon}
-                      <span className="text-sm font-medium">{item.label}</span>
+                      <span className="text-sm font-medium">{t(item.key)}</span>
                     </span>
                     <ChevronDownIcon
                       size={16}
                       className={`transition-transform ${
-                        expandedItems.includes(item.label) ? 'rotate-180' : ''
+                        expandedItems.includes(item.key) ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
-                  {expandedItems.includes(item.label) && (
+                  {expandedItems.includes(item.key) && (
                     <ul className="mt-1 ml-8 space-y-1">
                       {item.children.map((child) => (
                         <li key={child.href}>
@@ -138,7 +140,7 @@ export function Sidebar() {
                                 : 'text-text-secondary hover:bg-background-hover hover:text-text-primary'
                             }`}
                           >
-                            {child.label}
+                            {t(child.key)}
                           </Link>
                         </li>
                       ))}
@@ -155,7 +157,7 @@ export function Sidebar() {
                   }`}
                 >
                   {item.icon}
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span className="text-sm font-medium">{t(item.key)}</span>
                 </Link>
               )}
             </li>

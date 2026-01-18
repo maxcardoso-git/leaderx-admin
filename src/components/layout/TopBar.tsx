@@ -2,30 +2,34 @@
 
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { SearchIcon, BellIcon, ChevronDownIcon } from '../icons';
-
-const breadcrumbLabels: Record<string, string> = {
-  dashboard: 'Dashboard',
-  identity: 'Identity',
-  users: 'Users',
-  roles: 'Roles & Permissions',
-  network: 'Network',
-  nodes: 'Nodes',
-  hierarchy: 'Hierarchy',
-  governance: 'Governance',
-  policies: 'Policies',
-  rules: 'Rules',
-  audit: 'Audit',
-  compliance: 'Compliance',
-  reports: 'Reports',
-  settings: 'Settings',
-  create: 'Create',
-  edit: 'Edit',
-};
+import { LanguageSelector } from '../ui/LanguageSelector';
 
 export function TopBar() {
   const pathname = usePathname();
   const [searchFocused, setSearchFocused] = useState(false);
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
+
+  const breadcrumbLabels: Record<string, string> = {
+    dashboard: t('dashboard'),
+    identity: t('identity'),
+    users: t('users'),
+    roles: t('roles'),
+    network: t('network'),
+    nodes: t('nodes'),
+    hierarchy: t('hierarchy'),
+    governance: t('governance'),
+    policies: t('policies'),
+    rules: t('rules'),
+    audit: t('audit'),
+    compliance: t('compliance'),
+    reports: t('reports'),
+    settings: t('settings'),
+    create: 'Create',
+    edit: 'Edit',
+  };
 
   const getBreadcrumbs = () => {
     const segments = pathname.split('/').filter(Boolean);
@@ -36,7 +40,7 @@ export function TopBar() {
   };
 
   const breadcrumbs = getBreadcrumbs();
-  const pageTitle = breadcrumbs[breadcrumbs.length - 1]?.label || 'Dashboard';
+  const pageTitle = breadcrumbs[breadcrumbs.length - 1]?.label || t('dashboard');
 
   return (
     <header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 lg:px-6 min-w-0">
@@ -68,11 +72,11 @@ export function TopBar() {
       </div>
 
       {/* Right: Search & Actions */}
-      <div className="flex items-center gap-2 lg:gap-4 flex-shrink-0">
+      <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
         {/* Search */}
         <div
           className={`relative hidden sm:flex items-center transition-all ${
-            searchFocused ? 'w-64 lg:w-72' : 'w-48 lg:w-60'
+            searchFocused ? 'w-52 lg:w-64' : 'w-40 lg:w-52'
           }`}
         >
           <SearchIcon
@@ -81,12 +85,15 @@ export function TopBar() {
           />
           <input
             type="text"
-            placeholder="Search..."
+            placeholder={tCommon('search')}
             className="w-full h-9 pl-10 pr-4 bg-background-alt border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-gold focus:ring-0 transition-colors"
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
           />
         </div>
+
+        {/* Language Selector */}
+        <LanguageSelector />
 
         {/* Notifications */}
         <button className="relative p-2 rounded-lg text-text-secondary hover:bg-background-hover hover:text-text-primary transition-colors">

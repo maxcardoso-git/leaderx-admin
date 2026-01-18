@@ -10,18 +10,18 @@ interface AdminLayoutProps {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="ml-[280px] min-h-screen flex flex-col w-[calc(100vw-280px)]">
+      <div className="pl-[280px] min-h-screen flex flex-col">
         {/* Top Bar */}
         <TopBar />
 
         {/* Page Content */}
-        <main className="flex-1 p-6 overflow-x-hidden overflow-y-auto">
-          <div className="animate-fade-in max-w-full">
+        <main className="flex-1 p-6 overflow-y-auto">
+          <div className="animate-fade-in">
             {children}
           </div>
         </main>
