@@ -116,7 +116,10 @@
     "actionCannotBeUndone": "Esta accion no se puede deshacer.",
     "userCreated": "Usuario creado exitosamente!",
     "userUpdated": "Usuario actualizado exitosamente!",
-    "userDeleted": "Usuario eliminado exitosamente!"
+    "userDeleted": "Usuario eliminado exitosamente!",
+    "edit": "Editar",
+    "editUser": "Editar Usuario",
+    "emailCannotBeChanged": "El email no se puede cambiar"
   },
   "validation": {
     "required": "Este campo es obligatorio",

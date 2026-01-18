@@ -116,7 +116,10 @@
     "actionCannotBeUndone": "This action cannot be undone.",
     "userCreated": "User created successfully!",
     "userUpdated": "User updated successfully!",
-    "userDeleted": "User deleted successfully!"
+    "userDeleted": "User deleted successfully!",
+    "edit": "Edit",
+    "editUser": "Edit User",
+    "emailCannotBeChanged": "Email cannot be changed"
   },
   "validation": {
     "required": "This field is required",

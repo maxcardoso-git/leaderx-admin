@@ -116,7 +116,10 @@
     "actionCannotBeUndone": "Questa azione non puo essere annullata.",
     "userCreated": "Utente creato con successo!",
     "userUpdated": "Utente aggiornato con successo!",
-    "userDeleted": "Utente eliminato con successo!"
+    "userDeleted": "Utente eliminato con successo!",
+    "edit": "Modifica",
+    "editUser": "Modifica Utente",
+    "emailCannotBeChanged": "L'email non puo essere modificata"
   },
   "validation": {
     "required": "Questo campo e obbligatorio",
