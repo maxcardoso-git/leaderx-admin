@@ -62,8 +62,7 @@ export default function UsersPage() {
       setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
-      // Use mock data for demo
-      setUsers(mockUsers);
+      setUsers([]);
     } finally {
       setIsLoading(false);
     }
@@ -80,21 +79,12 @@ export default function UsersPage() {
         usersService.getUserRoles(user.id),
       ]);
 
-      const roles = rolesResponse.items || [];
-
-      // Use mock data if API returns empty
-      if (roles.length === 0) {
-        setAvailableRoles(mockRoles);
-      } else {
-        setAvailableRoles(roles);
-      }
-
+      setAvailableRoles(rolesResponse.items || []);
       setUserRoles(currentUserRoles.map((r) => r.id));
     } catch (error) {
       console.error('Failed to load roles:', error);
-      // Fallback to mock data
-      setAvailableRoles(mockRoles);
-      setUserRoles(['role-admin']);
+      setAvailableRoles([]);
+      setUserRoles([]);
     } finally {
       setIsLoadingRoles(false);
     }
@@ -120,12 +110,6 @@ export default function UsersPage() {
       }
     } catch (error) {
       console.error('Failed to toggle role:', error);
-      // For demo, just update local state
-      setUserRoles((prev) =>
-        prev.includes(roleId)
-          ? prev.filter((id) => id !== roleId)
-          : [...prev, roleId]
-      );
     } finally {
       setIsSavingRoles(false);
     }
@@ -375,105 +359,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-// Mock data for demo
-const mockRoles: Role[] = [
-  {
-    id: 'role-admin',
-    tenantId: 'demo-tenant',
-    name: 'Administrador',
-    description: 'Acesso completo ao sistema com todas as permissões',
-    isSystem: true,
-    permissions: [],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'role-manager',
-    tenantId: 'demo-tenant',
-    name: 'Gerente',
-    description: 'Pode gerenciar usuários e conteúdo',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-05T00:00:00Z',
-    updatedAt: '2024-01-05T00:00:00Z',
-  },
-  {
-    id: 'role-member',
-    tenantId: 'demo-tenant',
-    name: 'Membro',
-    description: 'Acesso básico à plataforma',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-10T00:00:00Z',
-    updatedAt: '2024-01-10T00:00:00Z',
-  },
-  {
-    id: 'role-viewer',
-    tenantId: 'demo-tenant',
-    name: 'Visualizador',
-    description: 'Acesso somente leitura',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-15T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z',
-  },
-];
-
-const mockUsers: User[] = [
-  {
-    id: '1',
-    tenantId: 'demo-tenant',
-    email: 'max.cardoso@leaderx.com',
-    fullName: 'Max Cardoso',
-    status: 'ACTIVE',
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-    lastLoginAt: '2024-01-20T14:30:00Z',
-  },
-  {
-    id: '2',
-    tenantId: 'demo-tenant',
-    email: 'ana.silva@leaderx.com',
-    fullName: 'Ana Silva',
-    status: 'ACTIVE',
-    createdAt: '2024-01-16T09:00:00Z',
-    updatedAt: '2024-01-16T09:00:00Z',
-  },
-  {
-    id: '3',
-    tenantId: 'demo-tenant',
-    email: 'carlos.santos@leaderx.com',
-    fullName: 'Carlos Santos',
-    status: 'PENDING_VERIFICATION',
-    createdAt: '2024-01-17T11:00:00Z',
-    updatedAt: '2024-01-17T11:00:00Z',
-  },
-  {
-    id: '4',
-    tenantId: 'demo-tenant',
-    email: 'julia.costa@leaderx.com',
-    fullName: 'Julia Costa',
-    status: 'SUSPENDED',
-    createdAt: '2024-01-10T08:00:00Z',
-    updatedAt: '2024-01-18T16:00:00Z',
-  },
-  {
-    id: '5',
-    tenantId: 'demo-tenant',
-    email: 'pedro.lima@leaderx.com',
-    fullName: 'Pedro Lima',
-    status: 'INACTIVE',
-    createdAt: '2024-01-05T14:00:00Z',
-    updatedAt: '2024-01-12T10:00:00Z',
-  },
-  {
-    id: '6',
-    tenantId: 'demo-tenant',
-    email: 'maria.oliveira@leaderx.com',
-    fullName: 'Maria Oliveira',
-    status: 'ACTIVE',
-    createdAt: '2024-01-08T09:30:00Z',
-    updatedAt: '2024-01-19T11:00:00Z',
-  },
-];
