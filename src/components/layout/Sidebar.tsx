@@ -50,10 +50,11 @@ const navigationConfig: NavItem[] = [
   {
     key: 'network',
     icon: <NetworkIcon size={18} />,
-    badge: 2,
+    badge: 3,
     children: [
-      { key: 'nodes', href: '/network/nodes', icon: <NetworkIcon size={16} /> },
+      { key: 'overview', href: '/network', icon: <NetworkIcon size={16} /> },
       { key: 'hierarchy', href: '/network/hierarchy', icon: <NetworkIcon size={16} /> },
+      { key: 'nodes', href: '/network/nodes', icon: <NetworkIcon size={16} /> },
     ],
   },
   {
