@@ -12,6 +12,13 @@ import {
 // USERS SERVICE
 // ============================================
 
+interface UsersListResponse {
+  items: User[];
+  page: number;
+  size: number;
+  total: number;
+}
+
 export const usersService = {
   async list(params?: {
     page?: number;
@@ -19,7 +26,12 @@ export const usersService = {
     status?: string;
     search?: string;
   }): Promise<User[]> {
-    return api.get<User[]>('/identity/users', params);
+    try {
+      const response = await api.get<UsersListResponse>('/identity/users', params);
+      return response?.items || [];
+    } catch {
+      return [];
+    }
   },
 
   async getById(userId: string): Promise<User> {
@@ -55,7 +67,12 @@ export const usersService = {
   },
 
   async getUserRoles(userId: string): Promise<Role[]> {
-    return api.get<Role[]>(`/identity/users/${userId}/roles`);
+    try {
+      const response = await api.get<{ items: Role[] }>(`/identity/users/${userId}/roles`);
+      return response?.items || [];
+    } catch {
+      return [];
+    }
   },
 };
 
