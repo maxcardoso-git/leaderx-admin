@@ -3,24 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Button, Card, CardHeader, StatusPill, Avatar, Modal } from '@/components/ui';
-import { EditIcon, TrashIcon, ShieldIcon } from '@/components/icons';
+import { useTranslations } from 'next-intl';
+import { Button, Modal } from '@/components/ui';
+import { EditIcon, TrashIcon, ShieldIcon, ChevronLeftIcon } from '@/components/icons';
 import { User, UserStatus, Role } from '@/types/identity';
 import { usersService } from '@/services/identity.service';
-
-const mapStatus = (status: UserStatus): 'active' | 'inactive' | 'pending' | 'suspended' => {
-  const mapping: Record<UserStatus, 'active' | 'inactive' | 'pending' | 'suspended'> = {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
-    SUSPENDED: 'suspended',
-    PENDING_VERIFICATION: 'pending',
-  };
-  return mapping[status];
-};
 
 export default function UserDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('users');
+  const common = useTranslations('common');
+  const roles_t = useTranslations('roles');
   const userId = params.id as string;
 
   const [user, setUser] = useState<User | null>(null);
@@ -28,6 +22,16 @@ export default function UserDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const mapStatus = (status: UserStatus): { label: string; color: string } => {
+    const mapping: Record<UserStatus, { label: string; color: string }> = {
+      ACTIVE: { label: common('active'), color: 'text-emerald-400 bg-emerald-400/10' },
+      INACTIVE: { label: common('inactive'), color: 'text-white/40 bg-white/[0.05]' },
+      SUSPENDED: { label: common('suspended'), color: 'text-red-400 bg-red-400/10' },
+      PENDING_VERIFICATION: { label: common('pending'), color: 'text-amber-400 bg-amber-400/10' },
+    };
+    return mapping[status];
+  };
 
   useEffect(() => {
     loadUser();
@@ -44,7 +48,6 @@ export default function UserDetailPage() {
       setRoles(userRoles);
     } catch (error) {
       console.error('Failed to load user:', error);
-      // Use mock data for demo
       setUser(mockUser);
       setRoles(mockRoles);
     } finally {
@@ -80,19 +83,11 @@ export default function UserDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="h-8 w-48 bg-background-hover rounded animate-pulse" />
+      <div className="space-y-8">
+        <div className="h-8 w-48 bg-white/[0.05] rounded-lg animate-pulse" />
         <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 space-y-6">
-            <Card>
-              <div className="h-40 animate-pulse bg-background-hover rounded" />
-            </Card>
-          </div>
-          <div>
-            <Card>
-              <div className="h-60 animate-pulse bg-background-hover rounded" />
-            </Card>
-          </div>
+          <div className="col-span-2 h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
+          <div className="h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
         </div>
       </div>
     );
@@ -100,176 +95,157 @@ export default function UserDetailPage() {
 
   if (!user) {
     return (
-      <div className="text-center py-12">
-        <p className="text-text-muted">User not found</p>
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-white/40 mb-4">{t('noUsersFound')}</p>
         <Link href="/identity/users">
-          <Button variant="ghost" className="mt-4">
-            Back to Users
-          </Button>
+          <Button variant="ghost">{common('back')}</Button>
         </Link>
       </div>
     );
   }
 
+  const statusInfo = mapStatus(user.status);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Back Link */}
+      <Link
+        href="/identity/users"
+        className="inline-flex items-center gap-2 text-sm text-white/40 hover:text-white/70 transition-colors"
+      >
+        <ChevronLeftIcon size={16} />
+        {common('back')}
+      </Link>
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Avatar name={user.fullName} size="lg" />
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold/30 to-gold/10 flex items-center justify-center">
+            <span className="text-gold font-semibold text-xl">
+              {user.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            </span>
+          </div>
           <div>
-            <h1 className="font-heading text-2xl font-semibold text-text-primary">
-              {user.fullName}
-            </h1>
-            <p className="text-sm text-text-muted">{user.email}</p>
+            <h1 className="text-3xl font-light text-white">{user.fullName}</h1>
+            <p className="text-white/40 mt-1">{user.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Link href={`/identity/users/${userId}/edit`}>
-            <Button variant="secondary" leftIcon={<EditIcon size={18} />}>
-              Edit
+            <Button variant="secondary" leftIcon={<EditIcon size={16} />}>
+              {t('edit')}
             </Button>
           </Link>
           <Button
             variant="danger"
-            leftIcon={<TrashIcon size={18} />}
+            leftIcon={<TrashIcon size={16} />}
             onClick={() => setShowDeleteModal(true)}
           >
-            Delete
+            {common('delete')}
           </Button>
         </div>
       </div>
 
       {/* Content Grid */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Main Info */}
-        <div className="col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-6">
           {/* Details Card */}
-          <Card>
-            <CardHeader title="User Details" />
-            <div className="grid grid-cols-2 gap-6">
-              <InfoItem label="Full Name" value={user.fullName} />
-              <InfoItem label="Email" value={user.email} />
-              {user.externalId && (
-                <InfoItem label="External ID" value={user.externalId} />
-              )}
+          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-white/[0.05]">
+              <h2 className="text-lg font-medium text-white">{t('basicInfo')}</h2>
             </div>
-          </Card>
+            <div className="p-6">
+              <div className="grid grid-cols-2 gap-6">
+                <InfoItem label={t('fullName')} value={user.fullName} />
+                <InfoItem label={t('email')} value={user.email} />
+                {user.externalId && (
+                  <InfoItem label="ID" value={user.externalId} />
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Roles Card */}
-          <Card>
-            <CardHeader
-              title="Assigned Roles"
-              action={
-                <Link href={`/identity/users/${userId}/edit`}>
-                  <Button variant="ghost" size="sm">
-                    Manage Roles
-                  </Button>
-                </Link>
-              }
-            />
-            <div className="space-y-3">
+          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-white/[0.05] flex items-center justify-between">
+              <h2 className="text-lg font-medium text-white">{t('assignedRoles')}</h2>
+              <Link href={`/identity/users/${userId}/edit`}>
+                <button className="text-sm text-gold hover:text-gold/80 transition-colors">
+                  {t('manageRoles')}
+                </button>
+              </Link>
+            </div>
+            <div className="p-6">
               {roles.length > 0 ? (
-                roles.map((role) => (
-                  <div
-                    key={role.id}
-                    className="flex items-center justify-between p-3 bg-background-alt rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-gold/10 rounded-lg text-gold">
-                        <ShieldIcon size={18} />
+                <div className="space-y-3">
+                  {roles.map((role) => (
+                    <div
+                      key={role.id}
+                      className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.03]"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="p-2.5 bg-gold/10 rounded-xl text-gold">
+                          <ShieldIcon size={18} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-white">{role.name}</p>
+                          {role.description && (
+                            <p className="text-xs text-white/40 mt-0.5">{role.description}</p>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-text-primary">
-                          {role.name}
-                        </p>
-                        {role.description && (
-                          <p className="text-xs text-text-muted">{role.description}</p>
-                        )}
-                      </div>
+                      {role.isSystem && (
+                        <span className="text-xs text-white/30 bg-white/[0.05] px-2.5 py-1 rounded-lg">
+                          {roles_t('systemRole')}
+                        </span>
+                      )}
                     </div>
-                    {role.isSystem && (
-                      <span className="text-xs text-text-muted bg-background-hover px-2 py-1 rounded">
-                        System
-                      </span>
-                    )}
-                  </div>
-                ))
+                  ))}
+                </div>
               ) : (
-                <p className="text-sm text-text-muted py-4 text-center">
-                  No roles assigned
+                <p className="text-sm text-white/40 text-center py-8">
+                  {t('noRolesAssigned')}
                 </p>
               )}
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status Card */}
-          <Card>
-            <CardHeader title="Status" />
-            <div className="space-y-4">
+          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
+            <div className="p-6 border-b border-white/[0.05]">
+              <h2 className="text-lg font-medium text-white">{t('status')}</h2>
+            </div>
+            <div className="p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-text-muted">Current Status</span>
-                <StatusPill status={mapStatus(user.status)} />
+                <span className="text-sm text-white/40">{t('currentStatus')}</span>
+                <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${statusInfo.color}`}>
+                  {statusInfo.label}
+                </span>
               </div>
-              <div className="border-t border-border pt-4">
+              <div className="pt-2">
                 {user.status === 'ACTIVE' ? (
-                  <Button
-                    variant="secondary"
-                    className="w-full"
+                  <button
                     onClick={() => handleStatusChange('suspend')}
+                    className="w-full py-3 rounded-xl bg-white/[0.03] border border-white/[0.05] text-sm text-white/70 hover:bg-white/[0.05] hover:text-white transition-all"
                   >
-                    Suspend User
-                  </Button>
+                    {t('suspendUser')}
+                  </button>
                 ) : (
-                  <Button
-                    variant="primary"
-                    className="w-full"
+                  <button
                     onClick={() => handleStatusChange('activate')}
+                    className="w-full py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400 hover:bg-emerald-500/20 transition-all"
                   >
-                    Activate User
-                  </Button>
+                    {t('activateUser')}
+                  </button>
                 )}
               </div>
             </div>
-          </Card>
+          </div>
 
-          {/* Activity Card */}
-          <Card>
-            <CardHeader title="Activity" />
-            <div className="space-y-3">
-              <InfoItem
-                label="Created"
-                value={new Date(user.createdAt).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              />
-              <InfoItem
-                label="Last Updated"
-                value={new Date(user.updatedAt).toLocaleDateString('pt-BR', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })}
-              />
-              {user.lastLoginAt && (
-                <InfoItem
-                  label="Last Login"
-                  value={new Date(user.lastLoginAt).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                />
-              )}
-            </div>
-          </Card>
         </div>
       </div>
 
@@ -277,21 +253,21 @@ export default function UserDetailPage() {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="Delete User"
+        title={t('deleteUser')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>
-              Cancel
+              {common('cancel')}
             </Button>
             <Button variant="danger" onClick={handleDelete} isLoading={isDeleting}>
-              Delete User
+              {common('delete')}
             </Button>
           </>
         }
       >
-        <p className="text-text-secondary">
-          Are you sure you want to delete <strong className="text-text-primary">{user.fullName}</strong>?
-          This action cannot be undone.
+        <p className="text-white/60">
+          {t('deleteUserConfirm')} <strong className="text-white">{user.fullName}</strong>?
+          {' '}{t('actionCannotBeUndone')}
         </p>
       </Modal>
     </div>
@@ -301,8 +277,8 @@ export default function UserDetailPage() {
 function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs text-text-muted mb-1">{label}</p>
-      <p className="text-sm text-text-primary">{value}</p>
+      <p className="text-xs text-white/30 mb-1">{label}</p>
+      <p className="text-sm text-white/80">{value}</p>
     </div>
   );
 }
@@ -314,12 +290,11 @@ const mockUser: User = {
   email: 'max.cardoso@leaderx.com',
   fullName: 'Max Cardoso',
   status: 'ACTIVE',
-  createdAt: '2024-01-15T10:00:00Z',
-  updatedAt: '2024-01-15T10:00:00Z',
-  lastLoginAt: '2024-01-20T14:30:00Z',
+  createdAt: '',
+  updatedAt: '',
 };
 
 const mockRoles: Role[] = [
-  { id: 'role-admin', tenantId: 'demo', name: 'Administrator', description: 'Full system access', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
-  { id: 'role-manager', tenantId: 'demo', name: 'Manager', description: 'Manage users and content', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
+  { id: 'role-admin', tenantId: 'demo', name: 'Administrador', description: 'Acesso total ao sistema', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
+  { id: 'role-manager', tenantId: 'demo', name: 'Gerente', description: 'Gerenciar usuários e conteúdo', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
 ];

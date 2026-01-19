@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { Button, Card, Modal, Input } from '@/components/ui';
 import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon, ChevronRightIcon } from '@/components/icons';
 import { Role, Permission } from '@/types/identity';
@@ -19,6 +20,10 @@ const groupPermissions = (permissions: Permission[]) => {
 };
 
 export default function RolesPage() {
+  const t = useTranslations('roles');
+  const tCommon = useTranslations('common');
+  const tPermissions = useTranslations('permissions');
+
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
@@ -72,7 +77,7 @@ export default function RolesPage() {
 
   const handleSelectRole = (role: Role) => {
     if (hasChanges) {
-      if (!confirm('Você tem alterações não salvas. Descartar?')) {
+      if (!confirm(t('unsavedChanges'))) {
         return;
       }
     }
@@ -94,7 +99,7 @@ export default function RolesPage() {
       setSelectedRole(newRole);
     } catch (error) {
       console.error('Failed to create role:', error);
-      alert('Falha ao criar função. Tente novamente.');
+      alert(t('failedToCreateRole'));
     }
   };
 
@@ -131,10 +136,10 @@ export default function RolesPage() {
       setRoles(rolesArray.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
       setSelectedRole(updatedRole);
       setHasChanges(false);
-      alert('Permissões salvas com sucesso!');
+      alert(t('permissionsSaved'));
     } catch (error) {
       console.error('Failed to save permissions:', error);
-      alert('Falha ao salvar permissões.');
+      alert(t('failedToSavePermissions'));
     } finally {
       setSaving(false);
     }
@@ -151,7 +156,7 @@ export default function RolesPage() {
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Failed to delete role:', error);
-      alert('Falha ao excluir função.');
+      alert(t('failedToDeleteRole'));
     } finally {
       setDeleting(false);
     }
@@ -176,7 +181,7 @@ export default function RolesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="text-text-muted">Carregando...</div>
+        <div className="text-text-muted">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -188,17 +193,17 @@ export default function RolesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-light text-text-primary tracking-tight">
-              Funções & Permissões
+              {t('title')}
             </h1>
             <p className="text-text-muted mt-2">
-              Gerencie funções e suas permissões associadas
+              {t('subtitle')}
             </p>
           </div>
           <Button
             leftIcon={<PlusIcon size={18} />}
             onClick={() => setShowCreateModal(true)}
           >
-            Nova Função
+            {t('newRole')}
           </Button>
         </div>
       </div>
@@ -210,7 +215,7 @@ export default function RolesPage() {
           <div className="sticky top-6">
             <div className="mb-4">
               <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
-                Funções ({roles.length})
+                {t('rolesCount')} ({roles.length})
               </h2>
             </div>
 
@@ -243,12 +248,12 @@ export default function RolesPage() {
                           </span>
                           {role.isSystem && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded bg-background-alt text-text-muted uppercase tracking-wide">
-                              Sistema
+                              {t('systemRole')}
                             </span>
                           )}
                         </div>
                         <p className="text-xs text-text-muted mt-0.5 truncate">
-                          {role.permissions.length} permissões
+                          {role.permissions.length} {t('permissions')}
                         </p>
                       </div>
                       <ChevronRightIcon size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90' : ''}`} />
@@ -276,16 +281,16 @@ export default function RolesPage() {
                         {selectedRole.name}
                       </h2>
                       <p className="text-text-muted mt-1">
-                        {selectedRole.description || 'Sem descrição'}
+                        {selectedRole.description || t('noDescription')}
                       </p>
                       <div className="flex items-center gap-4 mt-3">
                         <div className="flex items-center gap-1.5 text-sm text-text-muted">
                           <UsersIcon size={14} />
-                          <span>{userCount} usuário{userCount !== 1 ? 's' : ''}</span>
+                          <span>{userCount} {userCount !== 1 ? t('users') : t('user')}</span>
                         </div>
                         <div className="flex items-center gap-1.5 text-sm text-text-muted">
                           <ShieldIcon size={14} />
-                          <span>{editedPermissions.length} permissões ativas</span>
+                          <span>{editedPermissions.length} {t('activePermissions')}</span>
                         </div>
                       </div>
                     </div>
@@ -299,7 +304,7 @@ export default function RolesPage() {
                         onClick={handleSavePermissions}
                         disabled={saving}
                       >
-                        {saving ? 'Salvando...' : 'Salvar Alterações'}
+                        {saving ? t('saving') : t('saveChanges')}
                       </Button>
                     )}
                     {!selectedRole.isSystem && (
@@ -309,7 +314,7 @@ export default function RolesPage() {
                           leftIcon={<EditIcon size={16} />}
                           onClick={handleOpenEditModal}
                         >
-                          Editar
+                          {tCommon('edit')}
                         </Button>
                         <Button
                           variant="ghost"
@@ -317,9 +322,9 @@ export default function RolesPage() {
                           onClick={() => setShowDeleteModal(true)}
                           className="text-error hover:bg-error/10"
                           disabled={!canDelete}
-                          title={!canDelete && userCount > 0 ? `Não é possível excluir: ${userCount} usuários têm esta função` : undefined}
+                          title={!canDelete && userCount > 0 ? `${t('cannotDelete')}: ${userCount} ${t('usersAssigned')}` : undefined}
                         >
-                          Excluir
+                          {tCommon('delete')}
                         </Button>
                       </>
                     )}
@@ -329,13 +334,13 @@ export default function RolesPage() {
                 {/* Warning for users */}
                 {userCount > 0 && !selectedRole.isSystem && (
                   <div className="mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning text-sm">
-                    Remova todos os usuários desta função antes de excluí-la.
+                    {t('removeUsersWarning')}
                   </div>
                 )}
 
                 {selectedRole.isSystem && (
                   <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
-                    Esta é uma função do sistema e não pode ser editada ou excluída.
+                    {t('systemRoleWarning')}
                   </div>
                 )}
               </Card>
@@ -346,11 +351,11 @@ export default function RolesPage() {
                   <div key={resource}>
                     <div className="flex items-center gap-3 mb-4">
                       <h3 className="text-lg font-medium text-text-primary">
-                        {resource}
+                        {tPermissions(resource)}
                       </h3>
                       <div className="flex-1 h-px bg-border" />
                       <span className="text-xs text-text-muted">
-                        {perms.filter(p => hasPermission(p.id)).length} de {perms.length}
+                        {perms.filter(p => hasPermission(p.id)).length} {t('of')} {perms.length}
                       </span>
                     </div>
 
@@ -388,12 +393,12 @@ export default function RolesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className={`font-medium ${isActive ? 'text-gold' : 'text-text-primary'}`}>
-                                  {permission.action}
+                                  {tPermissions(permission.action)}
                                 </span>
                               </div>
                               {permission.description && (
                                 <p className="text-sm text-text-muted mt-0.5">
-                                  {permission.description}
+                                  {tPermissions(permission.description)}
                                 </p>
                               )}
                             </div>
@@ -413,10 +418,10 @@ export default function RolesPage() {
                   <ShieldIcon size={40} className="text-text-muted" />
                 </div>
                 <h3 className="text-xl font-light text-text-primary mb-2">
-                  Selecione uma Função
+                  {t('selectRole')}
                 </h3>
                 <p className="text-text-muted max-w-sm">
-                  Escolha uma função na lista ao lado para visualizar e gerenciar suas permissões
+                  {t('selectRoleDescription')}
                 </p>
               </div>
             </Card>
@@ -428,28 +433,28 @@ export default function RolesPage() {
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title="Criar Nova Função"
+        title={t('newRole')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowCreateModal(false)}>
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button onClick={handleCreateRole} disabled={!newRoleName}>
-              Criar Função
+              {t('createRole')}
             </Button>
           </>
         }
       >
         <div className="space-y-5">
           <Input
-            label="Nome da Função"
-            placeholder="Ex: Gerente de Conteúdo"
+            label={t('roleName')}
+            placeholder={t('roleNamePlaceholder')}
             value={newRoleName}
             onChange={(e) => setNewRoleName(e.target.value)}
           />
           <Input
-            label="Descrição"
-            placeholder="Breve descrição da função"
+            label={t('roleDescription')}
+            placeholder={t('roleDescriptionPlaceholder')}
             value={newRoleDescription}
             onChange={(e) => setNewRoleDescription(e.target.value)}
           />
@@ -460,28 +465,28 @@ export default function RolesPage() {
       <Modal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title="Editar Função"
+        title={t('editRole')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowEditModal(false)}>
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button onClick={handleSaveRoleDetails} disabled={!editRoleName}>
-              Salvar Alterações
+              {t('saveChanges')}
             </Button>
           </>
         }
       >
         <div className="space-y-5">
           <Input
-            label="Nome da Função"
-            placeholder="Ex: Gerente de Conteúdo"
+            label={t('roleName')}
+            placeholder={t('roleNamePlaceholder')}
             value={editRoleName}
             onChange={(e) => setEditRoleName(e.target.value)}
           />
           <Input
-            label="Descrição"
-            placeholder="Breve descrição da função"
+            label={t('roleDescription')}
+            placeholder={t('roleDescriptionPlaceholder')}
             value={editRoleDescription}
             onChange={(e) => setEditRoleDescription(e.target.value)}
           />
@@ -492,36 +497,36 @@ export default function RolesPage() {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="Excluir Função"
+        title={t('deleteRole')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>
-              Cancelar
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="danger"
               onClick={handleDeleteRole}
               disabled={!canDelete || deleting}
             >
-              {deleting ? 'Excluindo...' : 'Excluir Função'}
+              {deleting ? t('deleting') : t('deleteRole')}
             </Button>
           </>
         }
       >
         {userCount > 0 ? (
           <div className="space-y-3">
-            <p className="text-error font-medium">Não é possível excluir esta função.</p>
+            <p className="text-error font-medium">{t('cannotDelete')}</p>
             <p className="text-text-secondary">
-              Existem <strong className="text-text-primary">{userCount} usuário{userCount !== 1 ? 's' : ''}</strong> atribuídos
-              à função <strong className="text-text-primary">{selectedRole?.name}</strong>.
-              Remova todos os usuários antes de excluir.
+              <strong className="text-text-primary">{userCount} {userCount !== 1 ? t('users') : t('user')}</strong>{' '}
+              {t('usersAssigned')}{' '}
+              <strong className="text-text-primary">{selectedRole?.name}</strong>.{' '}
+              {t('removeUsersFirst')}
             </p>
           </div>
         ) : (
           <p className="text-text-secondary">
-            Tem certeza que deseja excluir a função{' '}
+            {t('deleteRoleConfirm')}{' '}
             <strong className="text-text-primary">{selectedRole?.name}</strong>?
-            Esta ação não pode ser desfeita.
           </p>
         )}
       </Modal>
@@ -574,53 +579,53 @@ const mockRoles: Role[] = [
 ];
 
 mockRoles[0].permissions = [
-  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
-  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
-  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
-  { id: 'users-delete', resource: 'Usuários', action: 'DELETE', description: 'Remover usuários' },
-  { id: 'roles-create', resource: 'Funções', action: 'CREATE', description: 'Criar novas funções' },
-  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
-  { id: 'roles-update', resource: 'Funções', action: 'UPDATE', description: 'Modificar permissões de funções' },
-  { id: 'roles-delete', resource: 'Funções', action: 'DELETE', description: 'Remover funções' },
-  { id: 'network-create', resource: 'Rede', action: 'CREATE', description: 'Criar nós de rede' },
-  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
-  { id: 'network-update', resource: 'Rede', action: 'UPDATE', description: 'Modificar nós de rede' },
-  { id: 'network-delete', resource: 'Rede', action: 'DELETE', description: 'Remover nós de rede' },
-  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
-  { id: 'audit-manage', resource: 'Auditoria', action: 'MANAGE', description: 'Executar verificações de conformidade' },
+  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
+  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
+  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
+  { id: 'users-delete', resource: 'Users', action: 'DELETE', description: 'removeUsers' },
+  { id: 'roles-create', resource: 'Roles', action: 'CREATE', description: 'createRoles' },
+  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
+  { id: 'roles-update', resource: 'Roles', action: 'UPDATE', description: 'modifyRoles' },
+  { id: 'roles-delete', resource: 'Roles', action: 'DELETE', description: 'removeRoles' },
+  { id: 'network-create', resource: 'Network', action: 'CREATE', description: 'createNodes' },
+  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
+  { id: 'network-update', resource: 'Network', action: 'UPDATE', description: 'modifyNodes' },
+  { id: 'network-delete', resource: 'Network', action: 'DELETE', description: 'removeNodes' },
+  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
+  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE', description: 'runCompliance' },
 ];
 
 mockRoles[1].permissions = [
-  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
-  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
-  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
-  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
-  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
-  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
+  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
+  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
+  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
+  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
+  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
+  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
 ];
 
 mockRoles[2].permissions = [
-  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
-  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
+  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
+  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
 ];
 
 mockRoles[3].permissions = [
-  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
+  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
 ];
 
 const mockPermissions: Permission[] = [
-  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
-  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
-  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
-  { id: 'users-delete', resource: 'Usuários', action: 'DELETE', description: 'Remover usuários' },
-  { id: 'roles-create', resource: 'Funções', action: 'CREATE', description: 'Criar novas funções' },
-  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
-  { id: 'roles-update', resource: 'Funções', action: 'UPDATE', description: 'Modificar permissões de funções' },
-  { id: 'roles-delete', resource: 'Funções', action: 'DELETE', description: 'Remover funções' },
-  { id: 'network-create', resource: 'Rede', action: 'CREATE', description: 'Criar nós de rede' },
-  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
-  { id: 'network-update', resource: 'Rede', action: 'UPDATE', description: 'Modificar nós de rede' },
-  { id: 'network-delete', resource: 'Rede', action: 'DELETE', description: 'Remover nós de rede' },
-  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
-  { id: 'audit-manage', resource: 'Auditoria', action: 'MANAGE', description: 'Executar verificações de conformidade' },
+  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
+  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
+  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
+  { id: 'users-delete', resource: 'Users', action: 'DELETE', description: 'removeUsers' },
+  { id: 'roles-create', resource: 'Roles', action: 'CREATE', description: 'createRoles' },
+  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
+  { id: 'roles-update', resource: 'Roles', action: 'UPDATE', description: 'modifyRoles' },
+  { id: 'roles-delete', resource: 'Roles', action: 'DELETE', description: 'removeRoles' },
+  { id: 'network-create', resource: 'Network', action: 'CREATE', description: 'createNodes' },
+  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
+  { id: 'network-update', resource: 'Network', action: 'UPDATE', description: 'modifyNodes' },
+  { id: 'network-delete', resource: 'Network', action: 'DELETE', description: 'removeNodes' },
+  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
+  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE', description: 'runCompliance' },
 ];

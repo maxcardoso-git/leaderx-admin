@@ -1,10 +1,11 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface SidebarContextType {
   isCollapsed: boolean;
   isHovered: boolean;
+  setIsCollapsed: (value: boolean) => void;
   setIsHovered: (value: boolean) => void;
   toggleCollapsed: () => void;
 }
@@ -12,7 +13,7 @@ interface SidebarContextType {
 const SidebarContext = createContext<SidebarContextType | null>(null);
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed (auto-hide)
+  const [isCollapsed, setIsCollapsed] = useState(false); // Start expanded
   const [isHovered, setIsHovered] = useState(false);
 
   const toggleCollapsed = () => {
@@ -21,7 +22,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
   return (
     <SidebarContext.Provider
-      value={{ isCollapsed, isHovered, setIsHovered, toggleCollapsed }}
+      value={{ isCollapsed, setIsCollapsed, isHovered, setIsHovered, toggleCollapsed }}
     >
       {children}
     </SidebarContext.Provider>

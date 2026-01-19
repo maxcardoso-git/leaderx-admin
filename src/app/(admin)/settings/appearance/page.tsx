@@ -13,8 +13,9 @@ const MonacoEditor = dynamic(
 );
 
 const DEFAULT_CSS = `:root {
-  --bg-color: #000000;
+  --bg-color: #0d1117;
   --gold: #c4a45a;
+  --gold-rgb: 196, 164, 90;
   --text-main: #ffffff;
   --text-muted: #a0a0a0;
   --pill-bg: rgba(255, 255, 255, 0.05);

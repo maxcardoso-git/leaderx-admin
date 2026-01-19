@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -13,64 +12,85 @@ import {
   AuditIcon,
   SettingsIcon,
   ChevronDownIcon,
+  ChevronLeftIcon,
+  SearchIcon,
   LogoutIcon,
+  ShieldIcon,
 } from '../icons';
+import { useSidebar } from './SidebarContext';
+
+// CSS variable for gold color with fallback
+const goldColor = 'var(--gold, #c4a45a)';
+const goldColorRgb = 'var(--gold-rgb, 196, 164, 90)';
 
 interface NavItem {
   key: string;
   href?: string;
   icon: React.ReactNode;
-  children?: { key: string; href: string }[];
+  badge?: number;
+  children?: { key: string; href: string; icon?: React.ReactNode }[];
 }
 
 const navigationConfig: NavItem[] = [
   {
     key: 'dashboard',
     href: '/dashboard',
-    icon: <DashboardIcon size={20} />,
+    icon: <DashboardIcon size={18} />,
+    badge: 1,
   },
   {
     key: 'identity',
-    icon: <UsersIcon size={20} />,
+    icon: <UsersIcon size={18} />,
+    badge: 2,
     children: [
-      { key: 'users', href: '/identity/users' },
-      { key: 'roles', href: '/identity/roles' },
+      { key: 'users', href: '/identity/users', icon: <UsersIcon size={16} /> },
+      { key: 'roles', href: '/identity/roles', icon: <ShieldIcon size={16} /> },
     ],
   },
   {
     key: 'network',
-    icon: <NetworkIcon size={20} />,
+    icon: <NetworkIcon size={18} />,
+    badge: 2,
     children: [
-      { key: 'nodes', href: '/network/nodes' },
-      { key: 'hierarchy', href: '/network/hierarchy' },
+      { key: 'nodes', href: '/network/nodes', icon: <NetworkIcon size={16} /> },
+      { key: 'hierarchy', href: '/network/hierarchy', icon: <NetworkIcon size={16} /> },
     ],
   },
   {
     key: 'governance',
-    icon: <GovernanceIcon size={20} />,
+    icon: <GovernanceIcon size={18} />,
+    badge: 2,
     children: [
-      { key: 'policies', href: '/governance/policies' },
-      { key: 'rules', href: '/governance/rules' },
+      { key: 'policies', href: '/governance/policies', icon: <GovernanceIcon size={16} /> },
+      { key: 'rules', href: '/governance/rules', icon: <GovernanceIcon size={16} /> },
     ],
   },
   {
     key: 'audit',
-    icon: <AuditIcon size={20} />,
+    icon: <AuditIcon size={18} />,
+    badge: 2,
     children: [
-      { key: 'compliance', href: '/audit/compliance' },
-      { key: 'reports', href: '/audit/reports' },
+      { key: 'compliance', href: '/audit/compliance', icon: <AuditIcon size={16} /> },
+      { key: 'reports', href: '/audit/reports', icon: <AuditIcon size={16} /> },
     ],
   },
   {
     key: 'settings',
     href: '/settings/appearance',
-    icon: <SettingsIcon size={20} />,
+    icon: <SettingsIcon size={18} />,
   },
+];
+
+// Recent items - highlighted in gold
+const recentItems = [
+  { key: 'roles', href: '/identity/roles', icon: <ShieldIcon size={16} /> },
+  { key: 'users', href: '/identity/users', icon: <UsersIcon size={16} /> },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState<string[]>(['identity']);
+  const { isCollapsed, setIsCollapsed } = useSidebar();
   const t = useTranslations('nav');
 
   const toggleExpanded = (key: string) => {
@@ -85,107 +105,216 @@ export function Sidebar() {
   const isParentActive = (children?: { href: string }[]) =>
     children?.some((child) => pathname === child.href || pathname.startsWith(child.href));
 
+  // Style helpers using CSS variables
+  const activeItemStyle = {
+    backgroundColor: `rgba(${goldColorRgb}, 0.1)`,
+    color: goldColor,
+  };
+
+  const activeIconStyle = {
+    color: goldColor,
+  };
+
+  const avatarGradientStyle = {
+    background: `linear-gradient(to bottom right, rgba(${goldColorRgb}, 0.3), rgba(${goldColorRgb}, 0.1))`,
+  };
+
   return (
-    <aside className="w-[280px] min-w-[280px] h-screen sticky top-0 bg-background-alt border-r border-border flex flex-col">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-4 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <Image
-            src="/Logotipo-LeaderX.png"
-            alt="LeaderX"
-            width={160}
-            height={40}
-            className="object-contain"
-            priority
+    <aside
+      className={`
+        ${isCollapsed ? 'w-[72px] min-w-[72px]' : 'w-[280px] min-w-[280px]'}
+        h-screen sticky top-0 flex flex-col transition-all duration-300 border-r border-white/[0.06]
+      `}
+      style={{ backgroundColor: 'var(--bg-color, #0d1117)' }}
+    >
+      {/* Header */}
+      <div className="h-16 flex items-center justify-between px-5 border-b border-white/[0.06]">
+        {!isCollapsed && (
+          <Link href="/dashboard" className="flex items-center">
+            <span className="text-xl font-semibold" style={{ color: goldColor }}>Admin</span>
+          </Link>
+        )}
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={`
+            p-2 rounded-lg text-white/40 hover:bg-white/[0.06] hover:text-white/70 transition-all
+            ${isCollapsed ? 'mx-auto' : ''}
+          `}
+        >
+          <ChevronLeftIcon
+            size={18}
+            className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
           />
-        </Link>
+        </button>
       </div>
 
+      {/* Search */}
+      {!isCollapsed && (
+        <div className="px-4 py-4">
+          <div className="relative">
+            <SearchIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              type="text"
+              placeholder="Buscar módulo..."
+              className="w-full h-10 pl-10 pr-4 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-white/30 focus:border-white/[0.15] focus:bg-white/[0.06] focus:outline-none transition-all"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Recents Section */}
+      {!isCollapsed && (
+        <div className="px-4 pb-2">
+          <p className="text-[11px] font-medium text-white/30 uppercase tracking-wider px-3 mb-2">
+            Recentes
+          </p>
+          <div className="space-y-1">
+            {recentItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:opacity-80"
+                style={activeItemStyle}
+              >
+                {item.icon}
+                <span className="text-[13px] font-medium">{t(item.key)}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Divider */}
+      {!isCollapsed && <div className="mx-4 my-2 border-t border-white/[0.06]" />}
+
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3">
-        <ul className="space-y-1">
+      <nav className="flex-1 overflow-y-auto px-3 py-2">
+        <div className="space-y-1">
           {navigationConfig.map((item) => (
-            <li key={item.key}>
+            <div key={item.key}>
               {item.children ? (
                 <>
                   <button
                     onClick={() => toggleExpanded(item.key)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors ${
-                      isParentActive(item.children)
-                        ? 'bg-background-hover text-gold'
-                        : 'text-text-secondary hover:bg-background-hover hover:text-text-primary'
-                    }`}
+                    className={`
+                      w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200
+                      ${isParentActive(item.children)
+                        ? 'bg-white/[0.06] text-white'
+                        : 'text-white/50 hover:bg-white/[0.04] hover:text-white/70'
+                      }
+                    `}
                   >
                     <span className="flex items-center gap-3">
-                      <span className="flex-shrink-0">{item.icon}</span>
-                      <span className="text-sm font-medium">
-                        {t(item.key)}
+                      <span style={isParentActive(item.children) ? activeIconStyle : undefined}>
+                        {item.icon}
                       </span>
+                      {!isCollapsed && (
+                        <span className="text-[13px] font-medium">
+                          {t(item.key)}
+                        </span>
+                      )}
                     </span>
-                    <ChevronDownIcon
-                      size={16}
-                      className={`transition-transform flex-shrink-0 ${
-                        expandedItems.includes(item.key) ? 'rotate-180' : ''
-                      }`}
-                    />
+                    {!isCollapsed && (
+                      <div className="flex items-center gap-2">
+                        {item.badge && (
+                          <span className="text-[11px] font-medium text-white/40 bg-white/[0.08] px-2 py-0.5 rounded-md">
+                            {item.badge}
+                          </span>
+                        )}
+                        <ChevronDownIcon
+                          size={14}
+                          className={`transition-transform duration-300 text-white/30 ${
+                            expandedItems.includes(item.key) ? 'rotate-180' : ''
+                          }`}
+                        />
+                      </div>
+                    )}
                   </button>
-                  {expandedItems.includes(item.key) && (
-                    <ul className="mt-1 ml-8 space-y-1">
-                      {item.children.map((child) => (
-                        <li key={child.href}>
+                  {!isCollapsed && (
+                    <div className={`
+                      overflow-hidden transition-all duration-300 ease-out
+                      ${expandedItems.includes(item.key) ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
+                    `}>
+                      <div className="py-1 pl-4 space-y-0.5">
+                        {item.children.map((child) => (
                           <Link
+                            key={child.href}
                             href={child.href}
-                            className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
-                              isActive(child.href)
-                                ? 'bg-gold/10 text-gold border-l-2 border-gold -ml-0.5 pl-[10px]'
-                                : 'text-text-secondary hover:bg-background-hover hover:text-text-primary'
-                            }`}
+                            className={`
+                              flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] transition-all duration-200
+                              ${!isActive(child.href) ? 'text-white/40 hover:bg-white/[0.04] hover:text-white/60' : ''}
+                            `}
+                            style={isActive(child.href) ? activeItemStyle : undefined}
                           >
-                            {t(child.key)}
+                            {child.icon}
+                            <span>{t(child.key)}</span>
                           </Link>
-                        </li>
-                      ))}
-                    </ul>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </>
               ) : (
                 <Link
                   href={item.href!}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    isActive(item.href!)
-                      ? 'bg-gold/10 text-gold'
-                      : 'text-text-secondary hover:bg-background-hover hover:text-text-primary'
-                  }`}
+                  className={`
+                    flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200
+                    ${isActive(item.href!)
+                      ? 'bg-white/[0.06] text-white'
+                      : 'text-white/50 hover:bg-white/[0.04] hover:text-white/70'
+                    }
+                  `}
                 >
-                  <span className="flex-shrink-0">{item.icon}</span>
-                  <span className="text-sm font-medium">
-                    {t(item.key)}
+                  <span className="flex items-center gap-3">
+                    <span style={isActive(item.href!) ? activeIconStyle : undefined}>
+                      {item.icon}
+                    </span>
+                    {!isCollapsed && (
+                      <span className="text-[13px] font-medium">
+                        {t(item.key)}
+                      </span>
+                    )}
                   </span>
+                  {!isCollapsed && item.badge && (
+                    <span className="text-[11px] font-medium text-white/40 bg-white/[0.08] px-2 py-0.5 rounded-md">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-border">
-        <div className="flex items-center gap-3 px-2 py-2">
-          <div className="w-10 h-10 rounded-full bg-background-hover flex items-center justify-center flex-shrink-0">
-            <span className="text-gold font-medium text-sm">MC</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-text-primary truncate">
-              Max Cardoso
-            </p>
-            <p className="text-xs text-text-muted truncate">Admin</p>
-          </div>
-          <button
-            className="p-2 rounded-lg text-text-secondary hover:bg-background-hover hover:text-error transition-colors flex-shrink-0"
-            title="Logout"
+      <div className="p-3 border-t border-white/[0.06]">
+        <div className={`
+          flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]
+          ${isCollapsed ? 'justify-center' : ''}
+        `}>
+          <div
+            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            style={avatarGradientStyle}
           >
-            <LogoutIcon size={18} />
-          </button>
+            <span className="font-semibold text-xs" style={{ color: goldColor }}>MC</span>
+          </div>
+          {!isCollapsed && (
+            <>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate">
+                  Max Cardoso
+                </p>
+                <p className="text-xs text-white/40 truncate">Administrador</p>
+              </div>
+              <button
+                className="p-2 rounded-lg text-white/30 hover:bg-white/[0.05] hover:text-red-400 transition-all duration-200 flex-shrink-0"
+                title="Sair"
+              >
+                <LogoutIcon size={16} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </aside>

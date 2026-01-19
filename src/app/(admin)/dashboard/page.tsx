@@ -1,179 +1,102 @@
 'use client';
 
-import { Card, CardHeader, StatCard, StatusPill } from '@/components/ui';
-import { UsersIcon, ShieldIcon, NetworkIcon, AuditIcon } from '@/components/icons';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { UsersIcon, ShieldIcon, NetworkIcon, AuditIcon, PlusIcon, SettingsIcon } from '@/components/icons';
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
+  const nav = useTranslations('nav');
+
+  const quickActions = [
+    {
+      icon: <UsersIcon size={24} />,
+      label: nav('users'),
+      href: '/identity/users',
+      iconColor: 'text-blue-400',
+      gradient: 'from-blue-500/10 to-transparent',
+    },
+    {
+      icon: <ShieldIcon size={24} />,
+      label: nav('roles'),
+      href: '/identity/roles',
+      iconColor: 'text-emerald-400',
+      gradient: 'from-emerald-500/10 to-transparent',
+    },
+    {
+      icon: <NetworkIcon size={24} />,
+      label: nav('network'),
+      href: '/network',
+      iconColor: 'text-amber-400',
+      gradient: 'from-amber-500/10 to-transparent',
+    },
+    {
+      icon: <AuditIcon size={24} />,
+      label: nav('audit'),
+      href: '/audit/compliance',
+      iconColor: 'text-violet-400',
+      gradient: 'from-violet-500/10 to-transparent',
+    },
+    {
+      icon: <PlusIcon size={24} />,
+      label: t('addUser'),
+      href: '/identity/users/create',
+      iconColor: 'text-cyan-400',
+      gradient: 'from-cyan-500/10 to-transparent',
+    },
+    {
+      icon: <SettingsIcon size={24} />,
+      label: nav('settings'),
+      href: '/settings/appearance',
+      iconColor: 'text-rose-400',
+      gradient: 'from-rose-500/10 to-transparent',
+    },
+  ];
+
   return (
-    <div className="space-y-16">
-      {/* Header */}
-      <div>
-        <h1 className="font-heading text-3xl font-semibold text-text-primary">
-          Welcome back, Max
-        </h1>
-        <p className="text-base text-text-muted mt-3">
-          Here&apos;s what&apos;s happening with your organization today
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-        <StatCard
-          label="Total Users"
-          value="1,234"
-          change={{ value: 12, isPositive: true }}
-          icon={<UsersIcon size={28} />}
-        />
-        <StatCard
-          label="Active Roles"
-          value="23"
-          change={{ value: 2, isPositive: true }}
-          icon={<ShieldIcon size={28} />}
-        />
-        <StatCard
-          label="Network Nodes"
-          value="456"
-          change={{ value: 8, isPositive: true }}
-          icon={<NetworkIcon size={28} />}
-        />
-        <StatCard
-          label="Compliance Score"
-          value="98%"
-          change={{ value: 3, isPositive: true }}
-          icon={<AuditIcon size={28} />}
-        />
-      </div>
-
-      {/* Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Recent Activity */}
-        <Card className="lg:col-span-2">
-          <CardHeader title="Recent Activity" subtitle="Latest actions in your organization" />
-          <div className="space-y-6">
-            {recentActivities.map((activity, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-5 pb-6 border-b border-border last:border-0 last:pb-0"
-              >
-                <div className={`p-3 rounded-xl ${activity.iconBg}`}>
-                  {activity.icon}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-base text-text-primary font-medium">{activity.title}</p>
-                  <p className="text-sm text-text-muted mt-1">{activity.description}</p>
-                </div>
-                <span className="text-sm text-text-muted whitespace-nowrap">
-                  {activity.time}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        {/* Pending Approvals */}
-        <Card>
-          <CardHeader title="Pending Approvals" subtitle="Items requiring your attention" />
-          <div className="space-y-5">
-            {pendingApprovals.map((approval, index) => (
-              <div
-                key={index}
-                className="p-5 bg-background-alt rounded-xl hover:bg-background-hover transition-colors cursor-pointer"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-base font-medium text-text-primary">
-                    {approval.title}
-                  </span>
-                  <StatusPill status={approval.priority} size="sm" />
-                </div>
-                <p className="text-sm text-text-muted">{approval.description}</p>
-                <p className="text-sm text-text-muted mt-3">
-                  Requested by {approval.requestedBy} - {approval.time}
-                </p>
-              </div>
-            ))}
-          </div>
-        </Card>
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <div className="relative mb-12">
+        <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-transparent rounded-3xl" />
+        <div className="relative p-8">
+          <p className="text-gold text-sm font-medium tracking-wide uppercase mb-2">{nav('dashboard')}</p>
+          <h1 className="text-5xl font-extralight text-white mb-3">
+            {t('welcome')} <span className="font-normal">LeaderX</span>
+          </h1>
+          <p className="text-xl text-white/60 font-light">
+            {t('subtitle')}
+          </p>
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader title="Quick Actions" subtitle="Common tasks you can perform" />
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-10">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              className="flex flex-col items-center gap-4 p-6 bg-background-alt rounded-xl hover:bg-background-hover transition-colors group"
-            >
-              <div className="p-4 bg-gold/10 rounded-xl text-gold group-hover:bg-gold/20 transition-colors">
-                {action.icon}
-              </div>
-              <span className="text-base text-text-primary">{action.label}</span>
-            </button>
-          ))}
+      <div className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-2xl overflow-hidden">
+        <div className="p-6 border-b border-white/[0.05]">
+          <h2 className="text-lg font-medium text-white">{t('quickActions')}</h2>
+          <p className="text-sm text-white/40 mt-1">{t('quickActionsSub')}</p>
         </div>
-      </Card>
+        <div className="p-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+            {quickActions.map((action, index) => (
+              <Link
+                key={index}
+                href={action.href}
+                className="group relative overflow-hidden"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
+                <div className="relative flex flex-col items-center gap-4 p-6 bg-white/[0.02] rounded-2xl border border-white/[0.05] group-hover:border-white/[0.1] transition-all duration-300">
+                  <div className={`p-4 rounded-xl bg-white/[0.03] ${action.iconColor} group-hover:scale-110 transition-transform duration-300`}>
+                    {action.icon}
+                  </div>
+                  <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors text-center">
+                    {action.label}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
-const recentActivities = [
-  {
-    icon: <UsersIcon size={20} className="text-info" />,
-    iconBg: 'bg-info/10',
-    title: 'New user registered',
-    description: 'Ana Silva joined as a Member',
-    time: '5 min ago',
-  },
-  {
-    icon: <ShieldIcon size={20} className="text-success" />,
-    iconBg: 'bg-success/10',
-    title: 'Role updated',
-    description: 'Manager role permissions were modified',
-    time: '15 min ago',
-  },
-  {
-    icon: <NetworkIcon size={20} className="text-gold" />,
-    iconBg: 'bg-gold/10',
-    title: 'Network node created',
-    description: 'New regional branch added to the network',
-    time: '1 hour ago',
-  },
-  {
-    icon: <AuditIcon size={20} className="text-warning" />,
-    iconBg: 'bg-warning/10',
-    title: 'Compliance check completed',
-    description: 'Monthly compliance audit finished',
-    time: '2 hours ago',
-  },
-];
-
-const pendingApprovals = [
-  {
-    title: 'Role Assignment',
-    description: 'Assign Admin role to Carlos Santos',
-    requestedBy: 'Ana Silva',
-    time: '10 min ago',
-    priority: 'warning' as const,
-  },
-  {
-    title: 'User Activation',
-    description: 'Activate suspended account',
-    requestedBy: 'Pedro Lima',
-    time: '1 hour ago',
-    priority: 'pending' as const,
-  },
-  {
-    title: 'Permission Request',
-    description: 'Access to financial reports',
-    requestedBy: 'Julia Costa',
-    time: '3 hours ago',
-    priority: 'active' as const,
-  },
-];
-
-const quickActions = [
-  { icon: <UsersIcon size={28} />, label: 'Add User' },
-  { icon: <ShieldIcon size={28} />, label: 'Create Role' },
-  { icon: <NetworkIcon size={28} />, label: 'Add Node' },
-  { icon: <AuditIcon size={28} />, label: 'Run Audit' },
-];

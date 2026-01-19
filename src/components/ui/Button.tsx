@@ -2,6 +2,9 @@
 
 import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
 
+// CSS variables for theming
+const goldColor = 'var(--gold, #c4a45a)';
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
@@ -21,34 +24,45 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       rightIcon,
       disabled,
       className = '',
+      style,
       ...props
     },
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed';
+      'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
       primary:
-        'bg-gold text-background hover:bg-gold-light focus:ring-gold active:bg-gold-dark',
+        'text-black font-semibold hover:brightness-110 active:scale-[0.98]',
       secondary:
-        'bg-background-card border border-border text-text-primary hover:bg-background-hover hover:border-border-light focus:ring-border',
+        'bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.08] hover:border-white/[0.15]',
       ghost:
-        'bg-transparent text-text-secondary hover:bg-background-hover hover:text-text-primary focus:ring-border',
+        'bg-transparent text-white/60 hover:bg-white/[0.05] hover:text-white',
       danger:
-        'bg-error text-white hover:bg-red-600 focus:ring-error',
+        'bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:border-red-500/30',
     };
 
     const sizes = {
-      sm: 'h-8 px-3 text-xs gap-1.5',
-      md: 'h-10 px-4 text-sm gap-2',
+      sm: 'h-8 px-4 text-xs gap-1.5',
+      md: 'h-10 px-5 text-sm gap-2',
       lg: 'h-12 px-6 text-base gap-2.5',
     };
+
+    // Primary button uses gold background via inline style for CSS variable support
+    const buttonStyle = variant === 'primary'
+      ? {
+          backgroundColor: goldColor,
+          boxShadow: '0 0 20px rgba(196, 164, 90, 0.25)',
+          ...style,
+        }
+      : style;
 
     return (
       <button
         ref={ref}
         className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        style={buttonStyle}
         disabled={disabled || isLoading}
         {...props}
       >

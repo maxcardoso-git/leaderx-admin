@@ -46,6 +46,7 @@ export default function EditUserPage() {
 
   const loadUser = async () => {
     setIsLoadingUser(true);
+    setError(null);
     try {
       const [userData, roles] = await Promise.all([
         usersService.getById(userId),
@@ -57,24 +58,25 @@ export default function EditUserPage() {
         status: userData.status,
       });
       setUserRoles(roles.map((r) => r.id));
-    } catch (error) {
-      console.error('Failed to load user:', error);
-      // Use mock data for demo
+    } catch (err) {
+      console.error('Failed to load user:', err);
+      // Use mock data for demo (same as detail page)
       const mockUser: User = {
         id: userId,
         tenantId: 'demo-tenant',
-        email: 'user@example.com',
-        fullName: 'Example User',
+        email: 'max.cardoso@leaderx.com',
+        fullName: 'Max Cardoso',
         status: 'ACTIVE',
         createdAt: '2024-01-15T10:00:00Z',
         updatedAt: '2024-01-15T10:00:00Z',
+        lastLoginAt: '2024-01-20T14:30:00Z',
       };
       setOriginalUser(mockUser);
       setFormData({
         fullName: mockUser.fullName,
         status: mockUser.status,
       });
-      setUserRoles(['role-member']);
+      setUserRoles(['role-admin', 'role-manager']);
     } finally {
       setIsLoadingUser(false);
     }
@@ -87,11 +89,10 @@ export default function EditUserPage() {
       setAvailableRoles(response.items || []);
     } catch (error) {
       console.error('Failed to load roles:', error);
-      // Fallback to mock roles
+      // Fallback to mock roles (same as detail page)
       setAvailableRoles([
-        { id: 'role-admin', tenantId: 'demo', name: 'Administrator', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
-        { id: 'role-manager', tenantId: 'demo', name: 'Manager', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
-        { id: 'role-member', tenantId: 'demo', name: 'Member', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
+        { id: 'role-admin', tenantId: 'demo', name: 'Administrador', description: 'Acesso total ao sistema', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
+        { id: 'role-manager', tenantId: 'demo', name: 'Gerente', description: 'Gerenciar usuários e conteúdo', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
       ]);
     } finally {
       setIsLoadingRoles(false);
@@ -151,6 +152,22 @@ export default function EditUserPage() {
         <Card>
           <div className="h-60 animate-pulse bg-background-hover rounded" />
         </Card>
+      </div>
+    );
+  }
+
+  // Show error state if user couldn't be loaded
+  if (error && !originalUser) {
+    return (
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="p-6 bg-error/10 border border-error/20 rounded-xl text-center">
+          <p className="text-error font-medium mb-4">{error}</p>
+          <Link href="/identity/users">
+            <Button variant="secondary">
+              Voltar para Usuários
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }

@@ -27,66 +27,69 @@ export function TopBar() {
     compliance: t('compliance'),
     reports: t('reports'),
     settings: t('settings'),
-    create: 'Create',
-    edit: 'Edit',
+    appearance: 'Aparência',
+    create: 'Novo',
+    edit: 'Editar',
+  };
+
+  // Check if a segment looks like a UUID
+  const isUUID = (str: string) => {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
   };
 
   const getBreadcrumbs = () => {
     const segments = pathname.split('/').filter(Boolean);
-    return segments.map((segment, index) => ({
-      label: breadcrumbLabels[segment] || segment,
-      isLast: index === segments.length - 1,
-    }));
+    return segments
+      .filter(segment => !isUUID(segment)) // Filter out UUIDs
+      .map((segment, index, arr) => ({
+        label: breadcrumbLabels[segment] || segment.charAt(0).toUpperCase() + segment.slice(1),
+        isLast: index === arr.length - 1,
+      }));
   };
 
   const breadcrumbs = getBreadcrumbs();
   const pageTitle = breadcrumbs[breadcrumbs.length - 1]?.label || t('dashboard');
 
   return (
-    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 lg:px-6 min-w-0">
+    <header className="h-16 bg-[#0f0f0f] border-b border-white/[0.05] flex items-center justify-between px-6 min-w-0">
       {/* Left: Breadcrumbs */}
-      <div className="flex flex-col min-w-0 flex-shrink-0">
-        <h1 className="font-heading text-lg font-semibold text-text-primary">
-          {pageTitle}
-        </h1>
-        {breadcrumbs.length > 1 && (
-          <nav className="flex items-center gap-1 text-xs">
-            {breadcrumbs.map((crumb, index) => (
-              <span key={index} className="flex items-center gap-1">
-                {index > 0 && (
-                  <span className="text-text-muted">/</span>
-                )}
-                <span
-                  className={
-                    crumb.isLast
-                      ? 'text-gold'
-                      : 'text-text-muted hover:text-text-secondary'
-                  }
-                >
-                  {crumb.label}
-                </span>
+      <div className="flex items-center gap-3 min-w-0 flex-shrink-0">
+        <nav className="flex items-center gap-2 text-sm">
+          {breadcrumbs.map((crumb, index) => (
+            <span key={index} className="flex items-center gap-2">
+              {index > 0 && (
+                <span className="text-white/20">/</span>
+              )}
+              <span
+                className={
+                  crumb.isLast
+                    ? 'text-white font-medium'
+                    : 'text-white/40 hover:text-white/60 transition-colors'
+                }
+              >
+                {crumb.label}
               </span>
-            ))}
-          </nav>
-        )}
+            </span>
+          ))}
+        </nav>
       </div>
 
       {/* Right: Search & Actions */}
-      <div className="flex items-center gap-2 lg:gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 flex-shrink-0">
         {/* Search */}
         <div
-          className={`relative hidden sm:flex items-center transition-all ${
-            searchFocused ? 'w-52 lg:w-64' : 'w-40 lg:w-52'
+          className={`relative hidden sm:flex items-center transition-all duration-200 ${
+            searchFocused ? 'w-64' : 'w-48'
           }`}
         >
           <SearchIcon
-            size={18}
-            className="absolute left-3 text-text-muted pointer-events-none"
+            size={16}
+            className="absolute left-3 text-white/30 pointer-events-none"
           />
           <input
             type="text"
             placeholder={tCommon('search')}
-            className="w-full h-9 pl-10 pr-4 bg-background-alt border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:border-gold focus:ring-0 transition-colors"
+            className="w-full h-9 pl-9 pr-4 bg-white/[0.03] border border-white/[0.05] rounded-xl text-sm text-white placeholder:text-white/30 focus:border-white/[0.1] focus:bg-white/[0.05] focus:ring-0 transition-all"
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
           />
@@ -96,16 +99,15 @@ export function TopBar() {
         <LanguageSelector />
 
         {/* Notifications */}
-        <button className="relative p-2 rounded-lg text-text-secondary hover:bg-background-hover hover:text-text-primary transition-colors">
-          <BellIcon size={20} />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full" />
+        <button className="relative p-2.5 rounded-xl text-white/40 hover:bg-white/[0.05] hover:text-white/70 transition-all">
+          <BellIcon size={18} />
+          <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full" />
         </button>
 
         {/* Tenant Selector */}
-        <button className="flex items-center gap-2 px-2 lg:px-3 py-2 rounded-lg bg-background-alt border border-border hover:border-border-light transition-colors">
-          <span className="text-sm text-text-primary hidden sm:inline">Tenant Demo</span>
-          <span className="text-sm text-text-primary sm:hidden">Demo</span>
-          <ChevronDownIcon size={16} className="text-text-muted" />
+        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] hover:border-white/[0.1] transition-all">
+          <span className="text-sm text-white/80">Tenant Demo</span>
+          <ChevronDownIcon size={14} className="text-white/40" />
         </button>
       </div>
     </header>

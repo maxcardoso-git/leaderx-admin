@@ -3,18 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button, Table, StatusPill, Input, Select, Card, Avatar, Pagination } from '@/components/ui';
 import { PlusIcon, SearchIcon, FilterIcon, EditIcon, TrashIcon, EyeIcon } from '@/components/icons';
 import { User, UserStatus } from '@/types/identity';
 import { usersService } from '@/services/identity.service';
-
-const statusOptions = [
-  { value: '', label: 'All Status' },
-  { value: 'ACTIVE', label: 'Active' },
-  { value: 'INACTIVE', label: 'Inactive' },
-  { value: 'SUSPENDED', label: 'Suspended' },
-  { value: 'PENDING_VERIFICATION', label: 'Pending' },
-];
 
 const mapStatus = (status: UserStatus): 'active' | 'inactive' | 'pending' | 'suspended' => {
   const mapping: Record<UserStatus, 'active' | 'inactive' | 'pending' | 'suspended'> = {
@@ -28,12 +21,24 @@ const mapStatus = (status: UserStatus): 'active' | 'inactive' | 'pending' | 'sus
 
 export default function UsersPage() {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations('users');
+  const common = useTranslations('common');
+
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const statusOptions = [
+    { value: '', label: t('allStatus') },
+    { value: 'ACTIVE', label: common('active') },
+    { value: 'INACTIVE', label: common('inactive') },
+    { value: 'SUSPENDED', label: common('suspended') },
+    { value: 'PENDING_VERIFICATION', label: common('pending') },
+  ];
 
   useEffect(() => {
     loadUsers();
@@ -72,7 +77,7 @@ export default function UsersPage() {
   const columns = [
     {
       key: 'fullName',
-      header: 'User',
+      header: t('user'),
       render: (user: User) => (
         <div className="flex items-center gap-3">
           <Avatar name={user.fullName} size="md" />
@@ -85,7 +90,7 @@ export default function UsersPage() {
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('status'),
       width: '120px',
       render: (user: User) => (
         <StatusPill status={mapStatus(user.status)} />
@@ -93,11 +98,11 @@ export default function UsersPage() {
     },
     {
       key: 'createdAt',
-      header: 'Created',
+      header: t('created'),
       width: '150px',
       render: (user: User) => (
         <span className="text-text-muted">
-          {new Date(user.createdAt).toLocaleDateString('pt-BR')}
+          {new Date(user.createdAt).toLocaleDateString(locale)}
         </span>
       ),
     },
@@ -113,7 +118,7 @@ export default function UsersPage() {
               router.push(`/identity/users/${user.id}`);
             }}
             className="p-2 rounded-lg text-text-muted hover:text-text-primary hover:bg-background-hover transition-colors"
-            title="View"
+            title={common('view')}
           >
             <EyeIcon size={16} />
           </button>
@@ -123,7 +128,7 @@ export default function UsersPage() {
               router.push(`/identity/users/${user.id}/edit`);
             }}
             className="p-2 rounded-lg text-text-muted hover:text-gold hover:bg-background-hover transition-colors"
-            title="Edit"
+            title={common('edit')}
           >
             <EditIcon size={16} />
           </button>
@@ -133,7 +138,7 @@ export default function UsersPage() {
               // Handle delete
             }}
             className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
-            title="Delete"
+            title={common('delete')}
           >
             <TrashIcon size={16} />
           </button>
@@ -147,14 +152,14 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-text-primary">Users</h1>
+          <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
           <p className="text-sm text-text-muted mt-1">
-            Manage user accounts and permissions
+            {t('subtitle')}
           </p>
         </div>
         <Link href="/identity/users/create">
           <Button leftIcon={<PlusIcon size={18} />}>
-            Add User
+            {t('addUser')}
           </Button>
         </Link>
       </div>
@@ -164,7 +169,7 @@ export default function UsersPage() {
         <div className="flex items-center gap-4">
           <div className="flex-1 max-w-md">
             <Input
-              placeholder="Search by name or email..."
+              placeholder={t('searchPlaceholder')}
               leftIcon={<SearchIcon size={18} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,7 +183,7 @@ export default function UsersPage() {
             />
           </div>
           <Button variant="secondary" leftIcon={<FilterIcon size={18} />}>
-            More Filters
+            {t('moreFilters')}
           </Button>
         </div>
       </Card>
@@ -190,7 +195,7 @@ export default function UsersPage() {
         keyExtractor={(user) => user.id}
         onRowClick={(user) => router.push(`/identity/users/${user.id}`)}
         isLoading={isLoading}
-        emptyMessage="No users found"
+        emptyMessage={t('noUsersFound')}
       />
 
       {/* Pagination */}
