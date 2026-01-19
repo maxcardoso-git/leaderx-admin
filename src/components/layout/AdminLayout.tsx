@@ -3,34 +3,26 @@
 import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
-import { SidebarProvider, useSidebar } from './SidebarContext';
+import { SidebarProvider } from './SidebarContext';
 
 interface AdminLayoutProps {
   children: ReactNode;
 }
 
 function AdminLayoutContent({ children }: AdminLayoutProps) {
-  const { isCollapsed } = useSidebar();
-
-  // When collapsed, use smaller margin. Content stays put and sidebar overlays when expanded on hover
-  const sidebarWidth = isCollapsed ? '72px' : '280px';
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar */}
+      {/* Sidebar - fixed width */}
       <Sidebar />
 
-      {/* Main Content Area */}
-      <div
-        className="min-h-screen flex flex-col transition-all duration-300 ease-in-out"
-        style={{ marginLeft: sidebarWidth }}
-      >
+      {/* Main Content Area - always offset by sidebar width */}
+      <div className="min-h-screen flex flex-col ml-[280px]">
         {/* Top Bar */}
         <TopBar />
 
-        {/* Page Content */}
-        <main className="flex-1 px-8 py-6 overflow-y-auto">
-          <div className="animate-fade-in">
+        {/* Page Content with proper spacing */}
+        <main className="flex-1 p-8 overflow-y-auto">
+          <div className="max-w-[1400px] mx-auto animate-fade-in">
             {children}
           </div>
         </main>
