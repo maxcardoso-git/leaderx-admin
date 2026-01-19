@@ -5,7 +5,7 @@ import { UsersIcon, ShieldIcon, NetworkIcon, AuditIcon } from '@/components/icon
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {/* Header */}
       <div>
         <h1 className="font-heading text-2xl font-semibold text-text-primary">
@@ -49,11 +49,11 @@ export default function DashboardPage() {
         {/* Recent Activity */}
         <Card className="lg:col-span-2">
           <CardHeader title="Recent Activity" subtitle="Latest actions in your organization" />
-          <div className="space-y-4">
+          <div className="space-y-5">
             {recentActivities.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-start gap-4 pb-4 border-b border-border last:border-0 last:pb-0"
+                className="flex items-start gap-4 pb-5 border-b border-border last:border-0 last:pb-0"
               >
                 <div className={`p-2 rounded-lg ${activity.iconBg}`}>
                   {activity.icon}
@@ -73,11 +73,11 @@ export default function DashboardPage() {
         {/* Pending Approvals */}
         <Card>
           <CardHeader title="Pending Approvals" subtitle="Items requiring your attention" />
-          <div className="space-y-3">
+          <div className="space-y-4">
             {pendingApprovals.map((approval, index) => (
               <div
                 key={index}
-                className="p-3 bg-background-alt rounded-lg hover:bg-background-hover transition-colors cursor-pointer"
+                className="p-4 bg-background-alt rounded-lg hover:bg-background-hover transition-colors cursor-pointer"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-text-primary">

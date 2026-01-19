@@ -86,7 +86,7 @@ export function Sidebar() {
     children?.some((child) => pathname === child.href || pathname.startsWith(child.href));
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-[280px] bg-background-alt border-r border-border flex flex-col z-40">
+    <aside className="w-[280px] min-w-[280px] h-screen sticky top-0 bg-background-alt border-r border-border flex flex-col">
       {/* Logo */}
       <div className="h-16 flex items-center px-4 border-b border-border">
         <Link href="/dashboard" className="flex items-center gap-3">
