@@ -181,5 +181,18 @@
     "en": "English",
     "es": "Spanish",
     "it": "Italian"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "appearanceSubtitle": "Customize the platform's visual style",
+    "cssEditor": "CSS Editor",
+    "cssEditorHint": "Paste or edit custom CSS",
+    "livePreview": "Live Preview",
+    "livePreviewHint": "See changes in real time",
+    "themeSaved": "Theme saved successfully!",
+    "resetDefault": "Reset to Default",
+    "cssErrors": "CSS Errors",
+    "line": "Line"
   }
 }

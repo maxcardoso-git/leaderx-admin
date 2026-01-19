@@ -181,5 +181,18 @@
     "en": "Ingles",
     "es": "Espanol",
     "it": "Italiano"
+  },
+  "settings": {
+    "title": "Configuracion",
+    "appearance": "Apariencia",
+    "appearanceSubtitle": "Personaliza el estilo visual de la plataforma",
+    "cssEditor": "Editor de CSS",
+    "cssEditorHint": "Pega o edita el CSS personalizado",
+    "livePreview": "Vista Previa en Vivo",
+    "livePreviewHint": "Visualiza los cambios en tiempo real",
+    "themeSaved": "Tema guardado exitosamente!",
+    "resetDefault": "Restaurar Predeterminado",
+    "cssErrors": "Errores de CSS",
+    "line": "Linea"
   }
 }

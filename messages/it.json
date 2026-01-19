@@ -181,5 +181,18 @@
     "en": "Inglese",
     "es": "Spagnolo",
     "it": "Italiano"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "appearance": "Aspetto",
+    "appearanceSubtitle": "Personalizza lo stile visivo della piattaforma",
+    "cssEditor": "Editor CSS",
+    "cssEditorHint": "Incolla o modifica il CSS personalizzato",
+    "livePreview": "Anteprima dal Vivo",
+    "livePreviewHint": "Visualizza le modifiche in tempo reale",
+    "themeSaved": "Tema salvato con successo!",
+    "resetDefault": "Ripristina Predefinito",
+    "cssErrors": "Errori CSS",
+    "line": "Riga"
   }
 }
