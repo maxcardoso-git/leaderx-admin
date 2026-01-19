@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 interface CardProps {
   children: ReactNode;
   className?: string;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
   hover?: boolean;
 }
 
@@ -17,9 +17,10 @@ export function Card({
 }: CardProps) {
   const paddings = {
     none: '',
-    sm: 'p-4',
-    md: 'p-6',
-    lg: 'p-8',
+    sm: 'p-5',
+    md: 'p-8',
+    lg: 'p-10',
+    xl: 'p-12',
   };
 
   return (
@@ -44,13 +45,13 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, action }: CardHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-6">
+    <div className="flex items-start justify-between mb-8">
       <div>
-        <h3 className="font-heading text-lg font-semibold text-text-primary">
+        <h3 className="font-heading text-xl font-semibold text-text-primary">
           {title}
         </h3>
         {subtitle && (
-          <p className="text-sm text-text-muted mt-1">{subtitle}</p>
+          <p className="text-sm text-text-muted mt-2">{subtitle}</p>
         )}
       </div>
       {action && <div>{action}</div>}
@@ -70,16 +71,16 @@ interface StatCardProps {
 
 export function StatCard({ label, value, change, icon }: StatCardProps) {
   return (
-    <Card>
+    <Card padding="lg">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-text-muted mb-1">{label}</p>
-          <p className="text-2xl font-heading font-semibold text-text-primary">
+          <p className="text-sm text-text-muted mb-2">{label}</p>
+          <p className="text-3xl font-heading font-semibold text-text-primary">
             {value}
           </p>
           {change && (
             <p
-              className={`text-xs mt-2 flex items-center gap-1 ${
+              className={`text-sm mt-3 flex items-center gap-1 ${
                 change.isPositive ? 'text-success' : 'text-error'
               }`}
             >
@@ -89,7 +90,7 @@ export function StatCard({ label, value, change, icon }: StatCardProps) {
           )}
         </div>
         {icon && (
-          <div className="p-3 bg-gold/10 rounded-lg text-gold">
+          <div className="p-4 bg-gold/10 rounded-xl text-gold">
             {icon}
           </div>
         )}
