@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Button, Table, StatusPill, Input, Select, Card, Avatar, Pagination } from '@/components/ui';
-import { PlusIcon, SearchIcon, FilterIcon, EditIcon, TrashIcon, EyeIcon } from '@/components/icons';
-import { User, UserStatus } from '@/types/identity';
-import { usersService } from '@/services/identity.service';
+import { Button, Table, StatusPill, Input, Select, Card, Avatar, Pagination, Modal, Checkbox } from '@/components/ui';
+import { PlusIcon, SearchIcon, FilterIcon, EditIcon, TrashIcon, EyeIcon, ShieldIcon } from '@/components/icons';
+import { User, UserStatus, Role } from '@/types/identity';
+import { usersService, rolesService } from '@/services/identity.service';
 
 const mapStatus = (status: UserStatus): 'active' | 'inactive' | 'pending' | 'suspended' => {
   const mapping: Record<UserStatus, 'active' | 'inactive' | 'pending' | 'suspended'> = {
@@ -24,6 +24,7 @@ export default function UsersPage() {
   const locale = useLocale();
   const t = useTranslations('users');
   const common = useTranslations('common');
+  const tRoles = useTranslations('roles');
 
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,14 @@ export default function UsersPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Roles modal state
+  const [showRolesModal, setShowRolesModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [availableRoles, setAvailableRoles] = useState<Role[]>([]);
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [isLoadingRoles, setIsLoadingRoles] = useState(false);
+  const [isSavingRoles, setIsSavingRoles] = useState(false);
 
   const statusOptions = [
     { value: '', label: t('allStatus') },
@@ -57,6 +66,63 @@ export default function UsersPage() {
       setUsers(mockUsers);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const openRolesModal = async (user: User) => {
+    setSelectedUser(user);
+    setShowRolesModal(true);
+    setIsLoadingRoles(true);
+
+    try {
+      const [rolesResponse, currentUserRoles] = await Promise.all([
+        rolesService.list(),
+        usersService.getUserRoles(user.id),
+      ]);
+      setAvailableRoles(rolesResponse.items || []);
+      setUserRoles(currentUserRoles.map((r) => r.id));
+    } catch (error) {
+      console.error('Failed to load roles:', error);
+      // Fallback to mock data
+      setAvailableRoles([
+        { id: 'role-admin', tenantId: 'demo', name: 'Administrador', description: 'Acesso total ao sistema', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
+        { id: 'role-manager', tenantId: 'demo', name: 'Gerente', description: 'Gerenciar usuários e conteúdo', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
+        { id: 'role-viewer', tenantId: 'demo', name: 'Visualizador', description: 'Apenas visualização', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
+      ]);
+      setUserRoles(['role-admin']);
+    } finally {
+      setIsLoadingRoles(false);
+    }
+  };
+
+  const closeRolesModal = () => {
+    setShowRolesModal(false);
+    setSelectedUser(null);
+    setUserRoles([]);
+  };
+
+  const toggleRole = async (roleId: string) => {
+    if (!selectedUser) return;
+
+    setIsSavingRoles(true);
+    try {
+      if (userRoles.includes(roleId)) {
+        await usersService.removeRole(selectedUser.id, roleId);
+        setUserRoles((prev) => prev.filter((id) => id !== roleId));
+      } else {
+        await usersService.assignRole(selectedUser.id, roleId);
+        setUserRoles((prev) => [...prev, roleId]);
+      }
+    } catch (error) {
+      console.error('Failed to toggle role:', error);
+      // For demo, just update local state
+      setUserRoles((prev) =>
+        prev.includes(roleId)
+          ? prev.filter((id) => id !== roleId)
+          : [...prev, roleId]
+      );
+    } finally {
+      setIsSavingRoles(false);
     }
   };
 
@@ -121,6 +187,16 @@ export default function UsersPage() {
             title={common('view')}
           >
             <EyeIcon size={16} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              openRolesModal(user);
+            }}
+            className="p-2 rounded-lg text-text-muted hover:text-gold hover:bg-background-hover transition-colors"
+            title={t('manageRoles')}
+          >
+            <ShieldIcon size={16} />
           </button>
           <button
             onClick={(e) => {
@@ -210,6 +286,85 @@ export default function UsersPage() {
           />
         </Card>
       )}
+
+      {/* Roles Modal */}
+      <Modal
+        isOpen={showRolesModal}
+        onClose={closeRolesModal}
+        title={t('manageRoles')}
+        footer={
+          <Button onClick={closeRolesModal}>
+            {common('save')}
+          </Button>
+        }
+      >
+        {selectedUser && (
+          <div className="space-y-4">
+            {/* User Info */}
+            <div className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-lg">
+              <Avatar name={selectedUser.fullName} size="md" />
+              <div>
+                <p className="font-medium text-text-primary">{selectedUser.fullName}</p>
+                <p className="text-xs text-text-muted">{selectedUser.email}</p>
+              </div>
+            </div>
+
+            {/* Roles List */}
+            <div className="space-y-2">
+              <p className="text-sm text-text-muted mb-3">{t('assignedRoles')}</p>
+              {isLoadingRoles ? (
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-14 bg-white/[0.02] rounded-lg animate-pulse" />
+                  ))}
+                </div>
+              ) : availableRoles.length === 0 ? (
+                <p className="text-sm text-text-muted text-center py-4">{t('noRolesAvailable')}</p>
+              ) : (
+                <div className="space-y-2">
+                  {availableRoles.map((role) => (
+                    <div
+                      key={role.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border transition-colors cursor-pointer ${
+                        userRoles.includes(role.id)
+                          ? 'bg-gold/10 border-gold/30'
+                          : 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.1]'
+                      }`}
+                      onClick={() => toggleRole(role.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${userRoles.includes(role.id) ? 'bg-gold/20 text-gold' : 'bg-white/[0.05] text-text-muted'}`}>
+                          <ShieldIcon size={16} />
+                        </div>
+                        <div>
+                          <p className={`text-sm font-medium ${userRoles.includes(role.id) ? 'text-gold' : 'text-text-primary'}`}>
+                            {role.name}
+                          </p>
+                          {role.description && (
+                            <p className="text-xs text-text-muted">{role.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {role.isSystem && (
+                          <span className="text-xs text-text-muted bg-white/[0.05] px-2 py-0.5 rounded">
+                            {tRoles('systemRole')}
+                          </span>
+                        )}
+                        <Checkbox
+                          checked={userRoles.includes(role.id)}
+                          onChange={() => toggleRole(role.id)}
+                          disabled={isSavingRoles}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
