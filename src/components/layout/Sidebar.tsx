@@ -16,6 +16,14 @@ import {
   SearchIcon,
   LogoutIcon,
   ShieldIcon,
+  GroupIcon,
+  TagIcon,
+  CubeIcon,
+  BriefcaseIcon,
+  LayersIcon,
+  RefreshIcon,
+  TruckIcon,
+  BoxIcon,
 } from '../icons';
 import { useSidebar } from './SidebarContext';
 
@@ -60,8 +68,9 @@ const navigationConfig: NavItem[] = [
   {
     key: 'governance',
     icon: <GovernanceIcon size={18} />,
-    badge: 2,
+    badge: 3,
     children: [
+      { key: 'workingUnits', href: '/governance/working-units', icon: <GroupIcon size={16} /> },
       { key: 'policies', href: '/governance/policies', icon: <GovernanceIcon size={16} /> },
       { key: 'rules', href: '/governance/rules', icon: <GovernanceIcon size={16} /> },
     ],
@@ -73,6 +82,19 @@ const navigationConfig: NavItem[] = [
     children: [
       { key: 'compliance', href: '/audit/compliance', icon: <AuditIcon size={16} /> },
       { key: 'reports', href: '/audit/reports', icon: <AuditIcon size={16} /> },
+    ],
+  },
+  {
+    key: 'systemSettings',
+    icon: <BoxIcon size={18} />,
+    badge: 6,
+    children: [
+      { key: 'categories', href: '/settings/categories', icon: <TagIcon size={16} /> },
+      { key: 'segments', href: '/settings/segments', icon: <CubeIcon size={16} /> },
+      { key: 'positions', href: '/settings/positions', icon: <BriefcaseIcon size={16} /> },
+      { key: 'lines', href: '/settings/lines', icon: <LayersIcon size={16} /> },
+      { key: 'cycles', href: '/settings/cycles', icon: <RefreshIcon size={16} /> },
+      { key: 'suppliers', href: '/settings/suppliers', icon: <TruckIcon size={16} /> },
     ],
   },
   {
@@ -234,7 +256,7 @@ export function Sidebar() {
                   {!isCollapsed && (
                     <div className={`
                       overflow-hidden transition-all duration-300 ease-out
-                      ${expandedItems.includes(item.key) ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}
+                      ${expandedItems.includes(item.key) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
                     `}>
                       <div className="py-1 pl-4 space-y-0.5">
                         {item.children.map((child) => (
