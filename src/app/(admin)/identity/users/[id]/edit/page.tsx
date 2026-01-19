@@ -28,24 +28,14 @@ export default function EditUserPage() {
   const [originalUser, setOriginalUser] = useState<User | null>(null);
 
   const [formData, setFormData] = useState<UpdateUserDto>({
-    name: '',
-    phone: '',
-    document: '',
-    documentType: 'CPF',
+    fullName: '',
+    status: 'ACTIVE',
   });
 
-  const documentTypeOptions = [
-    { value: 'CPF', label: 'CPF' },
-    { value: 'CNPJ', label: 'CNPJ' },
-    { value: 'RG', label: 'RG' },
-    { value: 'PASSPORT', label: 'Passport' },
-  ];
-
   const statusOptions = [
-    { value: 'ACTIVE', label: tCommon('active') },
-    { value: 'INACTIVE', label: tCommon('inactive') },
-    { value: 'SUSPENDED', label: tCommon('suspended') },
-    { value: 'PENDING_VERIFICATION', label: tCommon('pending') },
+    { value: 'ACTIVE', label: 'Ativo' },
+    { value: 'INACTIVE', label: 'Inativo' },
+    { value: 'SUSPENDED', label: 'Suspenso' },
   ];
 
   // Load user data
@@ -63,10 +53,7 @@ export default function EditUserPage() {
       ]);
       setOriginalUser(userData);
       setFormData({
-        name: userData.name,
-        phone: userData.phone || '',
-        document: userData.document || '',
-        documentType: userData.documentType || 'CPF',
+        fullName: userData.fullName,
         status: userData.status,
       });
       setUserRoles(roles.map((r) => r.id));
@@ -77,22 +64,14 @@ export default function EditUserPage() {
         id: userId,
         tenantId: 'demo-tenant',
         email: 'user@example.com',
-        name: 'Example User',
-        phone: '+55 11 99999-9999',
-        document: '123.456.789-00',
-        documentType: 'CPF',
+        fullName: 'Example User',
         status: 'ACTIVE',
-        emailVerified: true,
-        phoneVerified: false,
         createdAt: '2024-01-15T10:00:00Z',
         updatedAt: '2024-01-15T10:00:00Z',
       };
       setOriginalUser(mockUser);
       setFormData({
-        name: mockUser.name,
-        phone: mockUser.phone || '',
-        document: mockUser.document || '',
-        documentType: mockUser.documentType || 'CPF',
+        fullName: mockUser.fullName,
         status: mockUser.status,
       });
       setUserRoles(['role-member']);
@@ -125,7 +104,7 @@ export default function EditUserPage() {
     setSuccess(null);
 
     // Validation
-    if (!formData.name) {
+    if (!formData.fullName) {
       setError(tValidation('fillRequiredFields'));
       return;
     }
@@ -181,7 +160,7 @@ export default function EditUserPage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-2xl font-semibold text-text-primary">
-          {t('edit')} {originalUser?.name}
+          {t('edit')} {originalUser?.fullName}
         </h1>
         <p className="text-sm text-text-muted mt-1">
           {originalUser?.email}
@@ -211,8 +190,8 @@ export default function EditUserPage() {
               <Input
                 label={t('fullName')}
                 placeholder={t('fullNamePlaceholder')}
-                value={formData.name || ''}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                value={formData.fullName || ''}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 required
               />
             </div>
@@ -228,30 +207,11 @@ export default function EditUserPage() {
                 {t('emailCannotBeChanged')}
               </p>
             </div>
-            <Input
-              label={t('phone')}
-              type="tel"
-              placeholder={t('phonePlaceholder')}
-              value={formData.phone || ''}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            />
             <Select
-              label={t('status')}
+              label="Status"
               options={statusOptions}
               value={formData.status || 'ACTIVE'}
               onChange={(e) => setFormData({ ...formData, status: e.target.value as UserStatus })}
-            />
-            <Select
-              label={t('documentType')}
-              options={documentTypeOptions}
-              value={formData.documentType || 'CPF'}
-              onChange={(e) => setFormData({ ...formData, documentType: e.target.value })}
-            />
-            <Input
-              label={t('documentNumber')}
-              placeholder={t('documentPlaceholder')}
-              value={formData.document || ''}
-              onChange={(e) => setFormData({ ...formData, document: e.target.value })}
             />
           </div>
         </Card>

@@ -116,10 +116,10 @@ export default function UserDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Avatar name={user.name} size="lg" />
+          <Avatar name={user.fullName} size="lg" />
           <div>
             <h1 className="font-heading text-2xl font-semibold text-text-primary">
-              {user.name}
+              {user.fullName}
             </h1>
             <p className="text-sm text-text-muted">{user.email}</p>
           </div>
@@ -148,26 +148,11 @@ export default function UserDetailPage() {
           <Card>
             <CardHeader title="User Details" />
             <div className="grid grid-cols-2 gap-6">
-              <InfoItem label="Full Name" value={user.name} />
+              <InfoItem label="Full Name" value={user.fullName} />
               <InfoItem label="Email" value={user.email} />
-              <InfoItem label="Phone" value={user.phone || 'Not provided'} />
-              <InfoItem label="Document" value={user.document ? `${user.documentType}: ${user.document}` : 'Not provided'} />
-              <InfoItem
-                label="Email Verified"
-                value={
-                  <span className={user.emailVerified ? 'text-success' : 'text-warning'}>
-                    {user.emailVerified ? 'Verified' : 'Not Verified'}
-                  </span>
-                }
-              />
-              <InfoItem
-                label="Phone Verified"
-                value={
-                  <span className={user.phoneVerified ? 'text-success' : 'text-warning'}>
-                    {user.phoneVerified ? 'Verified' : 'Not Verified'}
-                  </span>
-                }
-              />
+              {user.externalId && (
+                <InfoItem label="External ID" value={user.externalId} />
+              )}
             </div>
           </Card>
 
@@ -176,9 +161,11 @@ export default function UserDetailPage() {
             <CardHeader
               title="Assigned Roles"
               action={
-                <Button variant="ghost" size="sm">
-                  Manage Roles
-                </Button>
+                <Link href={`/identity/users/${userId}/edit`}>
+                  <Button variant="ghost" size="sm">
+                    Manage Roles
+                  </Button>
+                </Link>
               }
             />
             <div className="space-y-3">
@@ -303,7 +290,7 @@ export default function UserDetailPage() {
         }
       >
         <p className="text-text-secondary">
-          Are you sure you want to delete <strong className="text-text-primary">{user.name}</strong>?
+          Are you sure you want to delete <strong className="text-text-primary">{user.fullName}</strong>?
           This action cannot be undone.
         </p>
       </Modal>
@@ -325,13 +312,8 @@ const mockUser: User = {
   id: '1',
   tenantId: 'demo-tenant',
   email: 'max.cardoso@leaderx.com',
-  name: 'Max Cardoso',
-  phone: '+55 11 99999-9999',
-  document: '123.456.789-00',
-  documentType: 'CPF',
+  fullName: 'Max Cardoso',
   status: 'ACTIVE',
-  emailVerified: true,
-  phoneVerified: true,
   createdAt: '2024-01-15T10:00:00Z',
   updatedAt: '2024-01-15T10:00:00Z',
   lastLoginAt: '2024-01-20T14:30:00Z',

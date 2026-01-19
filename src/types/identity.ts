@@ -2,40 +2,27 @@
 export interface User {
   id: string;
   tenantId: string;
+  externalId?: string;
   email: string;
-  name: string;
-  phone?: string;
-  document?: string;
-  documentType?: string;
+  fullName: string;
   status: UserStatus;
-  emailVerified: boolean;
-  phoneVerified: boolean;
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string;
-  metadata?: Record<string, unknown>;
 }
 
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING_VERIFICATION';
 
 export interface CreateUserDto {
+  externalId?: string;
   email: string;
-  name: string;
-  phone?: string;
-  document?: string;
-  documentType?: string;
-  password: string;
-  roleIds?: string[];
-  metadata?: Record<string, unknown>;
+  fullName: string;
+  status?: UserStatus;
 }
 
 export interface UpdateUserDto {
-  name?: string;
-  phone?: string;
-  document?: string;
-  documentType?: string;
+  fullName?: string;
   status?: UserStatus;
-  metadata?: Record<string, unknown>;
 }
 
 // Role Types

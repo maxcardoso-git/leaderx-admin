@@ -57,7 +57,7 @@ export default function UsersPage() {
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch;
   });
@@ -71,13 +71,13 @@ export default function UsersPage() {
 
   const columns = [
     {
-      key: 'name',
+      key: 'fullName',
       header: 'User',
       render: (user: User) => (
         <div className="flex items-center gap-3">
-          <Avatar name={user.name} size="md" />
+          <Avatar name={user.fullName} size="md" />
           <div>
-            <p className="font-medium text-text-primary">{user.name}</p>
+            <p className="font-medium text-text-primary">{user.fullName}</p>
             <p className="text-xs text-text-muted">{user.email}</p>
           </div>
         </div>
@@ -89,16 +89,6 @@ export default function UsersPage() {
       width: '120px',
       render: (user: User) => (
         <StatusPill status={mapStatus(user.status)} />
-      ),
-    },
-    {
-      key: 'emailVerified',
-      header: 'Verified',
-      width: '100px',
-      render: (user: User) => (
-        <span className={user.emailVerified ? 'text-success' : 'text-text-muted'}>
-          {user.emailVerified ? 'Yes' : 'No'}
-        </span>
       ),
     },
     {
@@ -225,11 +215,8 @@ const mockUsers: User[] = [
     id: '1',
     tenantId: 'demo-tenant',
     email: 'max.cardoso@leaderx.com',
-    name: 'Max Cardoso',
-    phone: '+55 11 99999-9999',
+    fullName: 'Max Cardoso',
     status: 'ACTIVE',
-    emailVerified: true,
-    phoneVerified: true,
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
     lastLoginAt: '2024-01-20T14:30:00Z',
@@ -238,10 +225,8 @@ const mockUsers: User[] = [
     id: '2',
     tenantId: 'demo-tenant',
     email: 'ana.silva@leaderx.com',
-    name: 'Ana Silva',
+    fullName: 'Ana Silva',
     status: 'ACTIVE',
-    emailVerified: true,
-    phoneVerified: false,
     createdAt: '2024-01-16T09:00:00Z',
     updatedAt: '2024-01-16T09:00:00Z',
   },
@@ -249,10 +234,8 @@ const mockUsers: User[] = [
     id: '3',
     tenantId: 'demo-tenant',
     email: 'carlos.santos@leaderx.com',
-    name: 'Carlos Santos',
+    fullName: 'Carlos Santos',
     status: 'PENDING_VERIFICATION',
-    emailVerified: false,
-    phoneVerified: false,
     createdAt: '2024-01-17T11:00:00Z',
     updatedAt: '2024-01-17T11:00:00Z',
   },
@@ -260,10 +243,8 @@ const mockUsers: User[] = [
     id: '4',
     tenantId: 'demo-tenant',
     email: 'julia.costa@leaderx.com',
-    name: 'Julia Costa',
+    fullName: 'Julia Costa',
     status: 'SUSPENDED',
-    emailVerified: true,
-    phoneVerified: true,
     createdAt: '2024-01-10T08:00:00Z',
     updatedAt: '2024-01-18T16:00:00Z',
   },
@@ -271,10 +252,8 @@ const mockUsers: User[] = [
     id: '5',
     tenantId: 'demo-tenant',
     email: 'pedro.lima@leaderx.com',
-    name: 'Pedro Lima',
+    fullName: 'Pedro Lima',
     status: 'INACTIVE',
-    emailVerified: true,
-    phoneVerified: false,
     createdAt: '2024-01-05T14:00:00Z',
     updatedAt: '2024-01-12T10:00:00Z',
   },
@@ -282,10 +261,8 @@ const mockUsers: User[] = [
     id: '6',
     tenantId: 'demo-tenant',
     email: 'maria.oliveira@leaderx.com',
-    name: 'Maria Oliveira',
+    fullName: 'Maria Oliveira',
     status: 'ACTIVE',
-    emailVerified: true,
-    phoneVerified: true,
     createdAt: '2024-01-08T09:30:00Z',
     updatedAt: '2024-01-19T11:00:00Z',
   },
