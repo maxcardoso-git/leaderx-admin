@@ -177,6 +177,7 @@
     "permissionsSaved": "Permissions saved successfully!",
     "failedToSavePermissions": "Failed to save permissions.",
     "failedToCreateRole": "Failed to create role. Please try again.",
+    "failedToUpdateRole": "Failed to update role. Please try again.",
     "failedToDeleteRole": "Failed to delete role.",
     "editRole": "Edit Role",
     "of": "of",

@@ -177,6 +177,7 @@
     "permissionsSaved": "¡Permisos guardados exitosamente!",
     "failedToSavePermissions": "Error al guardar permisos.",
     "failedToCreateRole": "Error al crear rol. Inténtalo de nuevo.",
+    "failedToUpdateRole": "Error al actualizar rol. Inténtalo de nuevo.",
     "failedToDeleteRole": "Error al eliminar rol.",
     "editRole": "Editar Rol",
     "of": "de",

@@ -177,6 +177,7 @@
     "permissionsSaved": "Permessi salvati con successo!",
     "failedToSavePermissions": "Errore nel salvataggio dei permessi.",
     "failedToCreateRole": "Errore nella creazione del ruolo. Riprova.",
+    "failedToUpdateRole": "Errore nell'aggiornamento del ruolo. Riprova.",
     "failedToDeleteRole": "Errore nell'eliminazione del ruolo.",
     "editRole": "Modifica Ruolo",
     "of": "di",

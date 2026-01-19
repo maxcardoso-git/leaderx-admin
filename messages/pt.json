@@ -177,6 +177,7 @@
     "permissionsSaved": "Permissões salvas com sucesso!",
     "failedToSavePermissions": "Falha ao salvar permissões.",
     "failedToCreateRole": "Falha ao criar função. Tente novamente.",
+    "failedToUpdateRole": "Falha ao atualizar função. Tente novamente.",
     "failedToDeleteRole": "Falha ao excluir função.",
     "editRole": "Editar Função",
     "of": "de",

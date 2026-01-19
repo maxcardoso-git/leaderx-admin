@@ -109,6 +109,10 @@ export const rolesService = {
     return api.post<Role>('/identity/roles', data);
   },
 
+  async update(roleId: string, data: { name?: string; description?: string }): Promise<Role> {
+    return api.put<Role>(`/identity/roles/${roleId}`, data);
+  },
+
   async updatePermissions(roleId: string, permissionIds: string[]): Promise<void> {
     return api.put(`/identity/roles/${roleId}/permissions`, { permissionIds });
   },

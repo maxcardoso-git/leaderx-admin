@@ -123,7 +123,13 @@ export default function RolesPage() {
   };
 
   const handleSaveRoleDetails = async () => {
-    if (selectedRole) {
+    if (!selectedRole) return;
+    setSaving(true);
+    try {
+      await rolesService.update(selectedRole.id, {
+        name: editRoleName,
+        description: editRoleDescription,
+      });
       const updatedRole = {
         ...selectedRole,
         name: editRoleName,
@@ -132,6 +138,11 @@ export default function RolesPage() {
       setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
       setSelectedRole(updatedRole);
       setShowEditModal(false);
+    } catch (error) {
+      console.error('Failed to update role:', error);
+      alert(t('failedToUpdateRole'));
+    } finally {
+      setSaving(false);
     }
   };
 
