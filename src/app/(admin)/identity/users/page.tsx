@@ -79,16 +79,21 @@ export default function UsersPage() {
         rolesService.list(),
         usersService.getUserRoles(user.id),
       ]);
-      setAvailableRoles(rolesResponse.items || []);
+
+      const roles = rolesResponse.items || [];
+
+      // Use mock data if API returns empty
+      if (roles.length === 0) {
+        setAvailableRoles(mockRoles);
+      } else {
+        setAvailableRoles(roles);
+      }
+
       setUserRoles(currentUserRoles.map((r) => r.id));
     } catch (error) {
       console.error('Failed to load roles:', error);
       // Fallback to mock data
-      setAvailableRoles([
-        { id: 'role-admin', tenantId: 'demo', name: 'Administrador', description: 'Acesso total ao sistema', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
-        { id: 'role-manager', tenantId: 'demo', name: 'Gerente', description: 'Gerenciar usuários e conteúdo', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
-        { id: 'role-viewer', tenantId: 'demo', name: 'Visualizador', description: 'Apenas visualização', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
-      ]);
+      setAvailableRoles(mockRoles);
       setUserRoles(['role-admin']);
     } finally {
       setIsLoadingRoles(false);
@@ -370,6 +375,49 @@ export default function UsersPage() {
 }
 
 // Mock data for demo
+const mockRoles: Role[] = [
+  {
+    id: 'role-admin',
+    tenantId: 'demo-tenant',
+    name: 'Administrador',
+    description: 'Acesso completo ao sistema com todas as permissões',
+    isSystem: true,
+    permissions: [],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'role-manager',
+    tenantId: 'demo-tenant',
+    name: 'Gerente',
+    description: 'Pode gerenciar usuários e conteúdo',
+    isSystem: false,
+    permissions: [],
+    createdAt: '2024-01-05T00:00:00Z',
+    updatedAt: '2024-01-05T00:00:00Z',
+  },
+  {
+    id: 'role-member',
+    tenantId: 'demo-tenant',
+    name: 'Membro',
+    description: 'Acesso básico à plataforma',
+    isSystem: false,
+    permissions: [],
+    createdAt: '2024-01-10T00:00:00Z',
+    updatedAt: '2024-01-10T00:00:00Z',
+  },
+  {
+    id: 'role-viewer',
+    tenantId: 'demo-tenant',
+    name: 'Visualizador',
+    description: 'Acesso somente leitura',
+    isSystem: false,
+    permissions: [],
+    createdAt: '2024-01-15T00:00:00Z',
+    updatedAt: '2024-01-15T00:00:00Z',
+  },
+];
+
 const mockUsers: User[] = [
   {
     id: '1',
