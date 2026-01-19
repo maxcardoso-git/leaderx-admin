@@ -131,7 +131,8 @@
     "userDeleted": "Usuario eliminado exitosamente!",
     "edit": "Editar",
     "editUser": "Editar Usuario",
-    "emailCannotBeChanged": "El email no se puede cambiar"
+    "emailCannotBeChanged": "El email no se puede cambiar",
+    "failedToLoadUser": "Error al cargar usuario"
   },
   "validation": {
     "required": "Este campo es obligatorio",

@@ -131,7 +131,8 @@
     "userDeleted": "User deleted successfully!",
     "edit": "Edit",
     "editUser": "Edit User",
-    "emailCannotBeChanged": "Email cannot be changed"
+    "emailCannotBeChanged": "Email cannot be changed",
+    "failedToLoadUser": "Failed to load user"
   },
   "validation": {
     "required": "This field is required",

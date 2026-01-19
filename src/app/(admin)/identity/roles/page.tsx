@@ -50,9 +50,20 @@ export default function RolesPage() {
   // Fetch roles and permissions
   const fetchData = useCallback(async () => {
     setLoading(true);
-    setRoles(mockRoles);
-    setPermissions(mockPermissions);
-    setLoading(false);
+    try {
+      const [rolesResponse, permissionsResponse] = await Promise.all([
+        rolesService.list(),
+        permissionsService.list(),
+      ]);
+      setRoles(rolesResponse.items || []);
+      setPermissions(permissionsResponse || []);
+    } catch (error) {
+      console.error('Failed to load roles and permissions:', error);
+      setRoles([]);
+      setPermissions([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -533,99 +544,3 @@ export default function RolesPage() {
     </div>
   );
 }
-
-// Mock data
-const mockRoles: Role[] = [
-  {
-    id: 'role-admin',
-    tenantId: 'demo-tenant',
-    name: 'Administrador',
-    description: 'Acesso completo ao sistema com todas as permissões',
-    isSystem: true,
-    permissions: [],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'role-manager',
-    tenantId: 'demo-tenant',
-    name: 'Gerente',
-    description: 'Pode gerenciar usuários e conteúdo',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-05T00:00:00Z',
-    updatedAt: '2024-01-05T00:00:00Z',
-  },
-  {
-    id: 'role-member',
-    tenantId: 'demo-tenant',
-    name: 'Membro',
-    description: 'Acesso básico à plataforma',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-10T00:00:00Z',
-    updatedAt: '2024-01-10T00:00:00Z',
-  },
-  {
-    id: 'role-viewer',
-    tenantId: 'demo-tenant',
-    name: 'Visualizador',
-    description: 'Acesso somente leitura',
-    isSystem: false,
-    permissions: [],
-    createdAt: '2024-01-15T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z',
-  },
-];
-
-mockRoles[0].permissions = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
-  { id: 'users-delete', resource: 'Users', action: 'DELETE', description: 'removeUsers' },
-  { id: 'roles-create', resource: 'Roles', action: 'CREATE', description: 'createRoles' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
-  { id: 'roles-update', resource: 'Roles', action: 'UPDATE', description: 'modifyRoles' },
-  { id: 'roles-delete', resource: 'Roles', action: 'DELETE', description: 'removeRoles' },
-  { id: 'network-create', resource: 'Network', action: 'CREATE', description: 'createNodes' },
-  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
-  { id: 'network-update', resource: 'Network', action: 'UPDATE', description: 'modifyNodes' },
-  { id: 'network-delete', resource: 'Network', action: 'DELETE', description: 'removeNodes' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
-  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE', description: 'runCompliance' },
-];
-
-mockRoles[1].permissions = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
-  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
-];
-
-mockRoles[2].permissions = [
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
-  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
-];
-
-mockRoles[3].permissions = [
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
-];
-
-const mockPermissions: Permission[] = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'createUsers' },
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'viewUsers' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'editUsers' },
-  { id: 'users-delete', resource: 'Users', action: 'DELETE', description: 'removeUsers' },
-  { id: 'roles-create', resource: 'Roles', action: 'CREATE', description: 'createRoles' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'viewRoles' },
-  { id: 'roles-update', resource: 'Roles', action: 'UPDATE', description: 'modifyRoles' },
-  { id: 'roles-delete', resource: 'Roles', action: 'DELETE', description: 'removeRoles' },
-  { id: 'network-create', resource: 'Network', action: 'CREATE', description: 'createNodes' },
-  { id: 'network-read', resource: 'Network', action: 'READ', description: 'viewNetwork' },
-  { id: 'network-update', resource: 'Network', action: 'UPDATE', description: 'modifyNodes' },
-  { id: 'network-delete', resource: 'Network', action: 'DELETE', description: 'removeNodes' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'viewAudit' },
-  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE', description: 'runCompliance' },
-];

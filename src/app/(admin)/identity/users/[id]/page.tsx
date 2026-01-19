@@ -48,8 +48,8 @@ export default function UserDetailPage() {
       setRoles(userRoles);
     } catch (error) {
       console.error('Failed to load user:', error);
-      setUser(mockUser);
-      setRoles(mockRoles);
+      setUser(null);
+      setRoles([]);
     } finally {
       setIsLoading(false);
     }
@@ -282,19 +282,3 @@ function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
     </div>
   );
 }
-
-// Mock data
-const mockUser: User = {
-  id: '1',
-  tenantId: 'demo-tenant',
-  email: 'max.cardoso@leaderx.com',
-  fullName: 'Max Cardoso',
-  status: 'ACTIVE',
-  createdAt: '',
-  updatedAt: '',
-};
-
-const mockRoles: Role[] = [
-  { id: 'role-admin', tenantId: 'demo', name: 'Administrador', description: 'Acesso total ao sistema', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
-  { id: 'role-manager', tenantId: 'demo', name: 'Gerente', description: 'Gerenciar usuários e conteúdo', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
-];
