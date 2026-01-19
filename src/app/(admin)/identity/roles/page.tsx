@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Button, Card, CardHeader, Modal, Input } from '@/components/ui';
-import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon } from '@/components/icons';
+import { Button, Card, Modal, Input } from '@/components/ui';
+import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon, ChevronRightIcon } from '@/components/icons';
 import { Role, Permission } from '@/types/identity';
 import { rolesService, permissionsService } from '@/services/identity.service';
 
@@ -45,7 +45,6 @@ export default function RolesPage() {
   // Fetch roles and permissions
   const fetchData = useCallback(async () => {
     setLoading(true);
-    // Use mock data for now until API is ready
     setRoles(mockRoles);
     setPermissions(mockPermissions);
     setLoading(false);
@@ -55,7 +54,6 @@ export default function RolesPage() {
     fetchData();
   }, [fetchData]);
 
-  // Check user count when selecting a role
   useEffect(() => {
     if (selectedRole) {
       rolesService.getUsersWithRole(selectedRole.id).then((result) => {
@@ -64,7 +62,6 @@ export default function RolesPage() {
     }
   }, [selectedRole]);
 
-  // Update edited permissions when role changes
   useEffect(() => {
     if (selectedRole) {
       const perms = Array.isArray(selectedRole.permissions) ? selectedRole.permissions : [];
@@ -75,7 +72,7 @@ export default function RolesPage() {
 
   const handleSelectRole = (role: Role) => {
     if (hasChanges) {
-      if (!confirm('You have unsaved changes. Discard them?')) {
+      if (!confirm('Você tem alterações não salvas. Descartar?')) {
         return;
       }
     }
@@ -84,7 +81,6 @@ export default function RolesPage() {
 
   const handleCreateRole = async () => {
     if (!newRoleName) return;
-
     try {
       const newRole = await rolesService.create({
         name: newRoleName,
@@ -98,7 +94,7 @@ export default function RolesPage() {
       setSelectedRole(newRole);
     } catch (error) {
       console.error('Failed to create role:', error);
-      alert('Failed to create role. Please try again.');
+      alert('Falha ao criar função. Tente novamente.');
     }
   };
 
@@ -111,8 +107,6 @@ export default function RolesPage() {
   };
 
   const handleSaveRoleDetails = async () => {
-    // Note: API may not support updating role name/description directly
-    // This updates locally and closes modal
     if (selectedRole) {
       const updatedRole = {
         ...selectedRole,
@@ -127,12 +121,9 @@ export default function RolesPage() {
 
   const handleSavePermissions = async () => {
     if (!selectedRole) return;
-
     setSaving(true);
     try {
       await rolesService.updatePermissions(selectedRole.id, editedPermissions);
-
-      // Update local state
       const permsArray = Array.isArray(permissions) ? permissions : [];
       const updatedPermissions = permsArray.filter((p) => editedPermissions.includes(p.id));
       const updatedRole = { ...selectedRole, permissions: updatedPermissions };
@@ -140,10 +131,10 @@ export default function RolesPage() {
       setRoles(rolesArray.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
       setSelectedRole(updatedRole);
       setHasChanges(false);
-      alert('Permissions saved successfully!');
+      alert('Permissões salvas com sucesso!');
     } catch (error) {
       console.error('Failed to save permissions:', error);
-      alert('Failed to save permissions. Please try again.');
+      alert('Falha ao salvar permissões.');
     } finally {
       setSaving(false);
     }
@@ -151,7 +142,6 @@ export default function RolesPage() {
 
   const handleDeleteRole = async () => {
     if (!selectedRole) return;
-
     setDeleting(true);
     try {
       await rolesService.delete(selectedRole.id);
@@ -161,7 +151,7 @@ export default function RolesPage() {
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Failed to delete role:', error);
-      alert('Failed to delete role. Please try again.');
+      alert('Falha ao excluir função.');
     } finally {
       setDeleting(false);
     }
@@ -169,12 +159,10 @@ export default function RolesPage() {
 
   const togglePermission = (permission: Permission) => {
     if (!selectedRole || selectedRole.isSystem) return;
-
     const hasPermission = editedPermissions.includes(permission.id);
     const newPermissions = hasPermission
       ? editedPermissions.filter((id) => id !== permission.id)
       : [...editedPermissions, permission.id];
-
     setEditedPermissions(newPermissions);
     setHasChanges(true);
   };
@@ -187,227 +175,281 @@ export default function RolesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-text-muted">Loading...</div>
+      <div className="flex items-center justify-center h-96">
+        <div className="text-text-muted">Carregando...</div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading text-2xl font-semibold text-text-primary">
-            Roles & Permissions
-          </h1>
-          <p className="text-sm text-text-muted mt-1">
-            Manage roles and their associated permissions
-          </p>
+    <div className="min-h-screen">
+      {/* Page Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-light text-text-primary tracking-tight">
+              Funções & Permissões
+            </h1>
+            <p className="text-text-muted mt-2">
+              Gerencie funções e suas permissões associadas
+            </p>
+          </div>
+          <Button
+            leftIcon={<PlusIcon size={18} />}
+            onClick={() => setShowCreateModal(true)}
+          >
+            Nova Função
+          </Button>
         </div>
-        <Button
-          leftIcon={<PlusIcon size={18} />}
-          onClick={() => setShowCreateModal(true)}
-        >
-          Create Role
-        </Button>
       </div>
 
-      {/* Content Grid */}
-      <div className="grid grid-cols-3 gap-6">
-        {/* Roles List */}
-        <Card className="col-span-1">
-          <CardHeader title="Roles" subtitle={`${roles.length} roles defined`} />
-          <div className="space-y-2">
-            {roles.map((role) => (
-              <button
-                key={role.id}
-                onClick={() => handleSelectRole(role)}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
-                  selectedRole?.id === role.id
-                    ? 'bg-gold/10 border border-gold'
-                    : 'bg-background-alt hover:bg-background-hover border border-transparent'
-                }`}
-              >
-                <div
-                  className={`p-2 rounded-lg ${
-                    selectedRole?.id === role.id
-                      ? 'bg-gold/20 text-gold'
-                      : 'bg-background-hover text-text-muted'
-                  }`}
-                >
-                  <ShieldIcon size={18} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p
-                    className={`text-sm font-medium ${
-                      selectedRole?.id === role.id
-                        ? 'text-gold'
-                        : 'text-text-primary'
-                    }`}
+      {/* Main Layout */}
+      <div className="flex gap-8">
+        {/* Sidebar - Roles List */}
+        <div className="w-80 flex-shrink-0">
+          <div className="sticky top-6">
+            <div className="mb-4">
+              <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
+                Funções ({roles.length})
+              </h2>
+            </div>
+
+            <div className="space-y-2">
+              {roles.map((role) => {
+                const isSelected = selectedRole?.id === role.id;
+                return (
+                  <button
+                    key={role.id}
+                    onClick={() => handleSelectRole(role)}
+                    className={`
+                      w-full text-left p-4 rounded-xl transition-all duration-200
+                      ${isSelected
+                        ? 'bg-background-card border-2 border-gold shadow-lg shadow-gold/5'
+                        : 'bg-background-card/50 border-2 border-transparent hover:bg-background-card hover:border-border'
+                      }
+                    `}
                   >
-                    {role.name}
-                  </p>
-                  <p className="text-xs text-text-muted truncate">
-                    {role.permissions.length} permissions
-                  </p>
-                </div>
-                {role.isSystem && (
-                  <span className="text-xs text-text-muted bg-background-hover px-2 py-1 rounded">
-                    System
-                  </span>
-                )}
-              </button>
-            ))}
+                    <div className="flex items-center gap-3">
+                      <div className={`
+                        w-10 h-10 rounded-lg flex items-center justify-center
+                        ${isSelected ? 'bg-gold/20 text-gold' : 'bg-background-alt text-text-muted'}
+                      `}>
+                        <ShieldIcon size={20} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className={`font-medium ${isSelected ? 'text-gold' : 'text-text-primary'}`}>
+                            {role.name}
+                          </span>
+                          {role.isSystem && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-background-alt text-text-muted uppercase tracking-wide">
+                              Sistema
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-text-muted mt-0.5 truncate">
+                          {role.permissions.length} permissões
+                        </p>
+                      </div>
+                      <ChevronRightIcon size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90' : ''}`} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </Card>
+        </div>
 
-        {/* Permissions Panel */}
-        <Card className="col-span-2">
+        {/* Main Content - Permissions */}
+        <div className="flex-1 min-w-0">
           {selectedRole ? (
-            <>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="font-heading text-lg font-semibold text-text-primary">
-                    {selectedRole.name}
-                  </h3>
-                  <p className="text-sm text-text-muted mt-0.5">
-                    {selectedRole.description || 'No description'}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {hasChanges && (
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      leftIcon={<SaveIcon size={16} />}
-                      onClick={handleSavePermissions}
-                      disabled={saving}
-                    >
-                      {saving ? 'Saving...' : 'Save'}
-                    </Button>
-                  )}
-                  {!selectedRole.isSystem && (
-                    <>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        leftIcon={<EditIcon size={16} />}
-                        onClick={handleOpenEditModal}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        leftIcon={<TrashIcon size={16} />}
-                        onClick={() => setShowDeleteModal(true)}
-                        className="text-error hover:text-error"
-                        disabled={!canDelete}
-                        title={!canDelete && userCount > 0 ? `Cannot delete: ${userCount} users have this role` : undefined}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
+            <div className="space-y-6">
+              {/* Role Header Card */}
+              <Card className="!p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
+                      <ShieldIcon size={28} />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-light text-text-primary">
+                        {selectedRole.name}
+                      </h2>
+                      <p className="text-text-muted mt-1">
+                        {selectedRole.description || 'Sem descrição'}
+                      </p>
+                      <div className="flex items-center gap-4 mt-3">
+                        <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                          <UsersIcon size={14} />
+                          <span>{userCount} usuário{userCount !== 1 ? 's' : ''}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-sm text-text-muted">
+                          <ShieldIcon size={14} />
+                          <span>{editedPermissions.length} permissões ativas</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-              {/* Users with this role */}
-              <div className="mb-6 p-4 bg-background-alt rounded-lg">
-                <div className="flex items-center gap-2 text-text-muted">
-                  <UsersIcon size={16} />
-                  <span className="text-sm">
-                    {userCount} user{userCount !== 1 ? 's' : ''} have this role
-                    {userCount > 0 && !selectedRole.isSystem && (
-                      <span className="text-warning ml-2">
-                        (remove users before deleting)
-                      </span>
+                  <div className="flex items-center gap-2">
+                    {hasChanges && (
+                      <Button
+                        variant="primary"
+                        leftIcon={<SaveIcon size={16} />}
+                        onClick={handleSavePermissions}
+                        disabled={saving}
+                      >
+                        {saving ? 'Salvando...' : 'Salvar Alterações'}
+                      </Button>
                     )}
-                  </span>
+                    {!selectedRole.isSystem && (
+                      <>
+                        <Button
+                          variant="secondary"
+                          leftIcon={<EditIcon size={16} />}
+                          onClick={handleOpenEditModal}
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          leftIcon={<TrashIcon size={16} />}
+                          onClick={() => setShowDeleteModal(true)}
+                          className="text-error hover:bg-error/10"
+                          disabled={!canDelete}
+                          title={!canDelete && userCount > 0 ? `Não é possível excluir: ${userCount} usuários têm esta função` : undefined}
+                        >
+                          Excluir
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Permissions by Resource */}
-              <div className="space-y-6">
+                {/* Warning for users */}
+                {userCount > 0 && !selectedRole.isSystem && (
+                  <div className="mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20 text-warning text-sm">
+                    Remova todos os usuários desta função antes de excluí-la.
+                  </div>
+                )}
+
+                {selectedRole.isSystem && (
+                  <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm">
+                    Esta é uma função do sistema e não pode ser editada ou excluída.
+                  </div>
+                )}
+              </Card>
+
+              {/* Permissions Grid */}
+              <div className="space-y-8">
                 {Object.entries(groupedPermissions).map(([resource, perms]) => (
                   <div key={resource}>
-                    <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-3">
-                      {resource}
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {perms.map((permission) => (
-                        <button
-                          key={permission.id}
-                          onClick={() => togglePermission(permission)}
-                          disabled={selectedRole.isSystem}
-                          className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
-                            hasPermission(permission.id)
-                              ? 'bg-gold/10 border-gold text-gold'
-                              : 'bg-background-alt border-border text-text-secondary hover:border-border-light'
-                          } ${selectedRole.isSystem ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
-                        >
-                          <div
-                            className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
-                              hasPermission(permission.id)
-                                ? 'bg-gold border-gold'
-                                : 'border-border'
-                            }`}
+                    <div className="flex items-center gap-3 mb-4">
+                      <h3 className="text-lg font-medium text-text-primary">
+                        {resource}
+                      </h3>
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-text-muted">
+                        {perms.filter(p => hasPermission(p.id)).length} de {perms.length}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {perms.map((permission) => {
+                        const isActive = hasPermission(permission.id);
+                        const isDisabled = selectedRole.isSystem;
+
+                        return (
+                          <button
+                            key={permission.id}
+                            onClick={() => togglePermission(permission)}
+                            disabled={isDisabled}
+                            className={`
+                              group relative flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200 text-left
+                              ${isActive
+                                ? 'bg-gold/5 border-gold/50'
+                                : 'bg-background-card/50 border-transparent hover:border-border hover:bg-background-card'
+                              }
+                              ${isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}
+                            `}
                           >
-                            {hasPermission(permission.id) && (
-                              <CheckIcon size={12} className="text-background" />
-                            )}
-                          </div>
-                          <div className="text-left">
-                            <p className="text-sm font-medium">{permission.action}</p>
-                            {permission.description && (
-                              <p className="text-xs text-text-muted">
-                                {permission.description}
-                              </p>
-                            )}
-                          </div>
-                        </button>
-                      ))}
+                            {/* Checkbox */}
+                            <div className={`
+                              w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all
+                              ${isActive
+                                ? 'bg-gold border-gold'
+                                : 'border-border group-hover:border-text-muted'
+                              }
+                            `}>
+                              {isActive && <CheckIcon size={14} className="text-background" />}
+                            </div>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className={`font-medium ${isActive ? 'text-gold' : 'text-text-primary'}`}>
+                                  {permission.action}
+                                </span>
+                              </div>
+                              {permission.description && (
+                                <p className="text-sm text-text-muted mt-0.5">
+                                  {permission.description}
+                                </p>
+                              )}
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
               </div>
-            </>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-text-muted">
-              <ShieldIcon size={48} className="mb-4 opacity-50" />
-              <p className="text-sm">Select a role to view and manage permissions</p>
             </div>
+          ) : (
+            /* Empty State */
+            <Card className="!p-12">
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="w-20 h-20 rounded-2xl bg-background-alt flex items-center justify-center mb-6">
+                  <ShieldIcon size={40} className="text-text-muted" />
+                </div>
+                <h3 className="text-xl font-light text-text-primary mb-2">
+                  Selecione uma Função
+                </h3>
+                <p className="text-text-muted max-w-sm">
+                  Escolha uma função na lista ao lado para visualizar e gerenciar suas permissões
+                </p>
+              </div>
+            </Card>
           )}
-        </Card>
+        </div>
       </div>
 
       {/* Create Role Modal */}
       <Modal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title="Create New Role"
+        title="Criar Nova Função"
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowCreateModal(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button onClick={handleCreateRole} disabled={!newRoleName}>
-              Create Role
+              Criar Função
             </Button>
           </>
         }
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Input
-            label="Role Name"
-            placeholder="e.g., Content Manager"
+            label="Nome da Função"
+            placeholder="Ex: Gerente de Conteúdo"
             value={newRoleName}
             onChange={(e) => setNewRoleName(e.target.value)}
           />
           <Input
-            label="Description"
-            placeholder="Brief description of the role"
+            label="Descrição"
+            placeholder="Breve descrição da função"
             value={newRoleDescription}
             onChange={(e) => setNewRoleDescription(e.target.value)}
           />
@@ -418,28 +460,28 @@ export default function RolesPage() {
       <Modal
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
-        title="Edit Role"
+        title="Editar Função"
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowEditModal(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button onClick={handleSaveRoleDetails} disabled={!editRoleName}>
-              Save Changes
+              Salvar Alterações
             </Button>
           </>
         }
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Input
-            label="Role Name"
-            placeholder="e.g., Content Manager"
+            label="Nome da Função"
+            placeholder="Ex: Gerente de Conteúdo"
             value={editRoleName}
             onChange={(e) => setEditRoleName(e.target.value)}
           />
           <Input
-            label="Description"
-            placeholder="Brief description of the role"
+            label="Descrição"
+            placeholder="Breve descrição da função"
             value={editRoleDescription}
             onChange={(e) => setEditRoleDescription(e.target.value)}
           />
@@ -450,37 +492,36 @@ export default function RolesPage() {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="Delete Role"
+        title="Excluir Função"
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>
-              Cancel
+              Cancelar
             </Button>
             <Button
               variant="danger"
               onClick={handleDeleteRole}
               disabled={!canDelete || deleting}
             >
-              {deleting ? 'Deleting...' : 'Delete Role'}
+              {deleting ? 'Excluindo...' : 'Excluir Função'}
             </Button>
           </>
         }
       >
         {userCount > 0 ? (
-          <div className="text-error">
-            <p className="mb-2">Cannot delete this role.</p>
+          <div className="space-y-3">
+            <p className="text-error font-medium">Não é possível excluir esta função.</p>
             <p className="text-text-secondary">
-              There {userCount === 1 ? 'is' : 'are'}{' '}
-              <strong className="text-text-primary">{userCount} user{userCount !== 1 ? 's' : ''}</strong>{' '}
-              assigned to the <strong className="text-text-primary">{selectedRole?.name}</strong> role.
-              Please remove all users from this role before deleting.
+              Existem <strong className="text-text-primary">{userCount} usuário{userCount !== 1 ? 's' : ''}</strong> atribuídos
+              à função <strong className="text-text-primary">{selectedRole?.name}</strong>.
+              Remova todos os usuários antes de excluir.
             </p>
           </div>
         ) : (
           <p className="text-text-secondary">
-            Are you sure you want to delete the{' '}
-            <strong className="text-text-primary">{selectedRole?.name}</strong> role?
-            This action cannot be undone.
+            Tem certeza que deseja excluir a função{' '}
+            <strong className="text-text-primary">{selectedRole?.name}</strong>?
+            Esta ação não pode ser desfeita.
           </p>
         )}
       </Modal>
@@ -488,13 +529,13 @@ export default function RolesPage() {
   );
 }
 
-// Mock data as fallback
+// Mock data
 const mockRoles: Role[] = [
   {
     id: 'role-admin',
     tenantId: 'demo-tenant',
-    name: 'Administrator',
-    description: 'Full system access with all permissions',
+    name: 'Administrador',
+    description: 'Acesso completo ao sistema com todas as permissões',
     isSystem: true,
     permissions: [],
     createdAt: '2024-01-01T00:00:00Z',
@@ -503,8 +544,8 @@ const mockRoles: Role[] = [
   {
     id: 'role-manager',
     tenantId: 'demo-tenant',
-    name: 'Manager',
-    description: 'Can manage users and content',
+    name: 'Gerente',
+    description: 'Pode gerenciar usuários e conteúdo',
     isSystem: false,
     permissions: [],
     createdAt: '2024-01-05T00:00:00Z',
@@ -513,8 +554,8 @@ const mockRoles: Role[] = [
   {
     id: 'role-member',
     tenantId: 'demo-tenant',
-    name: 'Member',
-    description: 'Basic access to the platform',
+    name: 'Membro',
+    description: 'Acesso básico à plataforma',
     isSystem: false,
     permissions: [],
     createdAt: '2024-01-10T00:00:00Z',
@@ -523,8 +564,8 @@ const mockRoles: Role[] = [
   {
     id: 'role-viewer',
     tenantId: 'demo-tenant',
-    name: 'Viewer',
-    description: 'Read-only access',
+    name: 'Visualizador',
+    description: 'Acesso somente leitura',
     isSystem: false,
     permissions: [],
     createdAt: '2024-01-15T00:00:00Z',
@@ -532,58 +573,54 @@ const mockRoles: Role[] = [
   },
 ];
 
-// Initialize admin with all permissions
 mockRoles[0].permissions = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE' },
-  { id: 'users-read', resource: 'Users', action: 'READ' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE' },
-  { id: 'users-delete', resource: 'Users', action: 'DELETE' },
-  { id: 'roles-create', resource: 'Roles', action: 'CREATE' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ' },
-  { id: 'roles-update', resource: 'Roles', action: 'UPDATE' },
-  { id: 'roles-delete', resource: 'Roles', action: 'DELETE' },
-  { id: 'network-create', resource: 'Network', action: 'CREATE' },
-  { id: 'network-read', resource: 'Network', action: 'READ' },
-  { id: 'network-update', resource: 'Network', action: 'UPDATE' },
-  { id: 'network-delete', resource: 'Network', action: 'DELETE' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ' },
-  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE' },
+  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
+  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
+  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
+  { id: 'users-delete', resource: 'Usuários', action: 'DELETE', description: 'Remover usuários' },
+  { id: 'roles-create', resource: 'Funções', action: 'CREATE', description: 'Criar novas funções' },
+  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
+  { id: 'roles-update', resource: 'Funções', action: 'UPDATE', description: 'Modificar permissões de funções' },
+  { id: 'roles-delete', resource: 'Funções', action: 'DELETE', description: 'Remover funções' },
+  { id: 'network-create', resource: 'Rede', action: 'CREATE', description: 'Criar nós de rede' },
+  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
+  { id: 'network-update', resource: 'Rede', action: 'UPDATE', description: 'Modificar nós de rede' },
+  { id: 'network-delete', resource: 'Rede', action: 'DELETE', description: 'Remover nós de rede' },
+  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
+  { id: 'audit-manage', resource: 'Auditoria', action: 'MANAGE', description: 'Executar verificações de conformidade' },
 ];
 
-// Initialize manager with partial permissions
 mockRoles[1].permissions = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE' },
-  { id: 'users-read', resource: 'Users', action: 'READ' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ' },
-  { id: 'network-read', resource: 'Network', action: 'READ' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ' },
+  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
+  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
+  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
+  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
+  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
+  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
 ];
 
-// Initialize member with basic permissions
 mockRoles[2].permissions = [
-  { id: 'users-read', resource: 'Users', action: 'READ' },
-  { id: 'network-read', resource: 'Network', action: 'READ' },
+  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
+  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
 ];
 
-// Initialize viewer with read-only
 mockRoles[3].permissions = [
-  { id: 'users-read', resource: 'Users', action: 'READ' },
+  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
 ];
 
 const mockPermissions: Permission[] = [
-  { id: 'users-create', resource: 'Users', action: 'CREATE', description: 'Create new users' },
-  { id: 'users-read', resource: 'Users', action: 'READ', description: 'View user details' },
-  { id: 'users-update', resource: 'Users', action: 'UPDATE', description: 'Edit user information' },
-  { id: 'users-delete', resource: 'Users', action: 'DELETE', description: 'Remove users' },
-  { id: 'roles-create', resource: 'Roles', action: 'CREATE', description: 'Create new roles' },
-  { id: 'roles-read', resource: 'Roles', action: 'READ', description: 'View roles' },
-  { id: 'roles-update', resource: 'Roles', action: 'UPDATE', description: 'Modify role permissions' },
-  { id: 'roles-delete', resource: 'Roles', action: 'DELETE', description: 'Remove roles' },
-  { id: 'network-create', resource: 'Network', action: 'CREATE', description: 'Create network nodes' },
-  { id: 'network-read', resource: 'Network', action: 'READ', description: 'View network structure' },
-  { id: 'network-update', resource: 'Network', action: 'UPDATE', description: 'Modify network nodes' },
-  { id: 'network-delete', resource: 'Network', action: 'DELETE', description: 'Remove network nodes' },
-  { id: 'audit-read', resource: 'Audit', action: 'READ', description: 'View audit logs' },
-  { id: 'audit-manage', resource: 'Audit', action: 'MANAGE', description: 'Run compliance checks' },
+  { id: 'users-create', resource: 'Usuários', action: 'CREATE', description: 'Criar novos usuários' },
+  { id: 'users-read', resource: 'Usuários', action: 'READ', description: 'Ver detalhes de usuários' },
+  { id: 'users-update', resource: 'Usuários', action: 'UPDATE', description: 'Editar informações de usuários' },
+  { id: 'users-delete', resource: 'Usuários', action: 'DELETE', description: 'Remover usuários' },
+  { id: 'roles-create', resource: 'Funções', action: 'CREATE', description: 'Criar novas funções' },
+  { id: 'roles-read', resource: 'Funções', action: 'READ', description: 'Ver funções' },
+  { id: 'roles-update', resource: 'Funções', action: 'UPDATE', description: 'Modificar permissões de funções' },
+  { id: 'roles-delete', resource: 'Funções', action: 'DELETE', description: 'Remover funções' },
+  { id: 'network-create', resource: 'Rede', action: 'CREATE', description: 'Criar nós de rede' },
+  { id: 'network-read', resource: 'Rede', action: 'READ', description: 'Ver estrutura da rede' },
+  { id: 'network-update', resource: 'Rede', action: 'UPDATE', description: 'Modificar nós de rede' },
+  { id: 'network-delete', resource: 'Rede', action: 'DELETE', description: 'Remover nós de rede' },
+  { id: 'audit-read', resource: 'Auditoria', action: 'READ', description: 'Ver logs de auditoria' },
+  { id: 'audit-manage', resource: 'Auditoria', action: 'MANAGE', description: 'Executar verificações de conformidade' },
 ];
