@@ -32,7 +32,7 @@ export const usersService = {
   },
 
   async update(userId: string, data: UpdateUserDto): Promise<User> {
-    return api.patch<User>(`/identity/users/${userId}`, data);
+    return api.put<User>(`/identity/users/${userId}`, data);
   },
 
   async delete(userId: string): Promise<void> {

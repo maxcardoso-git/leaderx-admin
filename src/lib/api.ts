@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://72.61.52.70:3004/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://72.61.52.70:3004';
 
 interface RequestConfig extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
@@ -7,14 +7,20 @@ interface RequestConfig extends RequestInit {
 class ApiClient {
   private baseUrl: string;
   private tenantId: string;
+  private orgId: string;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
     this.tenantId = 'demo-tenant'; // TODO: Get from auth context
+    this.orgId = 'demo-org'; // TODO: Get from auth context
   }
 
   setTenantId(tenantId: string) {
     this.tenantId = tenantId;
+  }
+
+  setOrgId(orgId: string) {
+    this.orgId = orgId;
   }
 
   private buildUrl(endpoint: string, params?: Record<string, string | number | boolean | undefined>): string {
@@ -38,6 +44,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'X-Tenant-Id': this.tenantId,
+        'X-Org-Id': this.orgId,
         ...headers,
       },
     });
