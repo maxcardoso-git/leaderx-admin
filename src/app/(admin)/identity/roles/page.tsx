@@ -70,11 +70,11 @@ export default function RolesPage() {
     fetchData();
   }, [fetchData]);
 
+  // Reset user count when selecting a role
+  // Note: getUsersWithRole API endpoint is not yet available
   useEffect(() => {
     if (selectedRole) {
-      rolesService.getUsersWithRole(selectedRole.id).then((result) => {
-        setUserCount(result.count);
-      });
+      setUserCount(0);
     }
   }, [selectedRole]);
 
