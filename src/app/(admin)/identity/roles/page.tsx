@@ -8,6 +8,7 @@ import { rolesService, permissionsService } from '@/services/identity.service';
 
 // Group permissions by resource
 const groupPermissions = (permissions: Permission[]) => {
+  if (!Array.isArray(permissions)) return {};
   return permissions.reduce((acc, permission) => {
     if (!acc[permission.resource]) {
       acc[permission.resource] = [];
@@ -49,8 +50,17 @@ export default function RolesPage() {
         rolesService.list(),
         permissionsService.list(),
       ]);
-      setRoles(rolesResponse.items || []);
-      setPermissions(permissionsResponse || []);
+      const rolesData = Array.isArray(rolesResponse?.items) ? rolesResponse.items : [];
+      const permsData = Array.isArray(permissionsResponse) ? permissionsResponse : [];
+
+      // Ensure each role has permissions as array
+      const normalizedRoles = rolesData.map(role => ({
+        ...role,
+        permissions: Array.isArray(role.permissions) ? role.permissions : []
+      }));
+
+      setRoles(normalizedRoles.length > 0 ? normalizedRoles : mockRoles);
+      setPermissions(permsData.length > 0 ? permsData : mockPermissions);
     } catch (error) {
       console.error('Failed to fetch data:', error);
       // Use mock data as fallback
@@ -77,7 +87,8 @@ export default function RolesPage() {
   // Update edited permissions when role changes
   useEffect(() => {
     if (selectedRole) {
-      setEditedPermissions(selectedRole.permissions.map((p) => p.id));
+      const perms = Array.isArray(selectedRole.permissions) ? selectedRole.permissions : [];
+      setEditedPermissions(perms.map((p) => p.id));
       setHasChanges(false);
     }
   }, [selectedRole]);
@@ -142,9 +153,11 @@ export default function RolesPage() {
       await rolesService.updatePermissions(selectedRole.id, editedPermissions);
 
       // Update local state
-      const updatedPermissions = permissions.filter((p) => editedPermissions.includes(p.id));
+      const permsArray = Array.isArray(permissions) ? permissions : [];
+      const updatedPermissions = permsArray.filter((p) => editedPermissions.includes(p.id));
       const updatedRole = { ...selectedRole, permissions: updatedPermissions };
-      setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
+      const rolesArray = Array.isArray(roles) ? roles : [];
+      setRoles(rolesArray.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
       setSelectedRole(updatedRole);
       setHasChanges(false);
       alert('Permissions saved successfully!');
@@ -162,7 +175,8 @@ export default function RolesPage() {
     setDeleting(true);
     try {
       await rolesService.delete(selectedRole.id);
-      setRoles(roles.filter((r) => r.id !== selectedRole.id));
+      const rolesArray = Array.isArray(roles) ? roles : [];
+      setRoles(rolesArray.filter((r) => r.id !== selectedRole.id));
       setSelectedRole(null);
       setShowDeleteModal(false);
     } catch (error) {
