@@ -32,7 +32,7 @@ export const usersService = {
   },
 
   async update(userId: string, data: UpdateUserDto): Promise<User> {
-    return api.put<User>(`/identity/users/${userId}`, data);
+    return api.patch<User>(`/identity/users/${userId}`, data);
   },
 
   async delete(userId: string): Promise<void> {
@@ -82,7 +82,7 @@ export const rolesService = {
   },
 
   async update(roleId: string, data: UpdateRoleDto): Promise<Role> {
-    return api.put<Role>(`/identity/roles/${roleId}`, data);
+    return api.patch<Role>(`/identity/roles/${roleId}`, data);
   },
 
   async delete(roleId: string): Promise<void> {

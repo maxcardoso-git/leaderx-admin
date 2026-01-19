@@ -16,6 +16,7 @@ export default function EditUserPage() {
   const t = useTranslations('users');
   const tCommon = useTranslations('common');
   const tValidation = useTranslations('validation');
+  const tRoles = useTranslations('roles');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -224,7 +225,7 @@ export default function EditUserPage() {
                 className="opacity-60"
               />
               <p className="text-xs text-text-muted mt-1">
-                Email cannot be changed
+                {t('emailCannotBeChanged')}
               </p>
             </div>
             <Input
@@ -268,7 +269,7 @@ export default function EditUserPage() {
                 <Checkbox
                   key={role.id}
                   label={role.name}
-                  description={role.isSystem ? 'Sistema' : 'Personalizado'}
+                  description={role.isSystem ? tRoles('systemRole') : tRoles('customRole')}
                   checked={userRoles.includes(role.id)}
                   onChange={() => toggleRole(role.id)}
                 />
