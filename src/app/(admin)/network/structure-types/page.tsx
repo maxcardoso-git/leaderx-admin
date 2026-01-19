@@ -43,10 +43,10 @@ export default function StructureTypesPage() {
   const [deleting, setDeleting] = useState(false);
 
   const scopeOptions = [
-    { value: 'GLOBAL_ALL_COUNTRIES', label: t('scopeGlobal') },
-    { value: 'COUNTRY_GROUP', label: t('scopeCountryGroup') },
-    { value: 'CITY_GROUP', label: t('scopeCityGroup') },
-    { value: 'SINGLE_CITY', label: t('scopeSingleCity') },
+    { value: 'GLOBAL_ALL_COUNTRIES', label: `${t('scopeGlobal')} (${t('level')} 1)`, level: 1 },
+    { value: 'COUNTRY_GROUP', label: `${t('scopeCountryGroup')} (${t('level')} 2)`, level: 2 },
+    { value: 'CITY_GROUP', label: `${t('scopeCityGroup')} (${t('level')} 3)`, level: 3 },
+    { value: 'SINGLE_CITY', label: `${t('scopeSingleCity')} (${t('level')} 4)`, level: 4 },
   ];
 
   useEffect(() => {
@@ -400,10 +400,12 @@ function StructureTypeForm({
   formData: CreateStructureTypeDto;
   setFormData: (data: CreateStructureTypeDto) => void;
   roles: Role[];
-  scopeOptions: { value: string; label: string }[];
+  scopeOptions: { value: string; label: string; level: number }[];
   t: (key: string) => string;
   isEdit?: boolean;
 }) {
+  const hierarchyLevel = scopeOptions.find((o) => o.value === formData.scope)?.level || 4;
+
   return (
     <div className="space-y-5">
       <Input
@@ -413,33 +415,64 @@ function StructureTypeForm({
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         required
       />
-      <Input
-        label={t('description')}
-        placeholder={t('descriptionPlaceholder')}
-        value={formData.description || ''}
-        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-      />
-      <Select
-        label={t('scope')}
-        options={scopeOptions}
-        value={formData.scope}
-        onChange={(e) => setFormData({ ...formData, scope: e.target.value as StructureScope })}
-        disabled={isEdit}
-      />
-      <Select
-        label={t('leadershipRole')}
-        options={roles.map((r) => ({ value: r.id, label: r.name }))}
-        value={formData.leadershipRoleId}
-        onChange={(e) => setFormData({ ...formData, leadershipRoleId: e.target.value })}
-        disabled={isEdit}
-      />
-      <Input
-        label={t('maxLeaders')}
-        type="number"
-        min={1}
-        value={formData.maxLeaders}
-        onChange={(e) => setFormData({ ...formData, maxLeaders: parseInt(e.target.value) || 1 })}
-      />
+
+      <div>
+        <Select
+          label={t('scope')}
+          options={scopeOptions}
+          value={formData.scope}
+          onChange={(e) => setFormData({ ...formData, scope: e.target.value as StructureScope })}
+          disabled={isEdit}
+        />
+        <p className="text-xs text-text-muted mt-1.5">{t('scopeHint')}</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-text-primary mb-1.5">
+          {t('description')}
+        </label>
+        <textarea
+          placeholder={t('descriptionPlaceholder')}
+          value={formData.description || ''}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          rows={3}
+          className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:border-gold/50 focus:ring-1 focus:ring-gold/20 focus:outline-none transition-all resize-none"
+        />
+      </div>
+
+      <div>
+        <Input
+          label={t('hierarchyLevel')}
+          value={hierarchyLevel}
+          disabled
+        />
+        <p className="text-xs text-text-muted mt-1.5 flex items-start gap-1.5">
+          <span className="inline-block w-4 h-4 bg-blue-500/20 text-blue-400 rounded text-[10px] flex-shrink-0 flex items-center justify-center font-medium">i</span>
+          {t('hierarchyLevelHint')}
+        </p>
+      </div>
+
+      <div>
+        <Select
+          label={t('leadershipRole')}
+          options={roles.map((r) => ({ value: r.id, label: r.name }))}
+          value={formData.leadershipRoleId}
+          onChange={(e) => setFormData({ ...formData, leadershipRoleId: e.target.value })}
+          disabled={isEdit}
+        />
+        <p className="text-xs text-text-muted mt-1.5">{t('leadershipRoleHint')}</p>
+      </div>
+
+      <div>
+        <Input
+          label={t('maxLeaders')}
+          type="number"
+          min={1}
+          value={formData.maxLeaders}
+          onChange={(e) => setFormData({ ...formData, maxLeaders: parseInt(e.target.value) || 1 })}
+        />
+        <p className="text-xs text-text-muted mt-1.5">{t('maxLeadersHint')}</p>
+      </div>
     </div>
   );
 }
