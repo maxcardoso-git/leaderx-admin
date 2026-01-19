@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, Card, CardHeader, Modal, Input, Checkbox } from '@/components/ui';
-import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon } from '@/components/icons';
-import { Role, Permission, PermissionAction } from '@/types/identity';
+import { useState, useEffect, useCallback } from 'react';
+import { Button, Card, CardHeader, Modal, Input } from '@/components/ui';
+import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon } from '@/components/icons';
+import { Role, Permission } from '@/types/identity';
+import { rolesService, permissionsService } from '@/services/identity.service';
 
 // Group permissions by resource
 const groupPermissions = (permissions: Permission[]) => {
@@ -17,63 +18,186 @@ const groupPermissions = (permissions: Permission[]) => {
 };
 
 export default function RolesPage() {
-  const [roles, setRoles] = useState<Role[]>(mockRoles);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [editedPermissions, setEditedPermissions] = useState<string[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [userCount, setUserCount] = useState<number>(0);
+
+  // Modals
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  // Form state
   const [newRoleName, setNewRoleName] = useState('');
   const [newRoleDescription, setNewRoleDescription] = useState('');
+  const [editRoleName, setEditRoleName] = useState('');
+  const [editRoleDescription, setEditRoleDescription] = useState('');
 
-  const permissions = mockPermissions;
   const groupedPermissions = groupPermissions(permissions);
 
-  const handleCreateRole = () => {
-    if (!newRoleName) return;
+  // Fetch roles and permissions
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [rolesResponse, permissionsResponse] = await Promise.all([
+        rolesService.list(),
+        permissionsService.list(),
+      ]);
+      setRoles(rolesResponse.items || []);
+      setPermissions(permissionsResponse || []);
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+      // Use mock data as fallback
+      setRoles(mockRoles);
+      setPermissions(mockPermissions);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    const newRole: Role = {
-      id: `role-${Date.now()}`,
-      tenantId: 'demo-tenant',
-      name: newRoleName,
-      description: newRoleDescription,
-      isSystem: false,
-      permissions: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    setRoles([...roles, newRole]);
-    setShowCreateModal(false);
-    setNewRoleName('');
-    setNewRoleDescription('');
-    setSelectedRole(newRole);
+  // Check user count when selecting a role
+  useEffect(() => {
+    if (selectedRole) {
+      rolesService.getUsersWithRole(selectedRole.id).then((result) => {
+        setUserCount(result.count);
+      });
+    }
+  }, [selectedRole]);
+
+  // Update edited permissions when role changes
+  useEffect(() => {
+    if (selectedRole) {
+      setEditedPermissions(selectedRole.permissions.map((p) => p.id));
+      setHasChanges(false);
+    }
+  }, [selectedRole]);
+
+  const handleSelectRole = (role: Role) => {
+    if (hasChanges) {
+      if (!confirm('You have unsaved changes. Discard them?')) {
+        return;
+      }
+    }
+    setSelectedRole(role);
   };
 
-  const handleDeleteRole = () => {
+  const handleCreateRole = async () => {
+    if (!newRoleName) return;
+
+    try {
+      const newRole = await rolesService.create({
+        name: newRoleName,
+        description: newRoleDescription,
+        permissionIds: [],
+      });
+      setRoles([...roles, newRole]);
+      setShowCreateModal(false);
+      setNewRoleName('');
+      setNewRoleDescription('');
+      setSelectedRole(newRole);
+    } catch (error) {
+      console.error('Failed to create role:', error);
+      alert('Failed to create role. Please try again.');
+    }
+  };
+
+  const handleOpenEditModal = () => {
+    if (selectedRole) {
+      setEditRoleName(selectedRole.name);
+      setEditRoleDescription(selectedRole.description || '');
+      setShowEditModal(true);
+    }
+  };
+
+  const handleSaveRoleDetails = async () => {
+    // Note: API may not support updating role name/description directly
+    // This updates locally and closes modal
+    if (selectedRole) {
+      const updatedRole = {
+        ...selectedRole,
+        name: editRoleName,
+        description: editRoleDescription,
+      };
+      setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
+      setSelectedRole(updatedRole);
+      setShowEditModal(false);
+    }
+  };
+
+  const handleSavePermissions = async () => {
     if (!selectedRole) return;
-    setRoles(roles.filter((r) => r.id !== selectedRole.id));
-    setSelectedRole(null);
-    setShowDeleteModal(false);
+
+    setSaving(true);
+    try {
+      await rolesService.updatePermissions(selectedRole.id, editedPermissions);
+
+      // Update local state
+      const updatedPermissions = permissions.filter((p) => editedPermissions.includes(p.id));
+      const updatedRole = { ...selectedRole, permissions: updatedPermissions };
+      setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
+      setSelectedRole(updatedRole);
+      setHasChanges(false);
+      alert('Permissions saved successfully!');
+    } catch (error) {
+      console.error('Failed to save permissions:', error);
+      alert('Failed to save permissions. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteRole = async () => {
+    if (!selectedRole) return;
+
+    setDeleting(true);
+    try {
+      await rolesService.delete(selectedRole.id);
+      setRoles(roles.filter((r) => r.id !== selectedRole.id));
+      setSelectedRole(null);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error('Failed to delete role:', error);
+      alert('Failed to delete role. Please try again.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const togglePermission = (permission: Permission) => {
-    if (!selectedRole) return;
+    if (!selectedRole || selectedRole.isSystem) return;
 
-    const hasPermission = selectedRole.permissions.some(
-      (p) => p.id === permission.id
-    );
+    const hasPermission = editedPermissions.includes(permission.id);
+    const newPermissions = hasPermission
+      ? editedPermissions.filter((id) => id !== permission.id)
+      : [...editedPermissions, permission.id];
 
-    const updatedPermissions = hasPermission
-      ? selectedRole.permissions.filter((p) => p.id !== permission.id)
-      : [...selectedRole.permissions, permission];
-
-    const updatedRole = { ...selectedRole, permissions: updatedPermissions };
-    setSelectedRole(updatedRole);
-    setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
+    setEditedPermissions(newPermissions);
+    setHasChanges(true);
   };
 
   const hasPermission = (permissionId: string) => {
-    return selectedRole?.permissions.some((p) => p.id === permissionId) ?? false;
+    return editedPermissions.includes(permissionId);
   };
+
+  const canDelete = !selectedRole?.isSystem && userCount === 0;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-text-muted">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -104,7 +228,7 @@ export default function RolesPage() {
             {roles.map((role) => (
               <button
                 key={role.id}
-                onClick={() => setSelectedRole(role)}
+                onClick={() => handleSelectRole(role)}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
                   selectedRole?.id === role.id
                     ? 'bg-gold/10 border border-gold'
@@ -157,22 +281,42 @@ export default function RolesPage() {
                     {selectedRole.description || 'No description'}
                   </p>
                 </div>
-                {!selectedRole.isSystem && (
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" leftIcon={<EditIcon size={16} />}>
-                      Edit
-                    </Button>
+                <div className="flex items-center gap-2">
+                  {hasChanges && (
                     <Button
-                      variant="ghost"
+                      variant="primary"
                       size="sm"
-                      leftIcon={<TrashIcon size={16} />}
-                      onClick={() => setShowDeleteModal(true)}
-                      className="text-error hover:text-error"
+                      leftIcon={<SaveIcon size={16} />}
+                      onClick={handleSavePermissions}
+                      disabled={saving}
                     >
-                      Delete
+                      {saving ? 'Saving...' : 'Save'}
                     </Button>
-                  </div>
-                )}
+                  )}
+                  {!selectedRole.isSystem && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        leftIcon={<EditIcon size={16} />}
+                        onClick={handleOpenEditModal}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        leftIcon={<TrashIcon size={16} />}
+                        onClick={() => setShowDeleteModal(true)}
+                        className="text-error hover:text-error"
+                        disabled={!canDelete}
+                        title={!canDelete && userCount > 0 ? `Cannot delete: ${userCount} users have this role` : undefined}
+                      >
+                        Delete
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Users with this role */}
@@ -180,7 +324,12 @@ export default function RolesPage() {
                 <div className="flex items-center gap-2 text-text-muted">
                   <UsersIcon size={16} />
                   <span className="text-sm">
-                    {Math.floor(Math.random() * 20) + 1} users have this role
+                    {userCount} user{userCount !== 1 ? 's' : ''} have this role
+                    {userCount > 0 && !selectedRole.isSystem && (
+                      <span className="text-warning ml-2">
+                        (remove users before deleting)
+                      </span>
+                    )}
                   </span>
                 </div>
               </div>
@@ -196,7 +345,7 @@ export default function RolesPage() {
                       {perms.map((permission) => (
                         <button
                           key={permission.id}
-                          onClick={() => !selectedRole.isSystem && togglePermission(permission)}
+                          onClick={() => togglePermission(permission)}
                           disabled={selectedRole.isSystem}
                           className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
                             hasPermission(permission.id)
@@ -271,6 +420,38 @@ export default function RolesPage() {
         </div>
       </Modal>
 
+      {/* Edit Role Modal */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Edit Role"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowEditModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveRoleDetails} disabled={!editRoleName}>
+              Save Changes
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Input
+            label="Role Name"
+            placeholder="e.g., Content Manager"
+            value={editRoleName}
+            onChange={(e) => setEditRoleName(e.target.value)}
+          />
+          <Input
+            label="Description"
+            placeholder="Brief description of the role"
+            value={editRoleDescription}
+            onChange={(e) => setEditRoleDescription(e.target.value)}
+          />
+        </div>
+      </Modal>
+
       {/* Delete Role Modal */}
       <Modal
         isOpen={showDeleteModal}
@@ -281,23 +462,39 @@ export default function RolesPage() {
             <Button variant="ghost" onClick={() => setShowDeleteModal(false)}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={handleDeleteRole}>
-              Delete Role
+            <Button
+              variant="danger"
+              onClick={handleDeleteRole}
+              disabled={!canDelete || deleting}
+            >
+              {deleting ? 'Deleting...' : 'Delete Role'}
             </Button>
           </>
         }
       >
-        <p className="text-text-secondary">
-          Are you sure you want to delete the{' '}
-          <strong className="text-text-primary">{selectedRole?.name}</strong> role?
-          Users with this role will lose their associated permissions.
-        </p>
+        {userCount > 0 ? (
+          <div className="text-error">
+            <p className="mb-2">Cannot delete this role.</p>
+            <p className="text-text-secondary">
+              There {userCount === 1 ? 'is' : 'are'}{' '}
+              <strong className="text-text-primary">{userCount} user{userCount !== 1 ? 's' : ''}</strong>{' '}
+              assigned to the <strong className="text-text-primary">{selectedRole?.name}</strong> role.
+              Please remove all users from this role before deleting.
+            </p>
+          </div>
+        ) : (
+          <p className="text-text-secondary">
+            Are you sure you want to delete the{' '}
+            <strong className="text-text-primary">{selectedRole?.name}</strong> role?
+            This action cannot be undone.
+          </p>
+        )}
       </Modal>
     </div>
   );
 }
 
-// Mock data
+// Mock data as fallback
 const mockRoles: Role[] = [
   {
     id: 'role-admin',

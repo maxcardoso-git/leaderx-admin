@@ -104,8 +104,8 @@ export default function EditUserPage() {
   const loadRoles = async () => {
     setIsLoadingRoles(true);
     try {
-      const roles = await rolesService.list();
-      setAvailableRoles(roles);
+      const response = await rolesService.list();
+      setAvailableRoles(response.items || []);
     } catch (error) {
       console.error('Failed to load roles:', error);
       // Fallback to mock roles

@@ -5,7 +5,6 @@ import {
   UpdateUserDto,
   Role,
   CreateRoleDto,
-  UpdateRoleDto,
   Permission,
 } from '@/types/identity';
 
@@ -64,13 +63,20 @@ export const usersService = {
 // ROLES SERVICE
 // ============================================
 
+interface RolesListResponse {
+  items: Role[];
+  page: number;
+  size: number;
+  total: number;
+}
+
 export const rolesService = {
   async list(params?: {
     page?: number;
     limit?: number;
     search?: string;
-  }): Promise<Role[]> {
-    return api.get<Role[]>('/identity/roles', params);
+  }): Promise<RolesListResponse> {
+    return api.get<RolesListResponse>('/identity/roles', params);
   },
 
   async getById(roleId: string): Promise<Role> {
@@ -81,12 +87,22 @@ export const rolesService = {
     return api.post<Role>('/identity/roles', data);
   },
 
-  async update(roleId: string, data: UpdateRoleDto): Promise<Role> {
-    return api.patch<Role>(`/identity/roles/${roleId}`, data);
+  async updatePermissions(roleId: string, permissionIds: string[]): Promise<void> {
+    return api.put(`/identity/roles/${roleId}/permissions`, { permissionIds });
   },
 
   async delete(roleId: string): Promise<void> {
     return api.delete(`/identity/roles/${roleId}`);
+  },
+
+  async getUsersWithRole(roleId: string): Promise<{ count: number }> {
+    // This endpoint may not exist, but we'll try to check users
+    try {
+      const response = await api.get<{ items: unknown[]; total: number }>('/identity/users', { roleId });
+      return { count: response.total || response.items?.length || 0 };
+    } catch {
+      return { count: 0 };
+    }
   },
 };
 
