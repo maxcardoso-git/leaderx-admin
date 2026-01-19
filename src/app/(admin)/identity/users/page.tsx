@@ -356,11 +356,13 @@ export default function UsersPage() {
                             {tRoles('systemRole')}
                           </span>
                         )}
-                        <Checkbox
-                          checked={userRoles.includes(role.id)}
-                          onChange={() => toggleRole(role.id)}
-                          disabled={isSavingRoles}
-                        />
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <Checkbox
+                            checked={userRoles.includes(role.id)}
+                            onChange={() => toggleRole(role.id)}
+                            disabled={isSavingRoles}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
