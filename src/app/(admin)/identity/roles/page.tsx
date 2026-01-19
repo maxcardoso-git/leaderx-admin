@@ -45,30 +45,10 @@ export default function RolesPage() {
   // Fetch roles and permissions
   const fetchData = useCallback(async () => {
     setLoading(true);
-    try {
-      const [rolesResponse, permissionsResponse] = await Promise.all([
-        rolesService.list(),
-        permissionsService.list(),
-      ]);
-      const rolesData = Array.isArray(rolesResponse?.items) ? rolesResponse.items : [];
-      const permsData = Array.isArray(permissionsResponse) ? permissionsResponse : [];
-
-      // Ensure each role has permissions as array
-      const normalizedRoles = rolesData.map(role => ({
-        ...role,
-        permissions: Array.isArray(role.permissions) ? role.permissions : []
-      }));
-
-      setRoles(normalizedRoles.length > 0 ? normalizedRoles : mockRoles);
-      setPermissions(permsData.length > 0 ? permsData : mockPermissions);
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-      // Use mock data as fallback
-      setRoles(mockRoles);
-      setPermissions(mockPermissions);
-    } finally {
-      setLoading(false);
-    }
+    // Use mock data for now until API is ready
+    setRoles(mockRoles);
+    setPermissions(mockPermissions);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
