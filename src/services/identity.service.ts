@@ -110,12 +110,21 @@ export const rolesService = {
 // PERMISSIONS SERVICE
 // ============================================
 
+interface PermissionsListResponse {
+  items: Permission[];
+  page: number;
+  size: number;
+  total: number;
+}
+
 export const permissionsService = {
   async list(): Promise<Permission[]> {
-    return api.get<Permission[]>('/identity/permissions');
+    const response = await api.get<PermissionsListResponse>('/identity/permissions');
+    return response.items || [];
   },
 
   async getByRole(roleId: string): Promise<Permission[]> {
-    return api.get<Permission[]>(`/identity/roles/${roleId}/permissions`);
+    const response = await api.get<PermissionsListResponse>(`/identity/roles/${roleId}/permissions`);
+    return response.items || [];
   },
 };
