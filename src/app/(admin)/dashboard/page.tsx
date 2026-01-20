@@ -31,10 +31,10 @@ function StatsCard({
   trend?: { value: string; positive: boolean };
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] p-5 group hover:border-white/[0.15] transition-all duration-300">
+    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] pl-6 pr-5 py-5 group hover:border-white/[0.15] transition-all duration-300">
       <div className="flex items-start justify-between">
-        <div className="space-y-3">
-          <p className="text-xs font-medium text-white/50 uppercase tracking-wider">
+        <div className="space-y-3 min-w-0">
+          <p className="text-xs font-medium text-white/50 uppercase tracking-wider truncate">
             {label}
           </p>
           <div className="flex items-baseline gap-2">
