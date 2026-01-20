@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Button, Table, StatusPill, Input, Card, Pagination } from '@/components/ui';
+import { Button, Table, StatusPill, Input, Card, Pagination, Modal } from '@/components/ui';
 import { PlusIcon, SearchIcon, EditIcon, TrashIcon, EyeIcon, GroupIcon } from '@/components/icons';
 import { WorkingUnit, WorkingUnitType, WorkingUnitStatus, WorkingUnitStats } from '@/types/governance';
 import { workingUnitsService, governanceStatsService } from '@/services/governance.service';
@@ -33,6 +33,9 @@ export default function WorkingUnitsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [unitToDelete, setUnitToDelete] = useState<WorkingUnit | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -58,15 +61,25 @@ export default function WorkingUnitsPage() {
     }
   };
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const openDeleteModal = (unit: WorkingUnit, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm(t('deleteConfirm'))) return;
+    setUnitToDelete(unit);
+    setShowDeleteModal(true);
+  };
 
+  const handleDelete = async () => {
+    if (!unitToDelete) return;
+
+    setIsDeleting(true);
     try {
-      await workingUnitsService.delete(id);
+      await workingUnitsService.delete(unitToDelete.id);
       loadData();
+      setShowDeleteModal(false);
+      setUnitToDelete(null);
     } catch (error) {
       console.error('Failed to delete working unit:', error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -165,7 +178,7 @@ export default function WorkingUnitsPage() {
             <EditIcon size={16} />
           </button>
           <button
-            onClick={(e) => handleDelete(unit.id, e)}
+            onClick={(e) => openDeleteModal(unit, e)}
             className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
             title={common('delete')}
           >
@@ -284,6 +297,37 @@ export default function WorkingUnitsPage() {
           />
         </Card>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setUnitToDelete(null);
+        }}
+        title={unitToDelete?.type === 'GROUP' ? t('deleteGroup') : t('deleteNucleus')}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowDeleteModal(false);
+                setUnitToDelete(null);
+              }}
+            >
+              {common('cancel')}
+            </Button>
+            <Button variant="danger" onClick={handleDelete} isLoading={isDeleting}>
+              {common('delete')}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-text-secondary">
+          {t('deleteConfirm')}{' '}
+          <strong className="text-text-primary">{unitToDelete?.name}</strong>?
+        </p>
+      </Modal>
     </div>
   );
 }
