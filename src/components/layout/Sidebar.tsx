@@ -31,6 +31,7 @@ import {
   CheckSquareIcon,
   BellIcon,
   ChartLineIcon,
+  PaletteIcon,
 } from '../icons';
 import { useSidebar } from './SidebarContext';
 
@@ -115,6 +116,7 @@ const navigationSections: NavSection[] = [
         key: 'systemSettings',
         icon: <SettingsIcon size={18} />,
         children: [
+          { key: 'appearance', href: '/settings/appearance', icon: <PaletteIcon size={16} /> },
           { key: 'categories', href: '/settings/categories', icon: <TagIcon size={16} /> },
           { key: 'segments', href: '/settings/segments', icon: <CubeIcon size={16} /> },
           { key: 'lines', href: '/settings/lines', icon: <LayersIcon size={16} /> },
