@@ -40,8 +40,8 @@ export const themeService = {
         saveToStorage(response);
         return response;
       }
-    } catch (error) {
-      console.warn('API theme load failed, trying localStorage:', error);
+    } catch {
+      // Silently fall back to localStorage - 404 is expected when no theme is configured
     }
 
     // Fallback to localStorage

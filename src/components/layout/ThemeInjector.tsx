@@ -16,8 +16,8 @@ export function ThemeInjector() {
       if (savedTheme?.css) {
         setTheme(savedTheme);
       }
-    } catch (error) {
-      console.error('Failed to load theme:', error);
+    } catch {
+      // Theme loading is optional - silently ignore errors
     }
   };
 
