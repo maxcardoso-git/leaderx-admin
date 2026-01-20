@@ -39,6 +39,7 @@ export default function StructureTypesPage() {
     scope: 'SINGLE_CITY',
     leadershipRoleId: '',
     maxLeaders: 1,
+    color: '#c4a45a',
   });
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -65,13 +66,13 @@ export default function StructureTypesPage() {
         positionsService.list(),
         scopesService.list(),
       ]);
-      setStructureTypes(typesResponse.items.length > 0 ? typesResponse.items : mockStructureTypes);
-      setPositions(positionsResponse.items || mockPositions);
+      setStructureTypes(typesResponse.items || []);
+      setPositions(positionsResponse.items || []);
       setScopes(scopesResponse.items || []);
     } catch (error) {
       console.error('Failed to load data:', error);
-      setStructureTypes(mockStructureTypes);
-      setPositions(mockPositions);
+      setStructureTypes([]);
+      setPositions([]);
       setScopes([]);
     } finally {
       setLoading(false);
@@ -88,23 +89,6 @@ export default function StructureTypesPage() {
       resetForm();
     } catch (error) {
       console.error('Failed to create structure type:', error);
-      // For demo, add mock data
-      const mockNew: StructureType = {
-        id: `type-${Date.now()}`,
-        tenantId: 'demo-tenant',
-        code: formData.name.toUpperCase().replace(/\s+/g, '_'),
-        ...formData,
-        maxLevels: 10,
-        allowNested: true,
-        status: 'ACTIVE',
-        hierarchyLevel: structureTypes.length + 1,
-        activeStructures: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setStructureTypes([...structureTypes, mockNew]);
-      setShowCreateModal(false);
-      resetForm();
     } finally {
       setSaving(false);
     }
@@ -120,6 +104,7 @@ export default function StructureTypesPage() {
         scope: formData.scope,
         leadershipRoleId: formData.leadershipRoleId,
         maxLeaders: formData.maxLeaders,
+        color: formData.color,
       });
       setStructureTypes(structureTypes.map((t) => (t.id === selectedType.id ? { ...t, ...updated } : t)));
       setShowEditModal(false);
@@ -127,17 +112,6 @@ export default function StructureTypesPage() {
       resetForm();
     } catch (error) {
       console.error('Failed to update structure type:', error);
-      // For demo, update local state
-      setStructureTypes(
-        structureTypes.map((t) =>
-          t.id === selectedType.id
-            ? { ...t, name: formData.name, description: formData.description, scope: formData.scope, leadershipRoleId: formData.leadershipRoleId, maxLeaders: formData.maxLeaders }
-            : t
-        )
-      );
-      setShowEditModal(false);
-      setSelectedType(null);
-      resetForm();
     } finally {
       setSaving(false);
     }
@@ -153,10 +127,6 @@ export default function StructureTypesPage() {
       setSelectedType(null);
     } catch (error) {
       console.error('Failed to delete structure type:', error);
-      // For demo, remove from local state
-      setStructureTypes(structureTypes.filter((t) => t.id !== selectedType.id));
-      setShowDeleteModal(false);
-      setSelectedType(null);
     } finally {
       setDeleting(false);
     }
@@ -170,6 +140,7 @@ export default function StructureTypesPage() {
       scope: type.scope,
       leadershipRoleId: type.leadershipRoleId,
       maxLeaders: type.maxLeaders,
+      color: type.color || '#c4a45a',
     });
     setShowEditModal(true);
   };
@@ -186,6 +157,7 @@ export default function StructureTypesPage() {
       scope: 'SINGLE_CITY',
       leadershipRoleId: '',
       maxLeaders: 1,
+      color: '#c4a45a',
     });
   };
 
@@ -262,14 +234,20 @@ export default function StructureTypesPage() {
               </tr>
             </thead>
             <tbody>
-              {structureTypes.map((type) => (
+              {[...structureTypes].sort((a, b) => (a.hierarchyLevel || 0) - (b.hierarchyLevel || 0)).map((type) => (
                 <tr
                   key={type.id}
                   className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center text-gold">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{
+                          backgroundColor: type.color ? `${type.color}15` : 'rgba(196, 164, 90, 0.1)',
+                          color: type.color || '#c4a45a',
+                        }}
+                      >
                         <NetworkIcon size={20} />
                       </div>
                       <div>
@@ -494,106 +472,35 @@ function StructureTypeForm({
         />
         <p className="text-xs text-text-muted mt-1.5">{t('maxLeadersHint')}</p>
       </div>
+
+      <div>
+        <label className="block text-sm font-medium text-text-primary mb-1.5">
+          {t('iconColor')}
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            type="color"
+            className="w-12 h-12 rounded-lg border border-white/[0.08] cursor-pointer bg-transparent"
+            value={formData.color || '#c4a45a'}
+            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+          />
+          <Input
+            value={(formData.color || '#c4a45a').toUpperCase()}
+            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+            className="flex-1"
+          />
+          <div
+            className="w-12 h-12 rounded-lg flex items-center justify-center"
+            style={{
+              backgroundColor: formData.color ? `${formData.color}15` : 'rgba(196, 164, 90, 0.1)',
+              color: formData.color || '#c4a45a',
+            }}
+          >
+            <NetworkIcon size={20} />
+          </div>
+        </div>
+        <p className="text-xs text-text-muted mt-1.5">{t('iconColorHint')}</p>
+      </div>
     </div>
   );
 }
-
-// Mock data
-const mockStructureTypes: StructureType[] = [
-  {
-    id: 'type-global',
-    tenantId: 'demo-tenant',
-    code: 'MATRIZ_GLOBAL',
-    name: 'Matriz Global',
-    description: 'Estrutura principal da organização',
-    maxLevels: 10,
-    allowNested: true,
-    status: 'ACTIVE',
-    scope: 'GLOBAL_ALL_COUNTRIES',
-    hierarchyLevel: 1,
-    leadershipRoleId: 'role-admin',
-    leadershipRole: { id: 'role-admin', name: 'Administrador' },
-    maxLeaders: 3,
-    activeStructures: 1,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'type-regional',
-    tenantId: 'demo-tenant',
-    code: 'REGIONAL',
-    name: 'Regional',
-    description: 'Estrutura regional que agrupa países',
-    maxLevels: 10,
-    allowNested: true,
-    status: 'ACTIVE',
-    scope: 'COUNTRY_GROUP',
-    hierarchyLevel: 2,
-    leadershipRoleId: 'role-manager',
-    leadershipRole: { id: 'role-manager', name: 'Gerente' },
-    maxLeaders: 2,
-    activeStructures: 2,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'type-national',
-    tenantId: 'demo-tenant',
-    code: 'NACIONAL',
-    name: 'Nacional',
-    description: 'Estrutura de país',
-    maxLevels: 10,
-    allowNested: true,
-    status: 'ACTIVE',
-    scope: 'COUNTRY_GROUP',
-    hierarchyLevel: 3,
-    leadershipRoleId: 'role-manager',
-    leadershipRole: { id: 'role-manager', name: 'Gerente' },
-    maxLeaders: 2,
-    activeStructures: 3,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'type-state',
-    tenantId: 'demo-tenant',
-    code: 'ESTADUAL',
-    name: 'Estadual',
-    description: 'Estrutura estadual',
-    maxLevels: 10,
-    allowNested: true,
-    status: 'ACTIVE',
-    scope: 'CITY_GROUP',
-    hierarchyLevel: 4,
-    leadershipRoleId: 'role-member',
-    leadershipRole: { id: 'role-member', name: 'Membro' },
-    maxLeaders: 1,
-    activeStructures: 2,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'type-city',
-    tenantId: 'demo-tenant',
-    code: 'MUNICIPAL',
-    name: 'Municipal',
-    description: 'Estrutura de cidade',
-    maxLevels: 10,
-    allowNested: true,
-    status: 'ACTIVE',
-    scope: 'SINGLE_CITY',
-    hierarchyLevel: 5,
-    leadershipRoleId: 'role-member',
-    leadershipRole: { id: 'role-member', name: 'Membro' },
-    maxLeaders: 1,
-    activeStructures: 4,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];
-
-const mockPositions: Position[] = [
-  { id: 'position-admin', tenantId: 'demo', name: 'Administrador', hierarchyGroup: 'LEADERSHIP', createdAt: '', updatedAt: '' },
-  { id: 'position-manager', tenantId: 'demo', name: 'Gerente', hierarchyGroup: 'LEADERSHIP', createdAt: '', updatedAt: '' },
-  { id: 'position-member', tenantId: 'demo', name: 'Membro', hierarchyGroup: 'OPERATIONAL', createdAt: '', updatedAt: '' },
-];

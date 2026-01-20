@@ -378,7 +378,9 @@
     "addChild": "Adicionar Estrutura Filha",
     "edit": "Editar",
     "delete": "Excluir",
-    "cannotDeleteWithActiveStructures": "Não é possível excluir: existem estruturas ativas deste tipo"
+    "cannotDeleteWithActiveStructures": "Não é possível excluir: existem estruturas ativas deste tipo",
+    "iconColor": "Cor do Ícone",
+    "iconColorHint": "Define a cor do ícone que representa este tipo de estrutura"
   },
   "workingUnits": {
     "title": "Unidades de Trabalho",
