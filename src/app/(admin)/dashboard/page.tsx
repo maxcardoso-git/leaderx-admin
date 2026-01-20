@@ -2,98 +2,335 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { UsersIcon, ShieldIcon, NetworkIcon, AuditIcon, PlusIcon, SettingsIcon } from '@/components/icons';
+import {
+  UsersIcon,
+  ShieldIcon,
+  NetworkIcon,
+  GroupIcon,
+  RocketIcon,
+  BarChartIcon,
+  PlusIcon,
+  ChevronRightIcon,
+  CalendarIcon,
+  TrophyIcon,
+  SettingsIcon,
+} from '@/components/icons';
+
+// Stats Card Component
+function StatsCard({
+  label,
+  value,
+  subtitle,
+  icon,
+  trend,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ReactNode;
+  trend?: { value: string; positive: boolean };
+}) {
+  return (
+    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] p-5 group hover:border-white/[0.15] transition-all duration-300">
+      <div className="flex items-start justify-between">
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-white/50 uppercase tracking-wider">
+            {label}
+          </p>
+          <div className="flex items-baseline gap-2">
+            <span className="text-3xl font-semibold text-white">{value}</span>
+            {trend && (
+              <span className={`text-xs font-medium ${trend.positive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {trend.positive ? '+' : ''}{trend.value}
+              </span>
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-sm text-white/40">{subtitle}</p>
+          )}
+        </div>
+        <div className="p-3 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 group-hover:scale-110 transition-all duration-300">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quick Action Card Component
+function QuickActionCard({
+  icon,
+  label,
+  description,
+  href,
+  color,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  href: string;
+  color: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300"
+    >
+      <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-white group-hover:text-gold transition-colors">
+          {label}
+        </p>
+        {description && (
+          <p className="text-sm text-white/40 truncate">{description}</p>
+        )}
+      </div>
+      <ChevronRightIcon size={16} className="text-white/30 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+    </Link>
+  );
+}
+
+// Module Card Component
+function ModuleCard({
+  icon,
+  title,
+  description,
+  stats,
+  href,
+  gradient,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  stats: { label: string; value: string | number }[];
+  href: string;
+  gradient: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group relative overflow-hidden rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300"
+    >
+      {/* Gradient Overlay */}
+      <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${gradient}`} />
+
+      <div className="relative p-6">
+        <div className="flex items-start gap-4 mb-4">
+          <div className="p-3 rounded-xl bg-white/[0.05] text-gold">
+            {icon}
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-white group-hover:text-gold transition-colors">
+              {title}
+            </h3>
+            <p className="text-sm text-white/40 mt-1">{description}</p>
+          </div>
+        </div>
+
+        {/* Stats Row */}
+        <div className="flex items-center gap-6 pt-4 border-t border-white/[0.06]">
+          {stats.map((stat, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <span className="text-lg font-semibold text-white">{stat.value}</span>
+              <span className="text-xs text-white/40">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard');
   const nav = useTranslations('nav');
 
-  const quickActions = [
-    {
-      icon: <UsersIcon size={24} />,
-      label: nav('users'),
-      href: '/identity/users',
-      iconColor: 'text-blue-400',
-      gradient: 'from-blue-500/10 to-transparent',
-    },
-    {
-      icon: <ShieldIcon size={24} />,
-      label: nav('roles'),
-      href: '/identity/roles',
-      iconColor: 'text-emerald-400',
-      gradient: 'from-emerald-500/10 to-transparent',
-    },
-    {
-      icon: <NetworkIcon size={24} />,
-      label: nav('network'),
-      href: '/network',
-      iconColor: 'text-amber-400',
-      gradient: 'from-amber-500/10 to-transparent',
-    },
-    {
-      icon: <AuditIcon size={24} />,
-      label: nav('audit'),
-      href: '/audit/compliance',
-      iconColor: 'text-violet-400',
-      gradient: 'from-violet-500/10 to-transparent',
-    },
-    {
-      icon: <PlusIcon size={24} />,
-      label: t('addUser'),
-      href: '/identity/users/create',
-      iconColor: 'text-cyan-400',
-      gradient: 'from-cyan-500/10 to-transparent',
-    },
-    {
-      icon: <SettingsIcon size={24} />,
-      label: nav('settings'),
-      href: '/settings/appearance',
-      iconColor: 'text-rose-400',
-      gradient: 'from-rose-500/10 to-transparent',
-    },
-  ];
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <div className="relative mb-12">
-        <div className="absolute inset-0 bg-gradient-to-r from-gold/5 via-transparent to-transparent rounded-3xl" />
-        <div className="relative p-8">
-          <p className="text-gold text-sm font-medium tracking-wide uppercase mb-2">{nav('dashboard')}</p>
-          <h1 className="text-5xl font-extralight text-white mb-3">
-            {t('welcome')} <span className="font-normal">LeaderX</span>
+    <div className="space-y-8">
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f35] via-[#141824] to-[#0d1117]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl" />
+
+        <div className="relative p-8 md:p-10">
+          {/* Top Label */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+            <span className="text-xs font-medium text-gold uppercase tracking-wider">
+              {nav('dashboard')}
+            </span>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-light text-white mb-3">
+            {t('welcome')} <span className="font-semibold text-gold">LeaderX</span>
           </h1>
-          <p className="text-xl text-white/60 font-light">
+          <p className="text-lg text-white/50 max-w-2xl">
             {t('subtitle')}
           </p>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <StatsCard
+              label={t('totalUsers')}
+              value="1,284"
+              subtitle="48 online"
+              icon={<UsersIcon size={20} />}
+              trend={{ value: '12%', positive: true }}
+            />
+            <StatsCard
+              label={t('activeRoles')}
+              value="16"
+              subtitle="3 system"
+              icon={<ShieldIcon size={20} />}
+            />
+            <StatsCard
+              label={t('networkNodes')}
+              value="89"
+              subtitle="12 estruturas"
+              icon={<NetworkIcon size={20} />}
+              trend={{ value: '5%', positive: true }}
+            />
+            <StatsCard
+              label={t('complianceScore')}
+              value="94%"
+              subtitle="Alta"
+              icon={<TrophyIcon size={20} />}
+              trend={{ value: '2%', positive: true }}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-white/[0.05]">
-          <h2 className="text-lg font-medium text-white">{t('quickActions')}</h2>
-          <p className="text-sm text-white/40 mt-1">{t('quickActionsSub')}</p>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Modules Section */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
+            <span className="text-xs text-white/40">4 módulos</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ModuleCard
+              icon={<UsersIcon size={24} />}
+              title={nav('identity')}
+              description="Usuários, perfis e sessões"
+              stats={[
+                { label: 'usuários', value: '1.2k' },
+                { label: 'perfis', value: 16 },
+              ]}
+              href="/identity/users"
+              gradient="bg-gradient-to-br from-blue-500/10 to-transparent"
+            />
+            <ModuleCard
+              icon={<NetworkIcon size={24} />}
+              title={nav('network')}
+              description="Estruturas organizacionais"
+              stats={[
+                { label: 'estruturas', value: 12 },
+                { label: 'tipos', value: 5 },
+              ]}
+              href="/network"
+              gradient="bg-gradient-to-br from-emerald-500/10 to-transparent"
+            />
+            <ModuleCard
+              icon={<GroupIcon size={24} />}
+              title={nav('governance')}
+              description="Unidades e lideranças"
+              stats={[
+                { label: 'unidades', value: 24 },
+                { label: 'líderes', value: 18 },
+              ]}
+              href="/governance/working-units"
+              gradient="bg-gradient-to-br from-violet-500/10 to-transparent"
+            />
+            <ModuleCard
+              icon={<RocketIcon size={24} />}
+              title={nav('execution')}
+              description="Eventos e gamificação"
+              stats={[
+                { label: 'eventos', value: 8 },
+                { label: 'aprovações', value: 3 },
+              ]}
+              href="/execution/events"
+              gradient="bg-gradient-to-br from-amber-500/10 to-transparent"
+            />
+          </div>
         </div>
-        <div className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-            {quickActions.map((action, index) => (
-              <Link
-                key={index}
-                href={action.href}
-                className="group relative overflow-hidden"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`} />
-                <div className="relative flex flex-col items-center gap-4 p-6 bg-white/[0.02] rounded-2xl border border-white/[0.05] group-hover:border-white/[0.1] transition-all duration-300">
-                  <div className={`p-4 rounded-xl bg-white/[0.03] ${action.iconColor} group-hover:scale-110 transition-transform duration-300`}>
-                    {action.icon}
+
+        {/* Quick Actions Sidebar */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('quickActionsSub')}</h2>
+          </div>
+
+          <div className="space-y-3">
+            <QuickActionCard
+              icon={<PlusIcon size={18} />}
+              label={t('addUser')}
+              description="Novo membro"
+              href="/identity/users/create"
+              color="bg-blue-500/20 text-blue-400"
+            />
+            <QuickActionCard
+              icon={<ShieldIcon size={18} />}
+              label={nav('roles')}
+              description="Permissões"
+              href="/identity/roles"
+              color="bg-emerald-500/20 text-emerald-400"
+            />
+            <QuickActionCard
+              icon={<CalendarIcon size={18} />}
+              label={nav('events')}
+              description="Novo evento"
+              href="/execution/events"
+              color="bg-violet-500/20 text-violet-400"
+            />
+            <QuickActionCard
+              icon={<BarChartIcon size={18} />}
+              label={nav('reports')}
+              description="Métricas"
+              href="/reports/engagement"
+              color="bg-amber-500/20 text-amber-400"
+            />
+            <QuickActionCard
+              icon={<SettingsIcon size={18} />}
+              label={nav('systemSettings')}
+              description="Configurar"
+              href="/settings/categories"
+              color="bg-rose-500/20 text-rose-400"
+            />
+          </div>
+
+          {/* Activity Card */}
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-5">
+            <h3 className="text-sm font-semibold text-white mb-4">Atividade Recente</h3>
+            <div className="space-y-4">
+              {[
+                { user: 'Maria Silva', action: 'criou usuário', time: '2min' },
+                { user: 'João Santos', action: 'atualizou perfil', time: '15min' },
+                { user: 'Ana Costa', action: 'aprovou', time: '1h' },
+              ].map((activity, i) => (
+                <div key={i} className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-semibold flex-shrink-0">
+                    {activity.user.split(' ').map(n => n[0]).join('')}
                   </div>
-                  <span className="text-sm font-medium text-white/80 group-hover:text-white transition-colors text-center">
-                    {action.label}
-                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white">
+                      <span className="font-medium">{activity.user}</span>{' '}
+                      <span className="text-white/50">{activity.action}</span>
+                    </p>
+                    <p className="text-xs text-white/30">{activity.time} atrás</p>
+                  </div>
                 </div>
-              </Link>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
