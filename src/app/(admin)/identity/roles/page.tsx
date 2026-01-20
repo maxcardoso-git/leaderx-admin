@@ -19,6 +19,19 @@ const groupPermissions = (permissions: Permission[]) => {
   }, {} as Record<string, Permission[]>);
 };
 
+// Format resource name for display (e.g., "roles" -> "Roles", "users" -> "Users")
+const formatResourceName = (resource: string): string => {
+  const resourceNames: Record<string, string> = {
+    roles: 'Funções',
+    users: 'Usuários',
+    permissions: 'Permissões',
+    events: 'Eventos',
+    network: 'Rede',
+    settings: 'Configurações',
+  };
+  return resourceNames[resource] || resource.charAt(0).toUpperCase() + resource.slice(1);
+};
+
 export default function RolesPage() {
   const t = useTranslations('roles');
   const tCommon = useTranslations('common');
@@ -386,7 +399,7 @@ export default function RolesPage() {
                   <div key={resource}>
                     <div className="flex items-center gap-3 mb-4">
                       <h3 className="text-lg font-medium text-text-primary">
-                        {tPermissions(resource)}
+                        {formatResourceName(resource)}
                       </h3>
                       <div className="flex-1 h-px bg-border" />
                       <span className="text-xs text-text-muted">
@@ -428,14 +441,9 @@ export default function RolesPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className={`font-medium ${isActive ? 'text-gold' : 'text-text-primary'}`}>
-                                  {tPermissions(permission.action)}
+                                  {permission.description || permission.action}
                                 </span>
                               </div>
-                              {permission.description && (
-                                <p className="text-sm text-text-muted mt-0.5">
-                                  {tPermissions(permission.description)}
-                                </p>
-                              )}
                             </div>
                           </button>
                         );
