@@ -63,15 +63,19 @@ export const usersService = {
   },
 
   async removeRole(userId: string, roleId: string): Promise<void> {
-    // First, find the assignment ID for this role
+    // First, find the ACTIVE assignment ID for this role
     interface RoleAssignment {
       id: string;
       roleId: string;
+      status: string;
     }
     const response = await api.get<{ assignments: RoleAssignment[] }>(
       `/identity/users/${userId}/roles`,
     );
-    const assignment = response?.assignments?.find((a) => a.roleId === roleId);
+    // Only find ACTIVE assignments (not REVOKED)
+    const assignment = response?.assignments?.find(
+      (a) => a.roleId === roleId && a.status === 'ACTIVE',
+    );
     if (!assignment) {
       throw new Error('Role assignment not found');
     }
@@ -92,18 +96,20 @@ export const usersService = {
       const response = await api.get<{ userId: string; assignments: RoleAssignment[] }>(
         `/identity/users/${userId}/roles`,
       );
-      // Transform assignments to Role format
-      return (response?.assignments || []).map((a) => ({
-        id: a.roleId,
-        tenantId: '',
-        name: a.roleName,
-        code: a.roleCode,
-        description: undefined,
-        isSystem: false,
-        permissions: [],
-        createdAt: a.assignedAt,
-        updatedAt: a.assignedAt,
-      }));
+      // Only return ACTIVE assignments (filter out REVOKED)
+      return (response?.assignments || [])
+        .filter((a) => a.status === 'ACTIVE')
+        .map((a) => ({
+          id: a.roleId,
+          tenantId: '',
+          name: a.roleName,
+          code: a.roleCode,
+          description: undefined,
+          isSystem: false,
+          permissions: [],
+          createdAt: a.assignedAt,
+          updatedAt: a.assignedAt,
+        }));
     } catch {
       return [];
     }
