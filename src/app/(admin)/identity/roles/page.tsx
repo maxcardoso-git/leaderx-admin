@@ -288,7 +288,7 @@ export default function RolesPage() {
                           )}
                         </div>
                         <p className="text-xs text-text-muted mt-0.5 truncate">
-                          {role.permissions.length} {t('permissions')}
+                          {(role.permissions?.length || 0)} {t('permissions')}
                         </p>
                       </div>
                       <ChevronRightIcon size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90' : ''}`} />
