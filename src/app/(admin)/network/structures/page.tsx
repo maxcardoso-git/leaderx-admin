@@ -382,6 +382,7 @@ export default function StructuresPage() {
         countries: formData.countries,
         leadersCount: 0,
         childrenCount: 0,
+        workingUnitsCount: 0,
         children: [],
       };
 
@@ -835,6 +836,7 @@ const mockTreeData: NetworkTreeNode[] = [
     countries: [],
     leadersCount: 3,
     childrenCount: 2,
+    workingUnitsCount: 0,
     children: [
       {
         id: 'structure-iberica',
@@ -848,6 +850,7 @@ const mockTreeData: NetworkTreeNode[] = [
         countries: ['Portugal', 'Espanha'],
         leadersCount: 2,
         childrenCount: 2,
+        workingUnitsCount: 0,
         children: [
           {
             id: 'structure-lisboa',
@@ -861,6 +864,7 @@ const mockTreeData: NetworkTreeNode[] = [
             countries: ['Portugal'],
             leadersCount: 1,
             childrenCount: 0,
+            workingUnitsCount: 0,
           },
           {
             id: 'structure-madrid',
@@ -874,6 +878,7 @@ const mockTreeData: NetworkTreeNode[] = [
             countries: ['Espanha'],
             leadersCount: 1,
             childrenCount: 0,
+            workingUnitsCount: 0,
           },
         ],
       },
@@ -889,6 +894,7 @@ const mockTreeData: NetworkTreeNode[] = [
         countries: ['Brasil', 'Argentina', 'Chile'],
         leadersCount: 2,
         childrenCount: 1,
+        workingUnitsCount: 0,
         children: [
           {
             id: 'structure-sp',
@@ -902,6 +908,7 @@ const mockTreeData: NetworkTreeNode[] = [
             countries: ['Brasil'],
             leadersCount: 1,
             childrenCount: 0,
+            workingUnitsCount: 0,
           },
         ],
       },
