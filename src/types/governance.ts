@@ -38,6 +38,7 @@ export interface CreateWorkingUnitDto {
 export interface UpdateWorkingUnitDto {
   name?: string;
   description?: string;
+  type?: WorkingUnitType;
   status?: WorkingUnitStatus;
   maxMembers?: number;
   structureId?: string;

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Button, Table, StatusPill, Input, Card, Pagination, Modal } from '@/components/ui';
+import { Button, Table, StatusPill, Input, Card, Pagination, Modal, Select } from '@/components/ui';
 import { PlusIcon, SearchIcon, EditIcon, TrashIcon, EyeIcon, GroupIcon } from '@/components/icons';
 import { WorkingUnit, WorkingUnitType, WorkingUnitStatus, WorkingUnitStats } from '@/types/governance';
 import { workingUnitsService, governanceStatsService } from '@/services/governance.service';
@@ -32,11 +32,19 @@ export default function WorkingUnitsPage() {
   const [stats, setStats] = useState<WorkingUnitStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [unitToDelete, setUnitToDelete] = useState<WorkingUnit | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const itemsPerPage = 10;
+
+  const statusFilterOptions = [
+    { value: '', label: common('all') },
+    { value: 'ACTIVE', label: t('statusACTIVE') },
+    { value: 'INACTIVE', label: t('statusINACTIVE') },
+    { value: 'SUSPENDED', label: t('statusSUSPENDED') },
+  ];
 
   useEffect(() => {
     loadData();
@@ -85,7 +93,8 @@ export default function WorkingUnitsPage() {
 
   const filteredUnits = units.filter((unit) => {
     const matchesSearch = unit.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    const matchesStatus = !statusFilter || unit.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
 
   const paginatedUnits = filteredUnits.slice(
@@ -243,6 +252,7 @@ export default function WorkingUnitsPage() {
                 setActiveTab(tab.key);
                 setCurrentPage(1);
                 setSearchTerm('');
+                setStatusFilter('');
               }}
               className={`
                 px-6 py-3 text-sm font-medium transition-all relative
@@ -261,7 +271,7 @@ export default function WorkingUnitsPage() {
         </div>
       </div>
 
-      {/* Search */}
+      {/* Search and Filters */}
       <Card padding="md">
         <div className="flex items-center gap-4">
           <div className="flex-1 max-w-md">
@@ -270,6 +280,16 @@ export default function WorkingUnitsPage() {
               leftIcon={<SearchIcon size={18} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="w-48">
+            <Select
+              options={statusFilterOptions}
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
         </div>

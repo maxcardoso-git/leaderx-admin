@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import { Button, Input, Select, Card, CardHeader, useToast } from '@/components/ui';
 import { workingUnitsService } from '@/services/governance.service';
 import { structuresService } from '@/services/network.service';
-import { WorkingUnit, UpdateWorkingUnitDto, WorkingUnitStatus } from '@/types/governance';
+import { WorkingUnit, UpdateWorkingUnitDto, WorkingUnitStatus, WorkingUnitType } from '@/types/governance';
 import { Structure } from '@/types/network';
 
 export default function EditWorkingUnitPage() {
@@ -27,13 +27,19 @@ export default function EditWorkingUnitPage() {
   const [originalUnit, setOriginalUnit] = useState<WorkingUnit | null>(null);
   const [structures, setStructures] = useState<Structure[]>([]);
 
-  const [formData, setFormData] = useState<UpdateWorkingUnitDto & { structureId?: string }>({
+  const [formData, setFormData] = useState<UpdateWorkingUnitDto & { structureId?: string; type?: WorkingUnitType }>({
     name: '',
     description: '',
+    type: 'GROUP',
     status: 'ACTIVE',
     maxMembers: 10,
     structureId: '',
   });
+
+  const typeOptions = [
+    { value: 'GROUP', label: t('typeGROUP') },
+    { value: 'NUCLEUS', label: t('typeNUCLEUS') },
+  ];
 
   const statusOptions = [
     { value: 'ACTIVE', label: t('statusACTIVE') },
@@ -58,6 +64,7 @@ export default function EditWorkingUnitPage() {
       setFormData({
         name: unitData.name,
         description: unitData.description || '',
+        type: unitData.type,
         status: unitData.status,
         maxMembers: unitData.maxMembers,
         structureId: unitData.structureId || '',
@@ -169,7 +176,7 @@ export default function EditWorkingUnitPage() {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
-            <div className="col-span-2">
+            <div>
               <Select
                 label={t('structure')}
                 options={[
@@ -178,6 +185,14 @@ export default function EditWorkingUnitPage() {
                 ]}
                 value={formData.structureId || ''}
                 onChange={(e) => setFormData({ ...formData, structureId: e.target.value })}
+              />
+            </div>
+            <div>
+              <Select
+                label={tCommon('type')}
+                options={typeOptions}
+                value={formData.type || 'GROUP'}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as WorkingUnitType })}
               />
             </div>
             <div>
