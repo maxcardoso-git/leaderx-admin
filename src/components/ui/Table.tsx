@@ -54,7 +54,7 @@ export function Table<T>({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="text-left text-xs font-semibold text-text-muted uppercase tracking-wider px-4 py-3"
+                  className="text-left text-xs font-semibold text-text-muted uppercase tracking-wider px-6 py-4"
                   style={{ width: column.width }}
                 >
                   {column.header}
@@ -92,7 +92,7 @@ export function Table<T>({
               {columns.map((column) => (
                 <th
                   key={column.key}
-                  className="text-left text-xs font-semibold text-text-muted uppercase tracking-wider px-4 py-3"
+                  className="text-left text-xs font-semibold text-text-muted uppercase tracking-wider px-6 py-4"
                   style={{ width: column.width }}
                 >
                   {column.header}
@@ -113,7 +113,7 @@ export function Table<T>({
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className="px-4 py-4 text-sm text-text-secondary"
+                    className="px-6 py-5 text-sm text-text-secondary"
                   >
                     {column.render
                       ? column.render(item)
