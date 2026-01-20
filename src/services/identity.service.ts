@@ -63,7 +63,19 @@ export const usersService = {
   },
 
   async removeRole(userId: string, roleId: string): Promise<void> {
-    return api.delete(`/identity/users/${userId}/roles/${roleId}`);
+    // First, find the assignment ID for this role
+    interface RoleAssignment {
+      id: string;
+      roleId: string;
+    }
+    const response = await api.get<{ assignments: RoleAssignment[] }>(
+      `/identity/users/${userId}/roles`,
+    );
+    const assignment = response?.assignments?.find((a) => a.roleId === roleId);
+    if (!assignment) {
+      throw new Error('Role assignment not found');
+    }
+    return api.delete(`/identity/users/${userId}/roles/${assignment.id}`);
   },
 
   async getUserRoles(userId: string): Promise<Role[]> {
