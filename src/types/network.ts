@@ -34,6 +34,7 @@ export interface CreateStructureTypeDto {
 export interface UpdateStructureTypeDto {
   name?: string;
   description?: string;
+  leadershipRoleId?: string;
   maxLeaders?: number;
 }
 
