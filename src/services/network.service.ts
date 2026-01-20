@@ -104,7 +104,11 @@ export const structuresService = {
 
   async getTree(): Promise<NetworkTreeNode[]> {
     try {
-      const response = await api.get<{ items: NetworkTreeNode[] }>('/network/structures/tree');
+      const response = await api.get<{ items: NetworkTreeNode[] } | NetworkTreeNode[]>('/network/structures/tree');
+      // Handle both { items: [] } and direct array responses
+      if (Array.isArray(response)) {
+        return response;
+      }
       return response?.items || [];
     } catch {
       return [];

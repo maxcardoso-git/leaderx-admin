@@ -459,7 +459,11 @@ const mockStructure: Structure = {
   type: {
     id: 'type-national',
     tenantId: 'demo-tenant',
+    code: 'NACIONAL',
     name: 'Nacional',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'COUNTRY_GROUP',
     hierarchyLevel: 3,
     leadershipRoleId: 'role-manager',

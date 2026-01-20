@@ -8,32 +8,55 @@ export type StructureScope =
 export interface StructureType {
   id: string;
   tenantId: string;
+  code: string;
   name: string;
   description?: string;
-  scope: StructureScope;
-  hierarchyLevel: number;
-  leadershipRoleId: string;
+  icon?: string;
+  color?: string;
+  maxLevels: number;
+  allowNested: boolean;
+  metadata?: Record<string, unknown>;
+  status: string;
+  // Legacy fields for compatibility with structure-types page
+  scope?: StructureScope;
+  hierarchyLevel?: number;
+  leadershipRoleId?: string;
   leadershipRole?: {
     id: string;
     name: string;
   };
-  maxLeaders: number;
+  maxLeaders?: number;
   activeStructures?: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateStructureTypeDto {
+  code?: string;
   name: string;
   description?: string;
-  scope: StructureScope;
-  leadershipRoleId: string;
-  maxLeaders: number;
+  icon?: string;
+  color?: string;
+  maxLevels?: number;
+  allowNested?: boolean;
+  metadata?: Record<string, unknown>;
+  // Legacy fields for structure-types page
+  scope?: StructureScope;
+  leadershipRoleId?: string;
+  maxLeaders?: number;
 }
 
 export interface UpdateStructureTypeDto {
   name?: string;
   description?: string;
+  icon?: string;
+  color?: string;
+  maxLevels?: number;
+  allowNested?: boolean;
+  metadata?: Record<string, unknown>;
+  status?: string;
+  // Legacy fields for structure-types page
+  scope?: StructureScope;
   leadershipRoleId?: string;
   maxLeaders?: number;
 }
@@ -45,6 +68,7 @@ export interface Structure {
   id: string;
   tenantId: string;
   name: string;
+  description?: string;
   typeId: string;
   type?: StructureType;
   parentId?: string;
@@ -52,8 +76,10 @@ export interface Structure {
   status: StructureStatus;
   scope: StructureScope;
   hierarchyLevel: number;
+  countries?: string[];
   leaders?: StructureLeader[];
   children?: Structure[];
+  childrenCount?: number;
   metadata?: Record<string, unknown>;
   createdAt: string;
   updatedAt: string;
@@ -61,14 +87,19 @@ export interface Structure {
 
 export interface CreateStructureDto {
   name: string;
+  description?: string;
   typeId: string;
   parentId?: string;
+  countries?: string[];
   metadata?: Record<string, unknown>;
 }
 
 export interface UpdateStructureDto {
   name?: string;
+  description?: string;
   status?: StructureStatus;
+  countries?: string[];
+  parentId?: string;
   metadata?: Record<string, unknown>;
 }
 
@@ -173,10 +204,14 @@ export interface NetworkStats {
 export interface NetworkTreeNode {
   id: string;
   name: string;
+  description?: string;
   type: string;
+  typeName?: string;
   scope: StructureScope;
   status: StructureStatus;
   hierarchyLevel: number;
+  countries?: string[];
   leadersCount: number;
+  childrenCount: number;
   children?: NetworkTreeNode[];
 }

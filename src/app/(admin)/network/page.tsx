@@ -399,6 +399,7 @@ const mockTreeData: NetworkTreeNode[] = [
     status: 'ACTIVE',
     hierarchyLevel: 1,
     leadersCount: 3,
+    childrenCount: 2,
     children: [
       {
         id: 'latam-1',
@@ -408,6 +409,7 @@ const mockTreeData: NetworkTreeNode[] = [
         status: 'ACTIVE',
         hierarchyLevel: 2,
         leadersCount: 2,
+        childrenCount: 2,
         children: [
           {
             id: 'brazil-1',
@@ -417,6 +419,7 @@ const mockTreeData: NetworkTreeNode[] = [
             status: 'ACTIVE',
             hierarchyLevel: 3,
             leadersCount: 2,
+            childrenCount: 2,
             children: [
               {
                 id: 'sp-1',
@@ -426,6 +429,7 @@ const mockTreeData: NetworkTreeNode[] = [
                 status: 'ACTIVE',
                 hierarchyLevel: 4,
                 leadersCount: 1,
+                childrenCount: 2,
                 children: [
                   {
                     id: 'sp-capital',
@@ -435,6 +439,7 @@ const mockTreeData: NetworkTreeNode[] = [
                     status: 'ACTIVE',
                     hierarchyLevel: 5,
                     leadersCount: 1,
+                    childrenCount: 0,
                   },
                   {
                     id: 'campinas',
@@ -444,6 +449,7 @@ const mockTreeData: NetworkTreeNode[] = [
                     status: 'ACTIVE',
                     hierarchyLevel: 5,
                     leadersCount: 1,
+                    childrenCount: 0,
                   },
                 ],
               },
@@ -455,6 +461,7 @@ const mockTreeData: NetworkTreeNode[] = [
                 status: 'ACTIVE',
                 hierarchyLevel: 4,
                 leadersCount: 1,
+                childrenCount: 0,
               },
             ],
           },
@@ -466,6 +473,7 @@ const mockTreeData: NetworkTreeNode[] = [
             status: 'PENDING',
             hierarchyLevel: 3,
             leadersCount: 0,
+            childrenCount: 0,
           },
         ],
       },
@@ -477,6 +485,7 @@ const mockTreeData: NetworkTreeNode[] = [
         status: 'ACTIVE',
         hierarchyLevel: 2,
         leadersCount: 2,
+        childrenCount: 1,
         children: [
           {
             id: 'portugal-1',
@@ -486,6 +495,7 @@ const mockTreeData: NetworkTreeNode[] = [
             status: 'ACTIVE',
             hierarchyLevel: 3,
             leadersCount: 1,
+            childrenCount: 0,
           },
         ],
       },

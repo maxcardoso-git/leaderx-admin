@@ -92,7 +92,11 @@ export default function StructureTypesPage() {
       const mockNew: StructureType = {
         id: `type-${Date.now()}`,
         tenantId: 'demo-tenant',
+        code: formData.name.toUpperCase().replace(/\s+/g, '_'),
         ...formData,
+        maxLevels: 10,
+        allowNested: true,
+        status: 'ACTIVE',
         hierarchyLevel: structureTypes.length + 1,
         activeStructures: 0,
         createdAt: new Date().toISOString(),
@@ -113,6 +117,7 @@ export default function StructureTypesPage() {
       const updated = await structureTypesService.update(selectedType.id, {
         name: formData.name,
         description: formData.description,
+        scope: formData.scope,
         leadershipRoleId: formData.leadershipRoleId,
         maxLeaders: formData.maxLeaders,
       });
@@ -126,7 +131,7 @@ export default function StructureTypesPage() {
       setStructureTypes(
         structureTypes.map((t) =>
           t.id === selectedType.id
-            ? { ...t, name: formData.name, description: formData.description, leadershipRoleId: formData.leadershipRoleId, maxLeaders: formData.maxLeaders }
+            ? { ...t, name: formData.name, description: formData.description, scope: formData.scope, leadershipRoleId: formData.leadershipRoleId, maxLeaders: formData.maxLeaders }
             : t
         )
       );
@@ -184,7 +189,8 @@ export default function StructureTypesPage() {
     });
   };
 
-  const getScopeLabel = (scope: StructureScope) => {
+  const getScopeLabel = (scope?: StructureScope) => {
+    if (!scope) return '-';
     const option = scopeOptions.find((o) => o.value === scope);
     return option?.label || scope;
   };
@@ -306,8 +312,17 @@ export default function StructureTypesPage() {
                       </button>
                       <button
                         onClick={() => openDeleteModal(type)}
-                        className="p-2 hover:bg-error/10 rounded-lg transition-colors text-text-muted hover:text-error"
+                        className={`p-2 rounded-lg transition-colors ${
+                          (type.activeStructures || 0) > 0
+                            ? 'text-text-muted/30 cursor-not-allowed'
+                            : 'text-text-muted hover:text-error hover:bg-error/10'
+                        }`}
                         disabled={(type.activeStructures || 0) > 0}
+                        title={
+                          (type.activeStructures || 0) > 0
+                            ? t('cannotDeleteWithActiveStructures')
+                            : tCommon('delete')
+                        }
                       >
                         <TrashIcon size={16} />
                       </button>
@@ -430,7 +445,6 @@ function StructureTypeForm({
           options={scopeOptions}
           value={formData.scope}
           onChange={(e) => setFormData({ ...formData, scope: e.target.value as StructureScope })}
-          disabled={isEdit}
         />
         <p className="text-xs text-text-muted mt-1.5">{t('scopeHint')}</p>
       </div>
@@ -489,8 +503,12 @@ const mockStructureTypes: StructureType[] = [
   {
     id: 'type-global',
     tenantId: 'demo-tenant',
+    code: 'MATRIZ_GLOBAL',
     name: 'Matriz Global',
     description: 'Estrutura principal da organização',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'GLOBAL_ALL_COUNTRIES',
     hierarchyLevel: 1,
     leadershipRoleId: 'role-admin',
@@ -503,8 +521,12 @@ const mockStructureTypes: StructureType[] = [
   {
     id: 'type-regional',
     tenantId: 'demo-tenant',
+    code: 'REGIONAL',
     name: 'Regional',
     description: 'Estrutura regional que agrupa países',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'COUNTRY_GROUP',
     hierarchyLevel: 2,
     leadershipRoleId: 'role-manager',
@@ -517,8 +539,12 @@ const mockStructureTypes: StructureType[] = [
   {
     id: 'type-national',
     tenantId: 'demo-tenant',
+    code: 'NACIONAL',
     name: 'Nacional',
     description: 'Estrutura de país',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'COUNTRY_GROUP',
     hierarchyLevel: 3,
     leadershipRoleId: 'role-manager',
@@ -531,8 +557,12 @@ const mockStructureTypes: StructureType[] = [
   {
     id: 'type-state',
     tenantId: 'demo-tenant',
+    code: 'ESTADUAL',
     name: 'Estadual',
     description: 'Estrutura estadual',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'CITY_GROUP',
     hierarchyLevel: 4,
     leadershipRoleId: 'role-member',
@@ -545,8 +575,12 @@ const mockStructureTypes: StructureType[] = [
   {
     id: 'type-city',
     tenantId: 'demo-tenant',
+    code: 'MUNICIPAL',
     name: 'Municipal',
     description: 'Estrutura de cidade',
+    maxLevels: 10,
+    allowNested: true,
+    status: 'ACTIVE',
     scope: 'SINGLE_CITY',
     hierarchyLevel: 5,
     leadershipRoleId: 'role-member',
