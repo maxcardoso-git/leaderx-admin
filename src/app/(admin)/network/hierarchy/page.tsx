@@ -4,11 +4,11 @@ import { NetworkIcon } from '@/components/icons';
 
 export default function NetworkHierarchyPage() {
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">Hierarquia</h1>
-        <p className="text-white/40 mt-1">Visualize a estrutura hierárquica da rede</p>
+        <p className="text-white/40" style={{ marginTop: '8px' }}>Visualize a estrutura hierárquica da rede</p>
       </div>
 
       {/* Coming Soon */}

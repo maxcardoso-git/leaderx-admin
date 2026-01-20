@@ -226,14 +226,14 @@ export default function AppearanceSettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold text-text-primary">
             {t('appearance')}
           </h1>
-          <p className="text-sm text-text-muted mt-1">
+          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>
             {t('appearanceSubtitle')}
           </p>
         </div>

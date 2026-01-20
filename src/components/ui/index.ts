@@ -10,3 +10,4 @@ export * from './Pagination';
 export * from './Avatar';
 export * from './LanguageSelector';
 export * from './UnderDevelopment';
+export * from './PageContainer';

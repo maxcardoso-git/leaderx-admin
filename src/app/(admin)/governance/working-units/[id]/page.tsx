@@ -226,7 +226,7 @@ export default function WorkingUnitDetailPage() {
   const statusInfo = mapStatus(unit.status);
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Back Link */}
       <Link
         href="/governance/working-units"
@@ -250,7 +250,7 @@ export default function WorkingUnitDetailPage() {
               </span>
             </div>
             {unit.description && (
-              <p className="text-white/40 mt-1">{unit.description}</p>
+              <p className="text-white/40" style={{ marginTop: '8px' }}>{unit.description}</p>
             )}
           </div>
         </div>

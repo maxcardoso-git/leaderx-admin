@@ -161,7 +161,7 @@ export default function StructureDetailPage() {
   const status = statusLabels[structure.status];
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Back Link */}
       <Link
         href="/network"
@@ -179,7 +179,7 @@ export default function StructureDetailPage() {
           </div>
           <div>
             <h1 className="text-3xl font-light text-text-primary">{structure.name}</h1>
-            <p className="text-text-muted mt-1">{structure.type?.name || t('unknownType')}</p>
+            <p className="text-text-muted" style={{ marginTop: '8px' }}>{structure.type?.name || t('unknownType')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

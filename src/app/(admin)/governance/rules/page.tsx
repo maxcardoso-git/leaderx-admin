@@ -4,11 +4,11 @@ import { GovernanceIcon } from '@/components/icons';
 
 export default function GovernanceRulesPage() {
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">Regras</h1>
-        <p className="text-white/40 mt-1">Configure as regras de governança</p>
+        <p className="text-white/40" style={{ marginTop: '8px' }}>Configure as regras de governança</p>
       </div>
 
       {/* Coming Soon */}

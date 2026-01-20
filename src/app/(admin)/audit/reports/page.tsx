@@ -4,11 +4,11 @@ import { AuditIcon } from '@/components/icons';
 
 export default function AuditReportsPage() {
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">Relatórios</h1>
-        <p className="text-white/40 mt-1">Visualize relatórios de auditoria</p>
+        <p className="text-white/40" style={{ marginTop: '8px' }}>Visualize relatórios de auditoria</p>
       </div>
 
       {/* Coming Soon */}

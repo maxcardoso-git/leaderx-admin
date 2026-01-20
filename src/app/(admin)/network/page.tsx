@@ -185,14 +185,14 @@ export default function NetworkOverviewPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-light text-text-primary tracking-tight">
             {t('title')}
           </h1>
-          <p className="text-text-muted mt-2">
+          <p className="text-text-muted" style={{ marginTop: '8px' }}>
             {t('subtitle')}
           </p>
         </div>

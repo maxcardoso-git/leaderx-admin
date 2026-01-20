@@ -107,7 +107,7 @@ export default function UserDetailPage() {
   const statusInfo = mapStatus(user.status);
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Back Link */}
       <Link
         href="/identity/users"
@@ -127,7 +127,7 @@ export default function UserDetailPage() {
           </div>
           <div>
             <h1 className="text-3xl font-light text-white">{user.fullName}</h1>
-            <p className="text-white/40 mt-1">{user.email}</p>
+            <p className="text-white/40" style={{ marginTop: '8px' }}>{user.email}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">

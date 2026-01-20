@@ -148,13 +148,13 @@ export default function EditUserPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="font-heading text-2xl font-semibold text-text-primary">
           {t('edit')} {originalUser?.fullName}
         </h1>
-        <p className="text-sm text-text-muted mt-1">
+        <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>
           {originalUser?.email}
         </p>
       </div>

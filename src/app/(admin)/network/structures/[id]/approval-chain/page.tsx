@@ -270,7 +270,7 @@ export default function ApprovalChainPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Back Link */}
       <Link
         href={`/network/structures/${structureId}`}
@@ -288,7 +288,7 @@ export default function ApprovalChainPage() {
           </div>
           <div>
             <h1 className="text-3xl font-light text-text-primary">{t('approvalChain')}</h1>
-            <p className="text-text-muted mt-1">{structure?.name}</p>
+            <p className="text-text-muted" style={{ marginTop: '8px' }}>{structure?.name}</p>
           </div>
         </div>
       </div>

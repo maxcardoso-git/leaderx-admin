@@ -8,11 +8,11 @@ export default function NetworkNodesPage() {
   const common = useTranslations('common');
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">{nav('nodes')}</h1>
-        <p className="text-white/40 mt-1">{nav('network')}</p>
+        <p className="text-white/40" style={{ marginTop: '8px' }}>{nav('network')}</p>
       </div>
 
       {/* Coming Soon */}

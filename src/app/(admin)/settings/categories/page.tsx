@@ -105,12 +105,12 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
-          <p className="text-sm text-text-muted mt-1">{t('subtitle')}</p>
+          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
         </div>
         <Button leftIcon={<PlusIcon size={18} />} onClick={openCreateModal}>
           {t('newCategory')}

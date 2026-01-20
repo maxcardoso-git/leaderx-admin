@@ -4,11 +4,11 @@ import { AuditIcon } from '@/components/icons';
 
 export default function AuditCompliancePage() {
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white">Conformidade</h1>
-        <p className="text-white/40 mt-1">Monitore a conformidade da organização</p>
+        <p className="text-white/40" style={{ marginTop: '8px' }}>Monitore a conformidade da organização</p>
       </div>
 
       {/* Coming Soon */}

@@ -190,7 +190,7 @@ export default function StructureTypesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Back Link */}
       <Link
         href="/network"
@@ -206,7 +206,7 @@ export default function StructureTypesPage() {
           <h1 className="text-3xl font-light text-text-primary tracking-tight">
             {t('structureTypes')}
           </h1>
-          <p className="text-text-muted mt-2">
+          <p className="text-text-muted" style={{ marginTop: '8px' }}>
             {t('structureTypesSubtitle')}
           </p>
         </div>
