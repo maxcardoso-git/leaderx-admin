@@ -228,7 +228,6 @@ export default function ClassificationsPage() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         title={editingClassification ? t('editClassification') : t('newClassification')}
-        subtitle={t('modalSubtitle')}
         footer={
           <>
             <Button variant="ghost" onClick={() => setShowModal(false)}>
