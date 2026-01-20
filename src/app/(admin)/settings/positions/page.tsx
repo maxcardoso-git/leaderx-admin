@@ -237,7 +237,11 @@ export default function PositionsPage() {
             <Button variant="ghost" onClick={() => setShowModal(false)}>
               {common('cancel')}
             </Button>
-            <Button onClick={handleSave} isLoading={isSaving}>
+            <Button
+              onClick={handleSave}
+              isLoading={isSaving}
+              disabled={!formData.code.trim() || !formData.name.trim() || !formData.hierarchyGroup}
+            >
               {common('save')}
             </Button>
           </>

@@ -175,7 +175,11 @@ export default function CreateWorkingUnitPage() {
               {tCommon('cancel')}
             </Button>
           </Link>
-          <Button type="submit" isLoading={isLoading} disabled={success !== null}>
+          <Button
+            type="submit"
+            isLoading={isLoading}
+            disabled={success !== null || !formData.code || !formData.name || !formData.structureId}
+          >
             {tCommon('save')}
           </Button>
         </div>

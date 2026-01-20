@@ -230,7 +230,11 @@ export default function CategoriesPage() {
             <Button variant="ghost" onClick={() => setShowModal(false)}>
               {common('cancel')}
             </Button>
-            <Button onClick={handleSave} isLoading={isSaving}>
+            <Button
+              onClick={handleSave}
+              isLoading={isSaving}
+              disabled={!formData.code.trim() || !formData.name.trim()}
+            >
               {common('save')}
             </Button>
           </>
