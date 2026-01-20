@@ -25,8 +25,11 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         <TopBar />
 
         {/* Page Content with proper spacing */}
-        <main className="flex-1 py-10 px-16 overflow-y-auto">
-          <div className="max-w-[1400px] space-y-10">
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ padding: '40px 64px' }}
+        >
+          <div className="max-w-[1400px]" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             {children}
           </div>
         </main>

@@ -213,12 +213,12 @@ export default function UsersPage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
-          <p className="text-sm text-text-muted mt-2">
+          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>
             {t('subtitle')}
           </p>
         </div>
