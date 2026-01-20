@@ -139,18 +139,39 @@ export const rolesService = {
 // PERMISSIONS SERVICE
 // ============================================
 
+interface ApiPermission {
+  id: string;
+  tenantId: string;
+  code: string;
+  name: string;
+  category: string;
+  createdAt: string;
+}
+
 interface PermissionsListResponse {
-  items: Permission[];
+  items: ApiPermission[];
   page: number;
   size: number;
   total: number;
 }
 
+// Transform API permission to frontend Permission type
+const transformPermission = (apiPerm: ApiPermission): Permission => {
+  // code format: "RESOURCE.ACTION" (e.g., "ROLES.CREATE")
+  const [resource, action] = apiPerm.code.split('.');
+  return {
+    id: apiPerm.id,
+    resource: resource?.toLowerCase() || 'unknown',
+    action: (action as Permission['action']) || 'READ',
+    description: apiPerm.name,
+  };
+};
+
 export const permissionsService = {
   async list(): Promise<Permission[]> {
     try {
       const response = await api.get<PermissionsListResponse>('/identity/permissions');
-      return response?.items || [];
+      return (response?.items || []).map(transformPermission);
     } catch {
       return [];
     }
@@ -159,7 +180,7 @@ export const permissionsService = {
   async getByRole(roleId: string): Promise<Permission[]> {
     try {
       const response = await api.get<PermissionsListResponse>(`/identity/roles/${roleId}/permissions`);
-      return response?.items || [];
+      return (response?.items || []).map(transformPermission);
     } catch {
       return [];
     }
