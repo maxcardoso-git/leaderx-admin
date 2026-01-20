@@ -158,7 +158,7 @@ export default function StructureDetailPage() {
     );
   }
 
-  const status = statusLabels[structure.status];
+  const status = statusLabels[structure.status] || { label: structure.status || '-', color: 'text-white/40 bg-white/[0.05]' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
