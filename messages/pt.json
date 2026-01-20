@@ -57,7 +57,13 @@
     "networkGrowth": "Crescimento da Rede",
     "eventPerformance": "Performance de Eventos",
     "notifications": "Notificações",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "nodes": "Nós da Rede",
+    "hierarchy": "Hierarquia",
+    "policies": "Políticas",
+    "rules": "Regras",
+    "audit": "Auditoria",
+    "compliance": "Conformidade"
   },
   "dashboard": {
     "welcome": "Bem-vindo de volta",
@@ -190,7 +196,9 @@
     "failedToDeleteRole": "Falha ao excluir função.",
     "editRole": "Editar Função",
     "of": "de",
-    "removeUsersWarning": "Remova todos os usuários desta função antes de excluí-la."
+    "removeUsersWarning": "Remova todos os usuários desta função antes de excluí-la.",
+    "roleCreated": "Função criada com sucesso!",
+    "roleDeleted": "Função excluída com sucesso!"
   },
   "permissions": {
     "Users": "Usuarios",
