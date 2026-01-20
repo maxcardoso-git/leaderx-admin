@@ -155,7 +155,7 @@ export default function RolesPage() {
       const permissionsToSave = editedPermissions
         .map((id) => {
           const perm = permsArray.find((p) => p.id === id);
-          return perm ? { permissionCode: perm.code, effect: 'ALLOW' as const } : null;
+          return perm ? { permissionCode: `${perm.resource}:${perm.action}`, effect: 'ALLOW' as const } : null;
         })
         .filter((p): p is { permissionCode: string; effect: 'ALLOW' } => p !== null);
 
