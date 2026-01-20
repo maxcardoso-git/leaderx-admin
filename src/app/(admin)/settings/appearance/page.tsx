@@ -547,15 +547,22 @@ export default function AppearanceSettingsPage() {
 
 // Preview Component
 function StylePreview({ css }: { css: string }) {
-  return (
-    <div className="relative h-full">
-      {/* Inject custom CSS */}
-      <style dangerouslySetInnerHTML={{ __html: css }} />
+  // Scope all CSS selectors to the preview container to avoid conflicts
+  const scopedCSS = css
+    // Scope body selector to preview
+    .replace(/\bbody\s*\{/g, '.preview-scope {')
+    // Scope main selector to preview
+    .replace(/\bmain\s*\{/g, '.preview-scope main {');
 
-      {/* Preview Container */}
-      <div
+  return (
+    <div className="relative h-full preview-scope">
+      {/* Inject custom CSS with scoped selectors */}
+      <style dangerouslySetInnerHTML={{ __html: scopedCSS }} />
+
+      {/* Preview Container - wraps content in main element */}
+      <main
         className="p-6 min-h-full"
-        style={{ backgroundColor: 'var(--bg-color, #000)' }}
+        style={{ backgroundColor: 'var(--bg-color, #0d1117)' }}
       >
         {/* Hero Section */}
         <div className="text-center mb-8 pb-8" style={{ borderBottom: '1px solid var(--card-border)' }}>
@@ -680,7 +687,7 @@ function StylePreview({ css }: { css: string }) {
             </tbody>
           </table>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
