@@ -22,6 +22,7 @@ export default function CategoriesPage() {
 
   // Form state
   const [formData, setFormData] = useState<CreateCategoryDto>({
+    code: '',
     name: '',
     description: '',
     previousCategoryId: undefined,
@@ -39,12 +40,12 @@ export default function CategoriesPage() {
         categoriesService.list(),
         classificationsService.list(),
       ]);
-      setCategories(categoriesData.items.length > 0 ? categoriesData.items : mockCategories);
-      setClassifications(classificationsData.items.length > 0 ? classificationsData.items : mockClassifications);
+      setCategories(categoriesData.items);
+      setClassifications(classificationsData.items);
     } catch (error) {
       console.error('Failed to load data:', error);
-      setCategories(mockCategories);
-      setClassifications(mockClassifications);
+      setCategories([]);
+      setClassifications([]);
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +80,7 @@ export default function CategoriesPage() {
   const openCreateModal = () => {
     setEditingCategory(null);
     setFormData({
+      code: '',
       name: '',
       description: '',
       previousCategoryId: undefined,
@@ -90,6 +92,7 @@ export default function CategoriesPage() {
   const openEditModal = (category: Category) => {
     setEditingCategory(category);
     setFormData({
+      code: category.code,
       name: category.name,
       description: category.description || '',
       previousCategoryId: category.previousCategoryId,
@@ -99,7 +102,7 @@ export default function CategoriesPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim()) return;
+    if (!formData.code.trim() || !formData.name.trim()) return;
 
     setIsSaving(true);
     try {
@@ -175,6 +178,7 @@ export default function CategoriesPage() {
                     <TagIcon size={20} className="text-gold" />
                   </div>
                   <div>
+                    <span className="text-xs text-gold/80 font-mono">{category.code}</span>
                     <h3 className="font-medium text-text-primary">{category.name}</h3>
                     {category.description && (
                       <p className="text-sm text-text-muted mt-1 line-clamp-2">
@@ -233,6 +237,14 @@ export default function CategoriesPage() {
         }
       >
         <div className="space-y-4">
+          <Input
+            label={t('code')}
+            placeholder={t('codePlaceholder')}
+            value={formData.code}
+            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+            required
+            disabled={!!editingCategory}
+          />
           <Input
             label={t('name')}
             placeholder={t('namePlaceholder')}
@@ -315,73 +327,3 @@ export default function CategoriesPage() {
     </div>
   );
 }
-
-// Mock data
-const mockCategories: Category[] = [
-  {
-    id: 'cat-1',
-    tenantId: 'demo',
-    name: 'Membro',
-    description: 'Membro regular do clube',
-    displayOrder: 1,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'cat-2',
-    tenantId: 'demo',
-    name: 'Sócio',
-    description: 'Membro com vínculo societário no Clube LeaderX',
-    previousCategoryId: 'class-1', // Requires Embaixador classification
-    displayOrder: 2,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];
-
-const mockClassifications: Classification[] = [
-  {
-    id: 'class-1',
-    tenantId: 'demo',
-    name: 'Embaixador',
-    description: 'Classificação para membros com papel de representante',
-    categoryId: 'cat-1',
-    badgeColor: '#8B5CF6',
-    displayOrder: 1,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-2',
-    tenantId: 'demo',
-    name: 'Prestigie Entry',
-    description: 'Primeiro nível do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#F59E0B',
-    displayOrder: 1,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-3',
-    tenantId: 'demo',
-    name: 'Prestigie Circle',
-    description: 'Segundo nível do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#EF4444',
-    displayOrder: 2,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-4',
-    tenantId: 'demo',
-    name: 'Diamond Prestigie',
-    description: 'Nível mais elevado do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#3B82F6',
-    displayOrder: 3,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];

@@ -459,6 +459,8 @@
       "newCategory": "Nova Categoria",
       "editCategory": "Editar Categoria",
       "deleteCategory": "Excluir Categoria",
+      "code": "Código",
+      "codePlaceholder": "Ex: SOCIO",
       "name": "Nome",
       "namePlaceholder": "Ex: Socio",
       "description": "Descricao",

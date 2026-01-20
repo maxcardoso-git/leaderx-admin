@@ -39,12 +39,12 @@ export default function ClassificationsPage() {
         classificationsService.list(),
         categoriesService.list(),
       ]);
-      setClassifications(classificationsData.items.length > 0 ? classificationsData.items : mockClassifications);
-      setCategories(categoriesData.items.length > 0 ? categoriesData.items : mockCategories);
+      setClassifications(classificationsData.items);
+      setCategories(categoriesData.items);
     } catch (error) {
       console.error('Failed to load data:', error);
-      setClassifications(mockClassifications);
-      setCategories(mockCategories);
+      setClassifications([]);
+      setCategories([]);
     } finally {
       setIsLoading(false);
     }
@@ -324,57 +324,3 @@ export default function ClassificationsPage() {
     </div>
   );
 }
-
-// Mock categories
-const mockCategories: Category[] = [
-  { id: 'cat-1', tenantId: 'demo', name: 'Membro', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'cat-2', tenantId: 'demo', name: 'Sócio', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-];
-
-// Mock classifications matching the screenshot
-const mockClassifications: Classification[] = [
-  {
-    id: 'class-1',
-    tenantId: 'demo',
-    name: 'Embaixador',
-    description: 'Classificação para membros com papel de representante',
-    categoryId: 'cat-1',
-    badgeColor: '#8B5CF6',
-    displayOrder: 1,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-2',
-    tenantId: 'demo',
-    name: 'Prestigie Entry',
-    description: 'Primeiro nível do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#F59E0B',
-    displayOrder: 2,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-3',
-    tenantId: 'demo',
-    name: 'Prestigie Circle',
-    description: 'Segundo nível do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#EF4444',
-    displayOrder: 3,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: 'class-4',
-    tenantId: 'demo',
-    name: 'Diamond Prestigie',
-    description: 'Nível mais elevado do Clube LeaderX',
-    categoryId: 'cat-2',
-    badgeColor: '#3B82F6',
-    displayOrder: 4,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];

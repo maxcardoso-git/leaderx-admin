@@ -211,7 +211,7 @@ export default function StructureDetailPage() {
               <div className="grid grid-cols-2 gap-6">
                 <InfoItem label={t('structureName')} value={structure.name} />
                 <InfoItem label={t('structureType')} value={structure.type?.name || '-'} />
-                <InfoItem label={t('scope')} value={t(`scope${structure.scope.replace(/_/g, '')}`)} />
+                <InfoItem label={t('scope')} value={structure.scope ? t(`scope${structure.scope.replace(/_/g, '')}`) : '-'} />
                 <InfoItem label={t('hierarchyLevel')} value={structure.hierarchyLevel} />
                 <InfoItem
                   label={t('status')}

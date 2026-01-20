@@ -6,6 +6,7 @@
 export interface Category {
   id: string;
   tenantId: string;
+  code: string;
   name: string;
   description?: string;
   previousCategoryId?: string;
@@ -16,6 +17,7 @@ export interface Category {
 }
 
 export interface CreateCategoryDto {
+  code: string;
   name: string;
   description?: string;
   previousCategoryId?: string;
