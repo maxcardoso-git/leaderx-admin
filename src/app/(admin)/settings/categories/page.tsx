@@ -1,17 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Card, Modal, Input } from '@/components/ui';
 import { PlusIcon, EditIcon, TrashIcon, TagIcon } from '@/components/icons';
-import { Category, CreateCategoryDto, UpdateCategoryDto } from '@/types/settings';
-import { categoriesService } from '@/services/settings.service';
+import { Category, CreateCategoryDto, UpdateCategoryDto, Classification } from '@/types/settings';
+import { categoriesService, classificationsService } from '@/services/settings.service';
 
 export default function CategoriesPage() {
   const t = useTranslations('systemSettings.categories');
   const common = useTranslations('common');
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const [classifications, setClassifications] = useState<Classification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -28,20 +29,51 @@ export default function CategoriesPage() {
   });
 
   useEffect(() => {
-    loadCategories();
+    loadData();
   }, []);
 
-  const loadCategories = async () => {
+  const loadData = async () => {
     setIsLoading(true);
     try {
-      const data = await categoriesService.list();
-      setCategories(data.items);
+      const [categoriesData, classificationsData] = await Promise.all([
+        categoriesService.list(),
+        classificationsService.list(),
+      ]);
+      setCategories(categoriesData.items.length > 0 ? categoriesData.items : mockCategories);
+      setClassifications(classificationsData.items.length > 0 ? classificationsData.items : mockClassifications);
     } catch (error) {
-      console.error('Failed to load categories:', error);
+      console.error('Failed to load data:', error);
       setCategories(mockCategories);
+      setClassifications(mockClassifications);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Group classifications by category
+  const classificationsByCategory = useMemo(() => {
+    const grouped: Record<string, Classification[]> = {};
+    classifications.forEach((classification) => {
+      const categoryId = classification.categoryId;
+      if (!grouped[categoryId]) {
+        grouped[categoryId] = [];
+      }
+      grouped[categoryId].push(classification);
+    });
+    // Sort each group by displayOrder
+    Object.values(grouped).forEach((group) => {
+      group.sort((a, b) => a.displayOrder - b.displayOrder);
+    });
+    return grouped;
+  }, [classifications]);
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.name || categoryId;
+  };
+
+  const loadCategories = async () => {
+    loadData();
   };
 
   const openCreateModal = () => {
@@ -98,10 +130,12 @@ export default function CategoriesPage() {
     }
   };
 
-  const getPreviousCategoryName = (previousCategoryId?: string) => {
-    if (!previousCategoryId) return '-';
-    const category = categories.find((c) => c.id === previousCategoryId);
-    return category?.name || '-';
+  const getPreviousClassificationName = (previousCategoryId?: string) => {
+    if (!previousCategoryId) return t('none');
+    const classification = classifications.find((c) => c.id === previousCategoryId);
+    if (!classification) return '-';
+    const categoryName = getCategoryName(classification.categoryId);
+    return `${classification.name} (${categoryName})`;
   };
 
   return (
@@ -171,7 +205,7 @@ export default function CategoriesPage() {
               </div>
               <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
                 <span>
-                  {t('progression')}: {getPreviousCategoryName(category.previousCategoryId)}
+                  {t('progression')}: {getPreviousClassificationName(category.previousCategoryId)}
                 </span>
                 <span>
                   {t('order')}: {category.displayOrder || '-'}
@@ -228,14 +262,20 @@ export default function CategoriesPage() {
                 })
               }
             >
-              <option value="">-</option>
-              {categories
-                .filter((c) => c.id !== editingCategory?.id)
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
+              <option value="">{t('none')}</option>
+              {categories.map((category) => {
+                const categoryClassifications = classificationsByCategory[category.id] || [];
+                if (categoryClassifications.length === 0) return null;
+                return (
+                  <optgroup key={category.id} label={category.name}>
+                    {categoryClassifications.map((classification) => (
+                      <option key={classification.id} value={classification.id}>
+                        {classification.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
             </select>
             <p className="text-xs text-text-muted mt-1">{t('previousCategoryHint')}</p>
           </div>
@@ -279,30 +319,67 @@ export default function CategoriesPage() {
 // Mock data
 const mockCategories: Category[] = [
   {
-    id: '1',
+    id: 'cat-1',
     tenantId: 'demo',
-    name: 'Socio',
-    description: 'Membro com vinculo societario no Clube LeaderX',
+    name: 'Membro',
+    description: 'Membro regular do clube',
     displayOrder: 1,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
   },
   {
-    id: '2',
+    id: 'cat-2',
     tenantId: 'demo',
-    name: 'Membro',
-    description: 'Membro regular do clube',
-    previousCategoryId: '1',
+    name: 'Sócio',
+    description: 'Membro com vínculo societário no Clube LeaderX',
+    previousCategoryId: 'class-1', // Requires Embaixador classification
+    displayOrder: 2,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+];
+
+const mockClassifications: Classification[] = [
+  {
+    id: 'class-1',
+    tenantId: 'demo',
+    name: 'Embaixador',
+    description: 'Classificação para membros com papel de representante',
+    categoryId: 'cat-1',
+    badgeColor: '#8B5CF6',
+    displayOrder: 1,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'class-2',
+    tenantId: 'demo',
+    name: 'Prestigie Entry',
+    description: 'Primeiro nível do Clube LeaderX',
+    categoryId: 'cat-2',
+    badgeColor: '#F59E0B',
+    displayOrder: 1,
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+  },
+  {
+    id: 'class-3',
+    tenantId: 'demo',
+    name: 'Prestigie Circle',
+    description: 'Segundo nível do Clube LeaderX',
+    categoryId: 'cat-2',
+    badgeColor: '#EF4444',
     displayOrder: 2,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',
   },
   {
-    id: '3',
+    id: 'class-4',
     tenantId: 'demo',
-    name: 'Convidado',
-    description: 'Convidado para eventos especificos',
-    previousCategoryId: '2',
+    name: 'Diamond Prestigie',
+    description: 'Nível mais elevado do Clube LeaderX',
+    categoryId: 'cat-2',
+    badgeColor: '#3B82F6',
     displayOrder: 3,
     createdAt: '2024-01-01T00:00:00Z',
     updatedAt: '2024-01-01T00:00:00Z',

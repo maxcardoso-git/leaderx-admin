@@ -22,6 +22,9 @@ import {
   Scope,
   CreateScopeDto,
   UpdateScopeDto,
+  Classification,
+  CreateClassificationDto,
+  UpdateClassificationDto,
   ListResponse,
 } from '@/types/settings';
 
@@ -291,5 +294,41 @@ export const scopesService = {
 
   async delete(id: string): Promise<void> {
     return api.delete(`/governance/scopes/${id}`);
+  },
+};
+
+// ============================================
+// CLASSIFICATIONS SERVICE (CLASSIFICAÇÕES)
+// ============================================
+
+export const classificationsService = {
+  async list(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    categoryId?: string;
+  }): Promise<ListResponse<Classification>> {
+    try {
+      const response = await api.get<ListResponse<Classification>>('/taxonomy/classifications', params);
+      return response || { items: [], page: 1, size: 25, total: 0 };
+    } catch {
+      return { items: [], page: 1, size: 25, total: 0 };
+    }
+  },
+
+  async getById(id: string): Promise<Classification> {
+    return api.get<Classification>(`/taxonomy/classifications/${id}`);
+  },
+
+  async create(data: CreateClassificationDto): Promise<Classification> {
+    return api.post<Classification>('/taxonomy/classifications', data);
+  },
+
+  async update(id: string, data: UpdateClassificationDto): Promise<Classification> {
+    return api.put<Classification>(`/taxonomy/classifications/${id}`, data);
+  },
+
+  async delete(id: string): Promise<void> {
+    return api.delete(`/taxonomy/classifications/${id}`);
   },
 };

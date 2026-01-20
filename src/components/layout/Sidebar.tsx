@@ -32,6 +32,7 @@ import {
   BellIcon,
   ChartLineIcon,
   PaletteIcon,
+  StarIcon,
 } from '../icons';
 import { useSidebar } from './SidebarContext';
 
@@ -118,6 +119,7 @@ const navigationSections: NavSection[] = [
         children: [
           { key: 'appearance', href: '/settings/appearance', icon: <PaletteIcon size={16} /> },
           { key: 'categories', href: '/settings/categories', icon: <TagIcon size={16} /> },
+          { key: 'classifications', href: '/settings/classifications', icon: <StarIcon size={16} /> },
           { key: 'segments', href: '/settings/segments', icon: <CubeIcon size={16} /> },
           { key: 'lines', href: '/settings/lines', icon: <LayersIcon size={16} /> },
           { key: 'cycles', href: '/settings/cycles', icon: <RefreshIcon size={16} /> },

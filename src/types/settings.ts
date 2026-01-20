@@ -240,6 +240,39 @@ export interface UpdateSupplierDto {
 }
 
 // ============================================
+// CLASSIFICATIONS DOMAIN (CLASSIFICAÇÕES)
+// ============================================
+
+export interface Classification {
+  id: string;
+  tenantId: string;
+  name: string;
+  description?: string;
+  categoryId: string;
+  category?: Category;
+  badgeColor: string;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateClassificationDto {
+  name: string;
+  description?: string;
+  categoryId: string;
+  badgeColor: string;
+  displayOrder?: number;
+}
+
+export interface UpdateClassificationDto {
+  name?: string;
+  description?: string;
+  categoryId?: string;
+  badgeColor?: string;
+  displayOrder?: number;
+}
+
+// ============================================
 // SCOPES DOMAIN (ESCOPOS DE ESTRUTURA)
 // ============================================
 

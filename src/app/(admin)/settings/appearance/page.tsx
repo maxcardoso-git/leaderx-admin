@@ -20,6 +20,13 @@ const DEFAULT_CSS = `:root {
   --text-muted: #a0a0a0;
   --pill-bg: rgba(255, 255, 255, 0.05);
   --pill-border: #333333;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
 }
 
 body {
@@ -91,6 +98,218 @@ body {
 .status-pill strong {
   margin-left: 5px;
   color: #fff;
+}
+
+/* ===== UI COMPONENTS ===== */
+
+/* Section Titles */
+.preview-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Headings */
+.preview-h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.preview-h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.preview-h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+/* Cards */
+.preview-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.preview-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.preview-card-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.preview-card-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.preview-stat {
+  text-align: center;
+}
+
+.preview-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.preview-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Buttons */
+.preview-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.preview-btn-primary {
+  background: var(--gold);
+  color: #000;
+}
+
+.preview-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.preview-btn-secondary {
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--text-main);
+}
+
+.preview-btn-outline {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.preview-btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.preview-btn-ghost:hover {
+  color: var(--text-main);
+  background: var(--pill-bg);
+}
+
+/* Inputs */
+.preview-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.875rem;
+}
+
+.preview-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.preview-input::placeholder {
+  color: var(--text-muted);
+}
+
+.preview-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+/* Badges */
+.preview-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.preview-badge-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success);
+}
+
+.preview-badge-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+}
+
+.preview-badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+
+.preview-badge-gold {
+  background: rgba(196, 164, 90, 0.15);
+  color: var(--gold);
+}
+
+/* Table */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.preview-table th,
+.preview-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.preview-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.preview-table td {
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.preview-table tr:hover td {
+  background: var(--pill-bg);
 }`;
 
 interface CSSValidationError {
@@ -335,33 +554,131 @@ function StylePreview({ css }: { css: string }) {
 
       {/* Preview Container */}
       <div
-        className="hero-container p-8 min-h-full flex flex-col items-center justify-center text-center"
+        className="p-6 min-h-full"
         style={{ backgroundColor: 'var(--bg-color, #000)' }}
       >
-        {/* Logo */}
-        <div className="logo mb-8">
-          <h2 className="logo-text">
-            LEADER<span>X</span>
-          </h2>
-          <p className="tagline">exponential leadership</p>
+        {/* Hero Section */}
+        <div className="text-center mb-8 pb-8" style={{ borderBottom: '1px solid var(--card-border)' }}>
+          {/* Logo */}
+          <div className="logo mb-4">
+            <h2 className="logo-text">
+              LEADER<span>X</span>
+            </h2>
+            <p className="tagline">exponential leadership</p>
+          </div>
+
+          {/* Main Title */}
+          <h1 className="main-title" style={{ fontSize: '2rem', margin: '16px 0' }}>
+            O Futuro da Liderança <br />
+            <span className="italic-gold">está sendo reescrito.</span>
+          </h1>
+
+          {/* Status Pill */}
+          <div className="status-pill" style={{ padding: '8px 20px', fontSize: '0.8rem' }}>
+            <span className="dot"></span>
+            Em desenvolvimento por <strong>Hans Werner</strong>
+          </div>
         </div>
 
-        {/* Main Title */}
-        <h1 className="main-title">
-          O Futuro da Liderança <br />
-          <span className="italic-gold">está sendo reescrito.</span>
-        </h1>
+        {/* Headings Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Títulos</div>
+          <h1 className="preview-h1">Título Principal (H1)</h1>
+          <h2 className="preview-h2">Título Secundário (H2)</h2>
+          <h3 className="preview-h3">Título Terciário (H3)</h3>
+        </div>
 
-        {/* Description */}
-        <p className="description">
-          Estamos preparando uma nova experiência digital à altura da nossa comunidade global.
-          Um ecossistema de alta performance desenhado para conectar o extraordinário.
-        </p>
+        {/* Cards Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Cards</div>
+          <div className="preview-card">
+            <div className="preview-card-title">Card de Estatísticas</div>
+            <div className="preview-card-text">
+              Visualize métricas importantes em tempo real.
+            </div>
+            <div className="preview-card-stats">
+              <div className="preview-stat">
+                <div className="preview-stat-value">1,234</div>
+                <div className="preview-stat-label">Usuários</div>
+              </div>
+              <div className="preview-stat">
+                <div className="preview-stat-value">56</div>
+                <div className="preview-stat-label">Grupos</div>
+              </div>
+              <div className="preview-stat">
+                <div className="preview-stat-value">89%</div>
+                <div className="preview-stat-label">Engajamento</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        {/* Status Pill */}
-        <div className="status-pill">
-          <span className="dot"></span>
-          Nova plataforma em desenvolvimento por <strong>Hans Werner</strong>
+        {/* Buttons Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Botões</div>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <button className="preview-btn preview-btn-primary">Primário</button>
+            <button className="preview-btn preview-btn-secondary">Secundário</button>
+            <button className="preview-btn preview-btn-outline">Outline</button>
+            <button className="preview-btn preview-btn-ghost">Ghost</button>
+          </div>
+        </div>
+
+        {/* Badges Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Badges / Status</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span className="preview-badge preview-badge-success">Ativo</span>
+            <span className="preview-badge preview-badge-error">Inativo</span>
+            <span className="preview-badge preview-badge-warning">Pendente</span>
+            <span className="preview-badge preview-badge-gold">Premium</span>
+          </div>
+        </div>
+
+        {/* Form Inputs Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Formulário</div>
+          <div style={{ display: 'grid', gap: '16px' }}>
+            <div>
+              <label className="preview-label">Nome</label>
+              <input type="text" className="preview-input" placeholder="Digite seu nome..." />
+            </div>
+            <div>
+              <label className="preview-label">Email</label>
+              <input type="email" className="preview-input" placeholder="exemplo@email.com" />
+            </div>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="mb-6">
+          <div className="preview-section-title">Tabela</div>
+          <table className="preview-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Cargo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>João Silva</td>
+                <td>Coordenador</td>
+                <td><span className="preview-badge preview-badge-success">Ativo</span></td>
+              </tr>
+              <tr>
+                <td>Maria Santos</td>
+                <td>Líder</td>
+                <td><span className="preview-badge preview-badge-gold">Premium</span></td>
+              </tr>
+              <tr>
+                <td>Pedro Oliveira</td>
+                <td>Membro</td>
+                <td><span className="preview-badge preview-badge-warning">Pendente</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
