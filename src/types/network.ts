@@ -199,20 +199,25 @@ export interface NetworkStats {
   structureTypes: number;
   approvalChains: number;
   pendingApprovals: number;
+  totalWorkingUnits?: number;
 }
 
 // Tree Node for visualization
 export interface NetworkTreeNode {
   id: string;
+  code?: string;
   name: string;
   description?: string;
   type: string;
+  typeId?: string;
   typeName?: string;
-  scope: StructureScope;
+  scope?: StructureScope;
   status: StructureStatus;
   hierarchyLevel: number;
+  level?: number;
   countries?: string[];
   leadersCount: number;
   childrenCount: number;
+  workingUnitsCount: number;
   children?: NetworkTreeNode[];
 }

@@ -13,6 +13,7 @@ import {
   ShieldIcon,
   CheckIcon,
   ClockIcon,
+  GroupIcon,
 } from '@/components/icons';
 import { structuresService, networkStatsService, structureTypesService } from '@/services/network.service';
 import { NetworkTreeNode, NetworkStats, StructureStatus } from '@/types/network';
@@ -84,9 +85,17 @@ function TreeNode({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-text-muted">
-          <UsersIcon size={12} />
-          <span className="text-xs">{node.leadersCount}</span>
+        <div className="flex items-center gap-3 text-text-muted">
+          <div className="flex items-center gap-1" title={t('leaders')}>
+            <UsersIcon size={12} />
+            <span className="text-xs">{node.leadersCount}</span>
+          </div>
+          {(node.workingUnitsCount > 0) && (
+            <div className="flex items-center gap-1" title={t('workingUnits')}>
+              <GroupIcon size={12} />
+              <span className="text-xs">{node.workingUnitsCount}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -148,6 +157,26 @@ export default function NetworkOverviewPage() {
     loadData();
   }, []);
 
+  // Transform backend response to frontend format
+  const transformTreeNode = (node: any): NetworkTreeNode => ({
+    id: node.id,
+    code: node.code,
+    name: node.name,
+    description: node.description,
+    type: node.typeName || node.type || '',
+    typeId: node.typeId,
+    typeName: node.typeName,
+    scope: node.scope,
+    status: node.status || 'ACTIVE',
+    hierarchyLevel: node.level ?? node.hierarchyLevel ?? 0,
+    level: node.level,
+    countries: node.countries,
+    leadersCount: node.leadersCount || 0,
+    childrenCount: node.childrenCount || 0,
+    workingUnitsCount: node.workingUnitsCount || 0,
+    children: node.children?.map(transformTreeNode),
+  });
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -155,7 +184,8 @@ export default function NetworkOverviewPage() {
         structuresService.getTree(),
         networkStatsService.getStats(),
       ]);
-      setTreeData(tree.length > 0 ? tree : mockTreeData);
+      const transformedTree = tree.map(transformTreeNode);
+      setTreeData(transformedTree.length > 0 ? transformedTree : mockTreeData);
       setStats(statsData.totalStructures > 0 ? statsData : mockStats);
     } catch (error) {
       console.error('Failed to load network data:', error);
@@ -214,7 +244,7 @@ export default function NetworkOverviewPage() {
 
       {/* Stats Grid */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatCard
             icon={<NetworkIcon size={20} className="text-blue-400" />}
             label={t('totalStructures')}
@@ -234,10 +264,16 @@ export default function NetworkOverviewPage() {
             color="bg-violet-500/10"
           />
           <StatCard
-            icon={<ClockIcon size={20} className="text-amber-400" />}
-            label={t('pendingApprovals')}
-            value={stats.pendingApprovals}
-            color="bg-amber-500/10"
+            icon={<GroupIcon size={20} className="text-gold" />}
+            label={t('workingUnits')}
+            value={stats.totalWorkingUnits || 0}
+            color="bg-gold/10"
+          />
+          <StatCard
+            icon={<UsersIcon size={20} className="text-cyan-400" />}
+            label={t('leaders')}
+            value={stats.approvalChains}
+            color="bg-cyan-500/10"
           />
         </div>
       )}
@@ -332,13 +368,13 @@ function SelectedStructureInfo({
     return <div className="text-text-muted">{t('structureNotFound')}</div>;
   }
 
-  const statusLabels: Record<StructureStatus, { label: string; color: string }> = {
+  const statusLabels: Record<string, { label: string; color: string }> = {
     ACTIVE: { label: tCommon('active'), color: 'text-emerald-400 bg-emerald-400/10' },
     INACTIVE: { label: tCommon('inactive'), color: 'text-white/40 bg-white/[0.05]' },
     PENDING: { label: tCommon('pending'), color: 'text-amber-400 bg-amber-400/10' },
   };
 
-  const status = statusLabels[node.status];
+  const status = statusLabels[node.status] || { label: node.status || '-', color: 'text-white/40 bg-white/[0.05]' };
 
   return (
     <div className="space-y-4">
@@ -361,11 +397,15 @@ function SelectedStructureInfo({
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-text-muted">{t('hierarchyLevel')}</span>
-          <span className="text-sm text-text-primary">{node.hierarchyLevel}</span>
+          <span className="text-sm text-text-primary">{node.hierarchyLevel || node.level || 0}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-text-muted">{t('leaders')}</span>
           <span className="text-sm text-text-primary">{node.leadersCount}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-sm text-text-muted">{t('workingUnits')}</span>
+          <span className="text-sm text-text-primary">{node.workingUnitsCount || 0}</span>
         </div>
         <div className="flex justify-between items-center">
           <span className="text-sm text-text-muted">{t('childStructures')}</span>
@@ -400,6 +440,7 @@ const mockTreeData: NetworkTreeNode[] = [
     hierarchyLevel: 1,
     leadersCount: 3,
     childrenCount: 2,
+    workingUnitsCount: 2,
     children: [
       {
         id: 'latam-1',
@@ -410,6 +451,7 @@ const mockTreeData: NetworkTreeNode[] = [
         hierarchyLevel: 2,
         leadersCount: 2,
         childrenCount: 2,
+        workingUnitsCount: 1,
         children: [
           {
             id: 'brazil-1',
@@ -420,6 +462,7 @@ const mockTreeData: NetworkTreeNode[] = [
             hierarchyLevel: 3,
             leadersCount: 2,
             childrenCount: 2,
+            workingUnitsCount: 3,
             children: [
               {
                 id: 'sp-1',
@@ -430,6 +473,7 @@ const mockTreeData: NetworkTreeNode[] = [
                 hierarchyLevel: 4,
                 leadersCount: 1,
                 childrenCount: 2,
+                workingUnitsCount: 0,
                 children: [
                   {
                     id: 'sp-capital',
@@ -440,6 +484,7 @@ const mockTreeData: NetworkTreeNode[] = [
                     hierarchyLevel: 5,
                     leadersCount: 1,
                     childrenCount: 0,
+                    workingUnitsCount: 0,
                   },
                   {
                     id: 'campinas',
@@ -450,6 +495,7 @@ const mockTreeData: NetworkTreeNode[] = [
                     hierarchyLevel: 5,
                     leadersCount: 1,
                     childrenCount: 0,
+                    workingUnitsCount: 0,
                   },
                 ],
               },
@@ -462,6 +508,7 @@ const mockTreeData: NetworkTreeNode[] = [
                 hierarchyLevel: 4,
                 leadersCount: 1,
                 childrenCount: 0,
+                workingUnitsCount: 0,
               },
             ],
           },
@@ -474,6 +521,7 @@ const mockTreeData: NetworkTreeNode[] = [
             hierarchyLevel: 3,
             leadersCount: 0,
             childrenCount: 0,
+            workingUnitsCount: 0,
           },
         ],
       },
@@ -486,6 +534,7 @@ const mockTreeData: NetworkTreeNode[] = [
         hierarchyLevel: 2,
         leadersCount: 2,
         childrenCount: 1,
+        workingUnitsCount: 0,
         children: [
           {
             id: 'portugal-1',
@@ -496,6 +545,7 @@ const mockTreeData: NetworkTreeNode[] = [
             hierarchyLevel: 3,
             leadersCount: 1,
             childrenCount: 0,
+            workingUnitsCount: 0,
           },
         ],
       },
@@ -509,4 +559,5 @@ const mockStats: NetworkStats = {
   structureTypes: 5,
   approvalChains: 8,
   pendingApprovals: 3,
+  totalWorkingUnits: 6,
 };

@@ -344,7 +344,7 @@ export default function StructuresPage() {
     setFormData({
       name: node.name,
       description: node.description || '',
-      typeId: structure?.typeId || '',
+      typeId: structure?.typeId || node.typeId || '',
       parentId: structure?.parentId,
       countries: node.countries || [],
     });
@@ -407,8 +407,11 @@ export default function StructuresPage() {
         description: formData.description,
         countries: formData.countries,
         parentId: formData.parentId || null,
-        typeId: formData.typeId,
       };
+      // Only include typeId if it's a valid non-empty string
+      if (formData.typeId && formData.typeId.trim() !== '') {
+        updateData.typeId = formData.typeId;
+      }
       console.log('Updating structure:', selectedNode.id, updateData);
       await structuresService.update(selectedNode.id, updateData);
       loadData();

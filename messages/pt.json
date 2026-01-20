@@ -23,6 +23,7 @@
     "pending": "Pendente",
     "suspended": "Suspenso",
     "actions": "Ações",
+    "type": "Tipo",
     "underDevelopment": "Em Desenvolvimento",
     "comingSoonMessage": "Este módulo está em desenvolvimento e estará disponível em breve."
   },
@@ -274,6 +275,7 @@
     "status": "Status",
     "hierarchyLevel": "Nível Hierárquico",
     "leaders": "Líderes",
+    "workingUnits": "Grupos de Trabalho",
     "childStructures": "Estruturas Filhas",
     "newStructure": "Nova Estrutura",
     "structureTypes": "Tipos de Estrutura",
