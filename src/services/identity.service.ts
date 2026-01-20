@@ -68,8 +68,30 @@ export const usersService = {
 
   async getUserRoles(userId: string): Promise<Role[]> {
     try {
-      const response = await api.get<{ items: Role[] }>(`/identity/users/${userId}/roles`);
-      return response?.items || [];
+      interface RoleAssignment {
+        id: string;
+        roleId: string;
+        roleCode: string;
+        roleName: string;
+        scopeType: string;
+        status: string;
+        assignedAt: string;
+      }
+      const response = await api.get<{ userId: string; assignments: RoleAssignment[] }>(
+        `/identity/users/${userId}/roles`,
+      );
+      // Transform assignments to Role format
+      return (response?.assignments || []).map((a) => ({
+        id: a.roleId,
+        tenantId: '',
+        name: a.roleName,
+        code: a.roleCode,
+        description: undefined,
+        isSystem: false,
+        permissions: [],
+        createdAt: a.assignedAt,
+        updatedAt: a.assignedAt,
+      }));
     } catch {
       return [];
     }
