@@ -99,7 +99,8 @@ export interface UpdateStructureDto {
   description?: string;
   status?: StructureStatus;
   countries?: string[];
-  parentId?: string;
+  parentId?: string | null;
+  typeId?: string;
   metadata?: Record<string, unknown>;
 }
 

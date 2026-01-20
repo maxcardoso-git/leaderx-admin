@@ -402,12 +402,15 @@ export default function StructuresPage() {
 
     setSaving(true);
     try {
-      await structuresService.update(selectedNode.id, {
+      const updateData: UpdateStructureDto = {
         name: formData.name,
         description: formData.description,
         countries: formData.countries,
-        parentId: formData.parentId,
-      } as UpdateStructureDto);
+        parentId: formData.parentId || null,
+        typeId: formData.typeId,
+      };
+      console.log('Updating structure:', selectedNode.id, updateData);
+      await structuresService.update(selectedNode.id, updateData);
       loadData();
       setShowEditModal(false);
     } catch (error) {
@@ -669,7 +672,6 @@ export default function StructuresPage() {
             options={structureTypes.map((type) => ({ value: type.id, label: type.name }))}
             value={formData.typeId}
             onChange={(e) => setFormData({ ...formData, typeId: e.target.value })}
-            disabled
           />
 
           <Select
