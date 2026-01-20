@@ -61,9 +61,8 @@ export default function WorkingUnitsPage() {
       setStats(statsData);
     } catch (error) {
       console.error('Failed to load working units:', error);
-      // Use mock data for demo
-      setUnits(mockUnits.filter((u) => u.type === activeTab));
-      setStats(mockStats);
+      setUnits([]);
+      setStats(null);
     } finally {
       setIsLoading(false);
     }
@@ -351,102 +350,3 @@ export default function WorkingUnitsPage() {
     </div>
   );
 }
-
-// Mock data for demo
-const mockStats: WorkingUnitStats = {
-  totalGroups: 8,
-  totalNuclei: 24,
-  activeGroups: 6,
-  activeNuclei: 20,
-  totalMembers: 156,
-};
-
-const mockUnits: WorkingUnit[] = [
-  {
-    id: '1',
-    tenantId: 'demo-tenant',
-    name: 'Grupo de Comunicacao',
-    description: 'Responsavel pela comunicacao interna e externa',
-    type: 'GROUP',
-    structureId: 'struct-1',
-    structure: { id: 'struct-1', name: 'Sede Nacional' },
-    status: 'ACTIVE',
-    maxMembers: 15,
-    membersCount: 12,
-    createdAt: '2024-01-15T10:00:00Z',
-    updatedAt: '2024-01-15T10:00:00Z',
-  },
-  {
-    id: '2',
-    tenantId: 'demo-tenant',
-    name: 'Grupo de Formacao',
-    description: 'Formacao e capacitacao de membros',
-    type: 'GROUP',
-    structureId: 'struct-1',
-    structure: { id: 'struct-1', name: 'Sede Nacional' },
-    status: 'ACTIVE',
-    maxMembers: 10,
-    membersCount: 8,
-    createdAt: '2024-01-16T09:00:00Z',
-    updatedAt: '2024-01-16T09:00:00Z',
-  },
-  {
-    id: '3',
-    tenantId: 'demo-tenant',
-    name: 'Grupo de Eventos',
-    description: 'Organizacao de eventos e atividades',
-    type: 'GROUP',
-    structureId: 'struct-2',
-    structure: { id: 'struct-2', name: 'Regional Sul' },
-    status: 'INACTIVE',
-    maxMembers: 8,
-    membersCount: 3,
-    createdAt: '2024-01-17T11:00:00Z',
-    updatedAt: '2024-01-17T11:00:00Z',
-  },
-  {
-    id: '4',
-    tenantId: 'demo-tenant',
-    name: 'Nucleo de Jovens',
-    description: 'Nucleo dedicado aos membros jovens',
-    type: 'NUCLEUS',
-    structureId: 'struct-1',
-    structure: { id: 'struct-1', name: 'Sede Nacional' },
-    parentId: '1',
-    status: 'ACTIVE',
-    maxMembers: 20,
-    membersCount: 15,
-    createdAt: '2024-01-18T14:00:00Z',
-    updatedAt: '2024-01-18T14:00:00Z',
-  },
-  {
-    id: '5',
-    tenantId: 'demo-tenant',
-    name: 'Nucleo de Mulheres',
-    description: 'Nucleo dedicado as mulheres',
-    type: 'NUCLEUS',
-    structureId: 'struct-1',
-    structure: { id: 'struct-1', name: 'Sede Nacional' },
-    parentId: '1',
-    status: 'ACTIVE',
-    maxMembers: 25,
-    membersCount: 18,
-    createdAt: '2024-01-19T10:00:00Z',
-    updatedAt: '2024-01-19T10:00:00Z',
-  },
-  {
-    id: '6',
-    tenantId: 'demo-tenant',
-    name: 'Nucleo Universitario',
-    description: 'Nucleo para estudantes universitarios',
-    type: 'NUCLEUS',
-    structureId: 'struct-2',
-    structure: { id: 'struct-2', name: 'Regional Sul' },
-    parentId: '2',
-    status: 'SUSPENDED',
-    maxMembers: 30,
-    membersCount: 5,
-    createdAt: '2024-01-20T09:00:00Z',
-    updatedAt: '2024-01-20T09:00:00Z',
-  },
-];

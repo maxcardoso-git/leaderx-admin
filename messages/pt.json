@@ -385,6 +385,8 @@
   "workingUnits": {
     "title": "Unidades de Trabalho",
     "subtitle": "Gerencie grupos e nucleos da sua organizacao",
+    "code": "Codigo",
+    "codePlaceholder": "Ex: GRP_COMUNICACAO",
     "groups": "Grupos",
     "nuclei": "Nucleos",
     "allUnits": "Todas as Unidades",
@@ -500,6 +502,8 @@
       "newPosition": "Novo Cargo",
       "editPosition": "Editar Cargo",
       "deletePosition": "Excluir Cargo",
+      "code": "Código",
+      "codePlaceholder": "Ex: DIR_REGIONAL",
       "name": "Nome do Cargo",
       "namePlaceholder": "Ex: Diretor Regional",
       "hierarchyGroup": "Grupo Hierarquico",

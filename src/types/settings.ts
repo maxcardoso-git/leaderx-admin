@@ -88,6 +88,7 @@ export interface UpdateLineDto {
 export interface Position {
   id: string;
   tenantId: string;
+  code: string;
   name: string;
   hierarchyGroup: string;
   description?: string;
@@ -96,6 +97,7 @@ export interface Position {
 }
 
 export interface CreatePositionDto {
+  code: string;
   name: string;
   hierarchyGroup: string;
   description?: string;

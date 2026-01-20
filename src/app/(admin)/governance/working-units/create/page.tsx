@@ -26,6 +26,7 @@ export default function CreateWorkingUnitPage() {
   const [structures, setStructures] = useState<Structure[]>([]);
 
   const [formData, setFormData] = useState<CreateWorkingUnitDto>({
+    code: '',
     name: '',
     description: '',
     type: typeParam || 'GROUP',
@@ -59,7 +60,7 @@ export default function CreateWorkingUnitPage() {
     setError(null);
     setSuccess(null);
 
-    if (!formData.name || !formData.structureId) {
+    if (!formData.code || !formData.name || !formData.structureId) {
       setError(tValidation('fillRequiredFields'));
       return;
     }
@@ -109,6 +110,15 @@ export default function CreateWorkingUnitPage() {
         <Card>
           <CardHeader title={t('unitInfo')} subtitle={t('unitInfoSub')} />
           <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Input
+                label={t('code')}
+                placeholder={t('codePlaceholder')}
+                value={formData.code}
+                onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                required
+              />
+            </div>
             <div className="col-span-2">
               <Input
                 label={t('unitName')}

@@ -352,6 +352,8 @@
   "workingUnits": {
     "title": "Unidades de Trabajo",
     "subtitle": "Gestiona grupos y nucleos de tu organizacion",
+    "code": "Codigo",
+    "codePlaceholder": "Ej: GRP_COMUNICACION",
     "groups": "Grupos",
     "nuclei": "Nucleos",
     "allUnits": "Todas las Unidades",

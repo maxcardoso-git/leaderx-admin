@@ -71,8 +71,8 @@ export default function WorkingUnitDetailPage() {
       setMembers(membersData.items);
     } catch (error) {
       console.error('Failed to load working unit:', error);
-      setUnit(mockUnit);
-      setMembers(mockMembers);
+      setUnit(null);
+      setMembers([]);
     } finally {
       setIsLoading(false);
     }
@@ -84,7 +84,7 @@ export default function WorkingUnitDetailPage() {
       setUsers(usersData);
     } catch (error) {
       console.error('Failed to load users:', error);
-      setUsers(mockUsers);
+      setUsers([]);
     }
   };
 
@@ -432,55 +432,3 @@ function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
     </div>
   );
 }
-
-// Mock data
-const mockUnit: WorkingUnit = {
-  id: '1',
-  tenantId: 'demo-tenant',
-  name: 'Grupo de Comunicacao',
-  description: 'Responsavel pela comunicacao interna e externa',
-  type: 'GROUP',
-  structureId: 'struct-1',
-  structure: { id: 'struct-1', name: 'Sede Nacional' },
-  status: 'ACTIVE',
-  maxMembers: 15,
-  membersCount: 3,
-  createdAt: '2024-01-15T10:00:00Z',
-  updatedAt: '2024-01-15T10:00:00Z',
-};
-
-const mockMembers: WorkingUnitMembership[] = [
-  {
-    id: 'm1',
-    workingUnitId: '1',
-    userId: 'u1',
-    user: { id: 'u1', fullName: 'Maria Silva', email: 'maria.silva@leaderx.com' },
-    role: 'COORDINATOR',
-    status: 'ACTIVE',
-    joinedAt: '2024-01-16T10:00:00Z',
-  },
-  {
-    id: 'm2',
-    workingUnitId: '1',
-    userId: 'u2',
-    user: { id: 'u2', fullName: 'Joao Santos', email: 'joao.santos@leaderx.com' },
-    role: 'SECRETARY',
-    status: 'ACTIVE',
-    joinedAt: '2024-01-17T10:00:00Z',
-  },
-  {
-    id: 'm3',
-    workingUnitId: '1',
-    userId: 'u3',
-    user: { id: 'u3', fullName: 'Ana Costa', email: 'ana.costa@leaderx.com' },
-    role: 'MEMBER',
-    status: 'PENDING',
-    joinedAt: '2024-01-18T10:00:00Z',
-  },
-];
-
-const mockUsers: User[] = [
-  { id: 'u4', tenantId: 'demo', email: 'pedro.lima@leaderx.com', fullName: 'Pedro Lima', status: 'ACTIVE', createdAt: '', updatedAt: '' },
-  { id: 'u5', tenantId: 'demo', email: 'julia.costa@leaderx.com', fullName: 'Julia Costa', status: 'ACTIVE', createdAt: '', updatedAt: '' },
-  { id: 'u6', tenantId: 'demo', email: 'carlos.santos@leaderx.com', fullName: 'Carlos Santos', status: 'ACTIVE', createdAt: '', updatedAt: '' },
-];

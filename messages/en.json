@@ -353,6 +353,8 @@
   "workingUnits": {
     "title": "Working Units",
     "subtitle": "Manage groups and nuclei in your organization",
+    "code": "Code",
+    "codePlaceholder": "E.g., GRP_COMMUNICATION",
     "groups": "Groups",
     "nuclei": "Nuclei",
     "allUnits": "All Units",

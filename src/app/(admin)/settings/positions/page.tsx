@@ -30,6 +30,7 @@ export default function PositionsPage() {
   const [filterGroup, setFilterGroup] = useState<string>('');
 
   const [formData, setFormData] = useState<CreatePositionDto>({
+    code: '',
     name: '',
     hierarchyGroup: '',
     description: '',
@@ -46,7 +47,7 @@ export default function PositionsPage() {
       setPositions(data.items);
     } catch (error) {
       console.error('Failed to load positions:', error);
-      setPositions(mockPositions);
+      setPositions([]);
     } finally {
       setIsLoading(false);
     }
@@ -76,13 +77,14 @@ export default function PositionsPage() {
 
   const openCreateModal = () => {
     setEditingPosition(null);
-    setFormData({ name: '', hierarchyGroup: '', description: '' });
+    setFormData({ code: '', name: '', hierarchyGroup: '', description: '' });
     setShowModal(true);
   };
 
   const openEditModal = (position: Position) => {
     setEditingPosition(position);
     setFormData({
+      code: position.code,
       name: position.name,
       hierarchyGroup: position.hierarchyGroup,
       description: position.description || '',
@@ -91,7 +93,7 @@ export default function PositionsPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim() || !formData.hierarchyGroup) return;
+    if (!formData.code.trim() || !formData.name.trim() || !formData.hierarchyGroup) return;
 
     setIsSaving(true);
     try {
@@ -243,6 +245,14 @@ export default function PositionsPage() {
       >
         <div className="space-y-4">
           <Input
+            label={t('code')}
+            placeholder={t('codePlaceholder')}
+            value={formData.code}
+            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+            required
+            disabled={!!editingPosition}
+          />
+          <Input
             label={t('name')}
             placeholder={t('namePlaceholder')}
             value={formData.name}
@@ -299,61 +309,3 @@ export default function PositionsPage() {
     </div>
   );
 }
-
-// Mock data
-const mockPositions: Position[] = [
-  {
-    id: '1',
-    tenantId: 'demo',
-    name: 'Presidente',
-    hierarchyGroup: 'DIRETORIA',
-    description: 'Responsável pela liderança geral do clube',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '2',
-    tenantId: 'demo',
-    name: 'Vice-Presidente',
-    hierarchyGroup: 'DIRETORIA',
-    description: 'Substituto do presidente em suas ausências',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '3',
-    tenantId: 'demo',
-    name: 'Diretor Financeiro',
-    hierarchyGroup: 'DIRETORIA',
-    description: 'Responsável pelas finanças do clube',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '4',
-    tenantId: 'demo',
-    name: 'Coordenador de Eventos',
-    hierarchyGroup: 'COORDENACAO',
-    description: 'Coordena a organização de eventos',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '5',
-    tenantId: 'demo',
-    name: 'Coordenador de Marketing',
-    hierarchyGroup: 'COORDENACAO',
-    description: 'Responsável pelo marketing e comunicação',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '6',
-    tenantId: 'demo',
-    name: 'Conselheiro',
-    hierarchyGroup: 'CONSELHO',
-    description: 'Membro do conselho consultivo',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];

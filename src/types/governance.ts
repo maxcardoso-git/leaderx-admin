@@ -7,6 +7,7 @@ export type MembershipStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING';
 export interface WorkingUnit {
   id: string;
   tenantId: string;
+  code: string;
   name: string;
   description?: string;
   type: WorkingUnitType;
@@ -26,6 +27,7 @@ export interface WorkingUnit {
 }
 
 export interface CreateWorkingUnitDto {
+  code: string;
   name: string;
   description?: string;
   type: WorkingUnitType;

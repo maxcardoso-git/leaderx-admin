@@ -352,6 +352,8 @@
   "workingUnits": {
     "title": "Unita di Lavoro",
     "subtitle": "Gestisci gruppi e nuclei della tua organizzazione",
+    "code": "Codice",
+    "codePlaceholder": "Es: GRP_COMUNICAZIONE",
     "groups": "Gruppi",
     "nuclei": "Nuclei",
     "allUnits": "Tutte le Unita",

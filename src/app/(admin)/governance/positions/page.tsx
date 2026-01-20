@@ -34,6 +34,7 @@ export default function PositionsPage() {
   const [filterGroup, setFilterGroup] = useState<string>('');
 
   const [formData, setFormData] = useState<CreatePositionDto>({
+    code: '',
     name: '',
     hierarchyGroup: '',
     description: '',
@@ -47,10 +48,10 @@ export default function PositionsPage() {
     setIsLoading(true);
     try {
       const data = await positionsService.list();
-      setPositions(data.items.length > 0 ? data.items : mockPositions);
+      setPositions(data.items);
     } catch (error) {
       console.error('Failed to load positions:', error);
-      setPositions(mockPositions);
+      setPositions([]);
     } finally {
       setIsLoading(false);
     }
@@ -79,13 +80,14 @@ export default function PositionsPage() {
 
   const openCreateModal = () => {
     setEditingPosition(null);
-    setFormData({ name: '', hierarchyGroup: '', description: '' });
+    setFormData({ code: '', name: '', hierarchyGroup: '', description: '' });
     setShowModal(true);
   };
 
   const openEditModal = (position: Position) => {
     setEditingPosition(position);
     setFormData({
+      code: position.code,
       name: position.name,
       hierarchyGroup: position.hierarchyGroup,
       description: position.description || '',
@@ -94,7 +96,7 @@ export default function PositionsPage() {
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim() || !formData.hierarchyGroup) return;
+    if (!formData.code.trim() || !formData.name.trim() || !formData.hierarchyGroup) return;
 
     setIsSaving(true);
     try {
@@ -120,6 +122,7 @@ export default function PositionsPage() {
         const newPosition: Position = {
           id: `pos-${Date.now()}`,
           tenantId: 'demo',
+          code: formData.code,
           name: formData.name,
           hierarchyGroup: formData.hierarchyGroup,
           description: formData.description,
@@ -275,6 +278,14 @@ export default function PositionsPage() {
       >
         <div className="space-y-4">
           <Input
+            label={t('code')}
+            placeholder={t('codePlaceholder')}
+            value={formData.code}
+            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+            required
+            disabled={!!editingPosition}
+          />
+          <Input
             label={t('name')}
             placeholder={t('namePlaceholder')}
             value={formData.name}
@@ -331,100 +342,3 @@ export default function PositionsPage() {
     </div>
   );
 }
-
-// Mock data matching the user's requirements
-const mockPositions: Position[] = [
-  // C-Level Executivo (8 cargos)
-  { id: 'pos-1', tenantId: 'demo', name: 'CEO (Chief Executive Officer)', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-2', tenantId: 'demo', name: 'Country Director', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-3', tenantId: 'demo', name: 'Country President', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-4', tenantId: 'demo', name: 'Empresário', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-5', tenantId: 'demo', name: 'General Director', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-6', tenantId: 'demo', name: 'Managing Director', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-7', tenantId: 'demo', name: 'Presidente', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-8', tenantId: 'demo', name: 'Sócio Fundador', hierarchyGroup: 'C_LEVEL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // C-Suite Officers (14 cargos)
-  { id: 'pos-9', tenantId: 'demo', name: 'CCO (Chief Commercial Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-10', tenantId: 'demo', name: 'CDO (Chief Data Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-11', tenantId: 'demo', name: 'CFO (Chief Financial Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-12', tenantId: 'demo', name: 'CHRO (Chief Human Resources Off...', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-13', tenantId: 'demo', name: 'CIO (Chief Information Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-14', tenantId: 'demo', name: 'CISO (Chief Information Security O...', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-15', tenantId: 'demo', name: 'CLO (Chief Legal Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-16', tenantId: 'demo', name: 'CMO (Chief Marketing Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-17', tenantId: 'demo', name: 'COO (Chief Operating Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-18', tenantId: 'demo', name: 'CPO (Chief Product Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-19', tenantId: 'demo', name: 'CRO (Chief Revenue Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-20', tenantId: 'demo', name: 'CSO (Chief Strategy Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-21', tenantId: 'demo', name: 'CTO (Chief Technology Officer)', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-22', tenantId: 'demo', name: 'CVO - Chief Visionary Officer', hierarchyGroup: 'C_SUITE', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Vice-Presidência (7 cargos)
-  { id: 'pos-23', tenantId: 'demo', name: 'Vice-Presidente Comercial', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-24', tenantId: 'demo', name: 'Vice-Presidente de Marketing', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-25', tenantId: 'demo', name: 'Vice-Presidente de Operações', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-26', tenantId: 'demo', name: 'Vice-Presidente de RH', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-27', tenantId: 'demo', name: 'Vice-Presidente de Tecnologia', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-28', tenantId: 'demo', name: 'Vice-Presidente Executivo', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-29', tenantId: 'demo', name: 'Vice-Presidente Financeiro', hierarchyGroup: 'VICE_PRESIDENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Diretoria (13 cargos)
-  { id: 'pos-30', tenantId: 'demo', name: 'Diretor Comercial', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-31', tenantId: 'demo', name: 'Diretor de Inovação', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-32', tenantId: 'demo', name: 'Diretor de Marketing', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-33', tenantId: 'demo', name: 'Diretor de Operações', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-34', tenantId: 'demo', name: 'Diretor de Produtos', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-35', tenantId: 'demo', name: 'Diretor de RH', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-36', tenantId: 'demo', name: 'Diretor de Supply Chain', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-37', tenantId: 'demo', name: 'Diretor de Tecnologia', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-38', tenantId: 'demo', name: 'Diretor de Vendas', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-39', tenantId: 'demo', name: 'Diretor Executivo', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-40', tenantId: 'demo', name: 'Diretor Financeiro', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-41', tenantId: 'demo', name: 'Diretor Geral', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-42', tenantId: 'demo', name: 'Diretor Jurídico', hierarchyGroup: 'DIRETORIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Gerência (12 cargos)
-  { id: 'pos-43', tenantId: 'demo', name: 'Gerente', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-44', tenantId: 'demo', name: 'Gerente Comercial', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-45', tenantId: 'demo', name: 'Gerente de Marketing', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-46', tenantId: 'demo', name: 'Gerente de Operações', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-47', tenantId: 'demo', name: 'Gerente de Produto', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-48', tenantId: 'demo', name: 'Gerente de Projetos', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-49', tenantId: 'demo', name: 'Gerente de RH', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-50', tenantId: 'demo', name: 'Gerente de TI', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-51', tenantId: 'demo', name: 'Gerente de Vendas', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-52', tenantId: 'demo', name: 'Gerente Financeiro', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-53', tenantId: 'demo', name: 'Gerente Geral', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-54', tenantId: 'demo', name: 'Gerente Sênior', hierarchyGroup: 'GERENCIA', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Coordenação (8 cargos)
-  { id: 'pos-55', tenantId: 'demo', name: 'Coordenador', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-56', tenantId: 'demo', name: 'Coordenador Administrativo', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-57', tenantId: 'demo', name: 'Coordenador de Marketing', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-58', tenantId: 'demo', name: 'Coordenador de Projetos', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-59', tenantId: 'demo', name: 'Coordenador de RH', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-60', tenantId: 'demo', name: 'Coordenador de TI', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-61', tenantId: 'demo', name: 'Coordenador de Vendas', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-62', tenantId: 'demo', name: 'Coordenador Financeiro', hierarchyGroup: 'COORDENACAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Supervisão (6 cargos)
-  { id: 'pos-63', tenantId: 'demo', name: 'Supervisor', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-64', tenantId: 'demo', name: 'Supervisor Administrativo', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-65', tenantId: 'demo', name: 'Supervisor de Operações', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-66', tenantId: 'demo', name: 'Supervisor de Produção', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-67', tenantId: 'demo', name: 'Supervisor de Qualidade', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-68', tenantId: 'demo', name: 'Supervisor de Vendas', hierarchyGroup: 'SUPERVISAO', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-
-  // Operacional (10 cargos)
-  { id: 'pos-69', tenantId: 'demo', name: 'Analista', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-70', tenantId: 'demo', name: 'Analista Júnior', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-71', tenantId: 'demo', name: 'Analista Pleno', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-72', tenantId: 'demo', name: 'Analista Sênior', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-73', tenantId: 'demo', name: 'Assistente', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-74', tenantId: 'demo', name: 'Auxiliar', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-75', tenantId: 'demo', name: 'Consultor', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-76', tenantId: 'demo', name: 'Especialista', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-77', tenantId: 'demo', name: 'Estagiário', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-  { id: 'pos-78', tenantId: 'demo', name: 'Trainee', hierarchyGroup: 'OPERACIONAL', createdAt: '2024-01-01T00:00:00Z', updatedAt: '2024-01-01T00:00:00Z' },
-];
