@@ -141,7 +141,12 @@
     "edit": "Modifica",
     "editUser": "Modifica Utente",
     "emailCannotBeChanged": "L'email non puo essere modificata",
-    "failedToLoadUser": "Impossibile caricare l'utente"
+    "failedToLoadUser": "Impossibile caricare l'utente",
+    "failedToDeleteUser": "Impossibile eliminare l'utente",
+    "failedToChangeStatus": "Impossibile cambiare lo stato dell'utente",
+    "failedToUpdateRoles": "Impossibile aggiornare i ruoli dell'utente",
+    "userSuspended": "Utente sospeso con successo!",
+    "userActivated": "Utente attivato con successo!"
   },
   "validation": {
     "required": "Questo campo e obbligatorio",

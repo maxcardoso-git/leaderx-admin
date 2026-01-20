@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Button, Input, Select, Card, CardHeader, Checkbox } from '@/components/ui';
+import { Button, Input, Select, Card, CardHeader, Checkbox, useToast } from '@/components/ui';
 import { usersService, rolesService } from '@/services/identity.service';
 import { User, UpdateUserDto, Role, UserStatus } from '@/types/identity';
 
@@ -17,6 +17,7 @@ export default function EditUserPage() {
   const tCommon = useTranslations('common');
   const tValidation = useTranslations('validation');
   const tRoles = useTranslations('roles');
+  const { showToast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
@@ -117,6 +118,7 @@ export default function EditUserPage() {
       }
     } catch (error) {
       console.error('Failed to toggle role:', error);
+      showToast('error', t('failedToUpdateRoles'));
     }
   };
 

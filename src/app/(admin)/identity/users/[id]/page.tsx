@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Button, Modal } from '@/components/ui';
+import { Button, Modal, useToast } from '@/components/ui';
 import { EditIcon, TrashIcon, ShieldIcon, ChevronLeftIcon } from '@/components/icons';
 import { User, UserStatus, Role } from '@/types/identity';
 import { usersService } from '@/services/identity.service';
@@ -17,6 +17,7 @@ export default function UserDetailPage() {
   const roles_t = useTranslations('roles');
   const userId = params.id as string;
 
+  const { showToast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,9 +60,11 @@ export default function UserDetailPage() {
     setIsDeleting(true);
     try {
       await usersService.delete(userId);
+      showToast('success', t('userDeleted'));
       router.push('/identity/users');
     } catch (error) {
       console.error('Failed to delete user:', error);
+      showToast('error', t('failedToDeleteUser'));
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);
@@ -72,12 +75,15 @@ export default function UserDetailPage() {
     try {
       if (action === 'suspend') {
         await usersService.suspend(userId);
+        showToast('success', t('userSuspended'));
       } else {
         await usersService.activate(userId);
+        showToast('success', t('userActivated'));
       }
       loadUser();
     } catch (error) {
       console.error('Failed to change user status:', error);
+      showToast('error', t('failedToChangeStatus'));
     }
   };
 

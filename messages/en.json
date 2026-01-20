@@ -141,7 +141,12 @@
     "edit": "Edit",
     "editUser": "Edit User",
     "emailCannotBeChanged": "Email cannot be changed",
-    "failedToLoadUser": "Failed to load user"
+    "failedToLoadUser": "Failed to load user",
+    "failedToDeleteUser": "Failed to delete user",
+    "failedToChangeStatus": "Failed to change user status",
+    "failedToUpdateRoles": "Failed to update user roles",
+    "userSuspended": "User suspended successfully!",
+    "userActivated": "User activated successfully!"
   },
   "validation": {
     "required": "This field is required",
