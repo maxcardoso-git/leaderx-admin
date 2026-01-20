@@ -87,6 +87,7 @@ export interface Structure {
 
 export interface CreateStructureDto {
   name: string;
+  code?: string;
   description?: string;
   typeId: string;
   parentId?: string;

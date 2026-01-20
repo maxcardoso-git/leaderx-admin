@@ -363,7 +363,7 @@ export default function StructuresPage() {
     try {
       await structuresService.create({
         ...formData,
-        metadata: { code: formData.name.toUpperCase().replace(/\s+/g, '_') },
+        code: formData.name.toUpperCase().replace(/\s+/g, '_'),
       });
       loadData();
       setShowCreateModal(false);
