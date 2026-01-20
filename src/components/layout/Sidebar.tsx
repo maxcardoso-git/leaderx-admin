@@ -24,6 +24,14 @@ import {
   RefreshIcon,
   TruckIcon,
   BoxIcon,
+  CalendarIcon,
+  RocketIcon,
+  BarChartIcon,
+  MailIcon,
+  TrophyIcon,
+  CheckSquareIcon,
+  BellIcon,
+  ChartLineIcon,
 } from '../icons';
 import { useSidebar } from './SidebarContext';
 
@@ -44,25 +52,26 @@ const navigationConfig: NavItem[] = [
     key: 'dashboard',
     href: '/dashboard',
     icon: <DashboardIcon size={18} />,
-    badge: 1,
   },
   {
     key: 'identity',
     icon: <UsersIcon size={18} />,
-    badge: 2,
+    badge: 4,
     children: [
       { key: 'users', href: '/identity/users', icon: <UsersIcon size={16} /> },
       { key: 'roles', href: '/identity/roles', icon: <ShieldIcon size={16} /> },
+      { key: 'sessions', href: '/identity/sessions', icon: <AuditIcon size={16} /> },
     ],
   },
   {
     key: 'network',
     icon: <NetworkIcon size={18} />,
-    badge: 3,
+    badge: 4,
     children: [
       { key: 'overview', href: '/network', icon: <NetworkIcon size={16} /> },
-      { key: 'hierarchy', href: '/network/hierarchy', icon: <NetworkIcon size={16} /> },
-      { key: 'nodes', href: '/network/nodes', icon: <NetworkIcon size={16} /> },
+      { key: 'structures', href: '/network/structures', icon: <LayersIcon size={16} /> },
+      { key: 'structureTypes', href: '/network/structure-types', icon: <CubeIcon size={16} /> },
+      { key: 'approvalChains', href: '/network/approval-chains', icon: <CheckSquareIcon size={16} /> },
     ],
   },
   {
@@ -71,36 +80,48 @@ const navigationConfig: NavItem[] = [
     badge: 3,
     children: [
       { key: 'workingUnits', href: '/governance/working-units', icon: <GroupIcon size={16} /> },
-      { key: 'policies', href: '/governance/policies', icon: <GovernanceIcon size={16} /> },
-      { key: 'rules', href: '/governance/rules', icon: <GovernanceIcon size={16} /> },
+      { key: 'positions', href: '/governance/positions', icon: <BriefcaseIcon size={16} /> },
+      { key: 'hierarchyGroups', href: '/governance/hierarchy-groups', icon: <LayersIcon size={16} /> },
     ],
   },
   {
-    key: 'audit',
-    icon: <AuditIcon size={18} />,
-    badge: 2,
+    key: 'execution',
+    icon: <RocketIcon size={18} />,
+    badge: 5,
     children: [
-      { key: 'compliance', href: '/audit/compliance', icon: <AuditIcon size={16} /> },
-      { key: 'reports', href: '/audit/reports', icon: <AuditIcon size={16} /> },
+      { key: 'events', href: '/execution/events', icon: <CalendarIcon size={16} /> },
+      { key: 'agenda', href: '/execution/agenda', icon: <CalendarIcon size={16} /> },
+      { key: 'invitations', href: '/execution/invitations', icon: <MailIcon size={16} /> },
+      { key: 'gamification', href: '/execution/gamification', icon: <TrophyIcon size={16} /> },
+      { key: 'approvals', href: '/execution/approvals', icon: <CheckSquareIcon size={16} /> },
     ],
   },
   {
     key: 'systemSettings',
-    icon: <BoxIcon size={18} />,
-    badge: 6,
+    icon: <SettingsIcon size={18} />,
+    badge: 5,
     children: [
       { key: 'categories', href: '/settings/categories', icon: <TagIcon size={16} /> },
       { key: 'segments', href: '/settings/segments', icon: <CubeIcon size={16} /> },
-      { key: 'positions', href: '/settings/positions', icon: <BriefcaseIcon size={16} /> },
       { key: 'lines', href: '/settings/lines', icon: <LayersIcon size={16} /> },
       { key: 'cycles', href: '/settings/cycles', icon: <RefreshIcon size={16} /> },
       { key: 'suppliers', href: '/settings/suppliers', icon: <TruckIcon size={16} /> },
     ],
   },
   {
-    key: 'settings',
-    href: '/settings/appearance',
-    icon: <SettingsIcon size={18} />,
+    key: 'reports',
+    icon: <BarChartIcon size={18} />,
+    badge: 3,
+    children: [
+      { key: 'engagement', href: '/reports/engagement', icon: <ChartLineIcon size={16} /> },
+      { key: 'networkGrowth', href: '/reports/network-growth', icon: <BarChartIcon size={16} /> },
+      { key: 'eventPerformance', href: '/reports/event-performance', icon: <CalendarIcon size={16} /> },
+    ],
+  },
+  {
+    key: 'notifications',
+    href: '/notifications',
+    icon: <BellIcon size={18} />,
   },
 ];
 

@@ -84,10 +84,10 @@ export default function UserDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-8">
-        <div className="h-8 w-48 bg-white/[0.05] rounded-lg animate-pulse" />
+        <div className="h-8 w-48 bg-[var(--color-background-hover)] rounded-lg animate-pulse" />
         <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
-          <div className="h-96 bg-white/[0.02] rounded-2xl animate-pulse" />
+          <div className="col-span-2 h-96 bg-[var(--color-background-card)] rounded-2xl animate-pulse border border-[var(--color-border)]" />
+          <div className="h-96 bg-[var(--color-background-card)] rounded-2xl animate-pulse border border-[var(--color-border)]" />
         </div>
       </div>
     );
@@ -96,7 +96,7 @@ export default function UserDetailPage() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-white/40 mb-4">{t('noUsersFound')}</p>
+        <p className="text-[var(--color-text-muted)] mb-4">{t('noUsersFound')}</p>
         <Link href="/identity/users">
           <Button variant="ghost">{common('back')}</Button>
         </Link>
@@ -151,8 +151,8 @@ export default function UserDetailPage() {
         {/* Main Info */}
         <div className="xl:col-span-2 space-y-6">
           {/* Details Card */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-white/[0.05]">
+          <div className="bg-card overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)]">
               <h2 className="text-lg font-medium text-white">{t('basicInfo')}</h2>
             </div>
             <div className="p-6">
@@ -167,8 +167,8 @@ export default function UserDetailPage() {
           </div>
 
           {/* Roles Card */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-white/[0.05] flex items-center justify-between">
+          <div className="bg-card overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)] flex items-center justify-between">
               <h2 className="text-lg font-medium text-white">{t('assignedRoles')}</h2>
               <Link href={`/identity/users/${userId}/edit`}>
                 <button className="text-sm text-gold hover:text-gold/80 transition-colors">
@@ -182,7 +182,7 @@ export default function UserDetailPage() {
                   {roles.map((role) => (
                     <div
                       key={role.id}
-                      className="flex items-center justify-between p-4 bg-white/[0.02] rounded-xl border border-white/[0.03]"
+                      className="flex items-center justify-between p-4 bg-[var(--color-background-hover)] rounded-xl border border-[var(--color-border)]"
                     >
                       <div className="flex items-center gap-4">
                         <div className="p-2.5 bg-gold/10 rounded-xl text-gold">
@@ -191,12 +191,12 @@ export default function UserDetailPage() {
                         <div>
                           <p className="text-sm font-medium text-white">{role.name}</p>
                           {role.description && (
-                            <p className="text-xs text-white/40 mt-0.5">{role.description}</p>
+                            <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{role.description}</p>
                           )}
                         </div>
                       </div>
                       {role.isSystem && (
-                        <span className="text-xs text-white/30 bg-white/[0.05] px-2.5 py-1 rounded-lg">
+                        <span className="text-xs text-[var(--color-text-muted)] bg-[var(--color-background-alt)] px-2.5 py-1 rounded-lg border border-[var(--color-border)]">
                           {roles_t('systemRole')}
                         </span>
                       )}
@@ -204,7 +204,7 @@ export default function UserDetailPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-white/40 text-center py-8">
+                <p className="text-sm text-[var(--color-text-muted)] text-center py-8">
                   {t('noRolesAssigned')}
                 </p>
               )}
@@ -215,13 +215,13 @@ export default function UserDetailPage() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Status Card */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-white/[0.05]">
+          <div className="bg-card overflow-hidden">
+            <div className="p-6 border-b border-[var(--color-border)]">
               <h2 className="text-lg font-medium text-white">{t('status')}</h2>
             </div>
             <div className="p-6 space-y-5">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-white/40">{t('currentStatus')}</span>
+                <span className="text-sm text-[var(--color-text-secondary)]">{t('currentStatus')}</span>
                 <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${statusInfo.color}`}>
                   {statusInfo.label}
                 </span>
@@ -230,7 +230,7 @@ export default function UserDetailPage() {
                 {user.status === 'ACTIVE' ? (
                   <button
                     onClick={() => handleStatusChange('suspend')}
-                    className="w-full py-3 rounded-xl bg-white/[0.03] border border-white/[0.05] text-sm text-white/70 hover:bg-white/[0.05] hover:text-white transition-all"
+                    className="w-full py-3 rounded-xl bg-[var(--color-background-alt)] border border-[var(--color-border)] text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-background-hover)] hover:text-white transition-all"
                   >
                     {t('suspendUser')}
                   </button>
@@ -277,8 +277,8 @@ export default function UserDetailPage() {
 function InfoItem({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs text-white/30 mb-1">{label}</p>
-      <p className="text-sm text-white/80">{value}</p>
+      <p className="text-xs text-[var(--color-text-muted)] mb-1">{label}</p>
+      <p className="text-sm text-[var(--color-text-secondary)]">{value}</p>
     </div>
   );
 }

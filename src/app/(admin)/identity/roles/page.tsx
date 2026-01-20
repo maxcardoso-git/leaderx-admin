@@ -150,8 +150,16 @@ export default function RolesPage() {
     if (!selectedRole) return;
     setSaving(true);
     try {
-      await rolesService.updatePermissions(selectedRole.id, editedPermissions);
+      // Convert permission IDs to permission codes
       const permsArray = Array.isArray(permissions) ? permissions : [];
+      const permissionsToSave = editedPermissions
+        .map((id) => {
+          const perm = permsArray.find((p) => p.id === id);
+          return perm ? { permissionCode: perm.code, effect: 'ALLOW' as const } : null;
+        })
+        .filter((p): p is { permissionCode: string; effect: 'ALLOW' } => p !== null);
+
+      await rolesService.updatePermissions(selectedRole.id, permissionsToSave);
       const updatedPermissions = permsArray.filter((p) => editedPermissions.includes(p.id));
       const updatedRole = { ...selectedRole, permissions: updatedPermissions };
       const rolesArray = Array.isArray(roles) ? roles : [];

@@ -113,8 +113,11 @@ export const rolesService = {
     return api.put<Role>(`/identity/roles/${roleId}`, data);
   },
 
-  async updatePermissions(roleId: string, permissionIds: string[]): Promise<void> {
-    return api.put(`/identity/roles/${roleId}/permissions`, { permissionIds });
+  async updatePermissions(
+    roleId: string,
+    permissions: Array<{ permissionCode: string; effect?: 'ALLOW' | 'DENY' }>,
+  ): Promise<void> {
+    return api.put(`/identity/roles/${roleId}/permissions`, { permissions });
   },
 
   async delete(roleId: string): Promise<void> {
