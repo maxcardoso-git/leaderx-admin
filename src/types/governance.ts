@@ -40,6 +40,7 @@ export interface UpdateWorkingUnitDto {
   description?: string;
   status?: WorkingUnitStatus;
   maxMembers?: number;
+  structureId?: string;
   metadata?: Record<string, unknown>;
 }
 

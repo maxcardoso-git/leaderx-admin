@@ -1,73 +1,56 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Button, Input, Select, Card, CardHeader, useToast } from '@/components/ui';
+import { Button, Input, Select, Card, CardHeader } from '@/components/ui';
 import { workingUnitsService } from '@/services/governance.service';
 import { structuresService } from '@/services/network.service';
-import { WorkingUnit, UpdateWorkingUnitDto, WorkingUnitStatus } from '@/types/governance';
+import { CreateWorkingUnitDto, WorkingUnitType } from '@/types/governance';
 import { Structure } from '@/types/network';
 
-export default function EditWorkingUnitPage() {
-  const params = useParams();
+export default function CreateWorkingUnitPage() {
   const router = useRouter();
-  const unitId = params.id as string;
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type') as WorkingUnitType | null;
 
   const t = useTranslations('workingUnits');
   const tCommon = useTranslations('common');
   const tValidation = useTranslations('validation');
-  const { showToast } = useToast();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingUnit, setIsLoadingUnit] = useState(true);
+  const [isLoadingStructures, setIsLoadingStructures] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [originalUnit, setOriginalUnit] = useState<WorkingUnit | null>(null);
   const [structures, setStructures] = useState<Structure[]>([]);
 
-  const [formData, setFormData] = useState<UpdateWorkingUnitDto & { structureId?: string }>({
+  const [formData, setFormData] = useState<CreateWorkingUnitDto>({
     name: '',
     description: '',
-    status: 'ACTIVE',
-    maxMembers: 10,
+    type: typeParam || 'GROUP',
     structureId: '',
+    maxMembers: 10,
   });
 
-  const statusOptions = [
-    { value: 'ACTIVE', label: t('statusACTIVE') },
-    { value: 'INACTIVE', label: t('statusINACTIVE') },
-    { value: 'SUSPENDED', label: t('statusSUSPENDED') },
+  const typeOptions = [
+    { value: 'GROUP', label: t('typeGROUP') },
+    { value: 'NUCLEUS', label: t('typeNUCLEUS') },
   ];
 
   useEffect(() => {
-    loadData();
-  }, [unitId]);
+    loadStructures();
+  }, []);
 
-  const loadData = async () => {
-    setIsLoadingUnit(true);
-    setError(null);
+  const loadStructures = async () => {
+    setIsLoadingStructures(true);
     try {
-      const [unitData, structuresData] = await Promise.all([
-        workingUnitsService.getById(unitId),
-        structuresService.list(),
-      ]);
-      setOriginalUnit(unitData);
+      const structuresData = await structuresService.list();
       setStructures(structuresData.items || []);
-      setFormData({
-        name: unitData.name,
-        description: unitData.description || '',
-        status: unitData.status,
-        maxMembers: unitData.maxMembers,
-        structureId: unitData.structureId || '',
-      });
     } catch (err) {
-      console.error('Failed to load working unit:', err);
-      setError(t('failedToLoadUnit'));
-      setOriginalUnit(null);
+      console.error('Failed to load structures:', err);
     } finally {
-      setIsLoadingUnit(false);
+      setIsLoadingStructures(false);
     }
   };
 
@@ -76,60 +59,34 @@ export default function EditWorkingUnitPage() {
     setError(null);
     setSuccess(null);
 
-    if (!formData.name) {
+    if (!formData.name || !formData.structureId) {
       setError(tValidation('fillRequiredFields'));
       return;
     }
 
     setIsLoading(true);
     try {
-      await workingUnitsService.update(unitId, formData);
-      setSuccess(t('unitUpdated'));
+      const created = await workingUnitsService.create(formData);
+      setSuccess(t('unitCreated'));
       setTimeout(() => {
-        router.push(`/governance/working-units/${unitId}`);
+        router.push(`/governance/working-units/${created.id}`);
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update working unit');
+      setError(err instanceof Error ? err.message : 'Failed to create working unit');
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (isLoadingUnit) {
-    return (
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="h-8 w-48 bg-background-hover rounded animate-pulse" />
-        <Card>
-          <div className="h-60 animate-pulse bg-background-hover rounded" />
-        </Card>
-      </div>
-    );
-  }
-
-  if (error && !originalUnit) {
-    return (
-      <div className="max-w-3xl mx-auto space-y-6">
-        <div className="p-6 bg-error/10 border border-error/20 rounded-xl text-center">
-          <p className="text-error font-medium mb-4">{error}</p>
-          <Link href="/governance/working-units">
-            <Button variant="secondary">
-              {t('backToList')}
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-3xl mx-auto" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Header */}
       <div>
         <h1 className="font-heading text-2xl font-semibold text-text-primary">
-          {t('editUnit')} {originalUnit?.name}
+          {formData.type === 'GROUP' ? t('createGroup') : t('createNucleus')}
         </h1>
         <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>
-          {t(`type${originalUnit?.type}`)}
+          {t('subtitle')}
         </p>
       </div>
 
@@ -156,7 +113,7 @@ export default function EditWorkingUnitPage() {
               <Input
                 label={t('unitName')}
                 placeholder={t('unitNamePlaceholder')}
-                value={formData.name || ''}
+                value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
@@ -176,8 +133,17 @@ export default function EditWorkingUnitPage() {
                   { value: '', label: t('selectStructure') },
                   ...structures.map((s) => ({ value: s.id, label: s.name })),
                 ]}
-                value={formData.structureId || ''}
+                value={formData.structureId}
                 onChange={(e) => setFormData({ ...formData, structureId: e.target.value })}
+                disabled={isLoadingStructures}
+              />
+            </div>
+            <div>
+              <Select
+                label={t('typeGROUP').replace('Grupo', 'Tipo')}
+                options={typeOptions}
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value as WorkingUnitType })}
               />
             </div>
             <div>
@@ -185,16 +151,8 @@ export default function EditWorkingUnitPage() {
                 label={t('maxMembers')}
                 type="number"
                 min={1}
-                value={formData.maxMembers || 10}
+                value={formData.maxMembers}
                 onChange={(e) => setFormData({ ...formData, maxMembers: parseInt(e.target.value) || 10 })}
-              />
-            </div>
-            <div>
-              <Select
-                label={t('status')}
-                options={statusOptions}
-                value={formData.status || 'ACTIVE'}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as WorkingUnitStatus })}
               />
             </div>
           </div>
@@ -202,7 +160,7 @@ export default function EditWorkingUnitPage() {
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 pt-4">
-          <Link href={`/governance/working-units/${unitId}`}>
+          <Link href="/governance/working-units">
             <Button variant="ghost" type="button">
               {tCommon('cancel')}
             </Button>
