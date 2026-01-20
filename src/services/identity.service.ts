@@ -63,23 +63,8 @@ export const usersService = {
   },
 
   async removeRole(userId: string, roleId: string): Promise<void> {
-    // First, find the ACTIVE assignment ID for this role
-    interface RoleAssignment {
-      id: string;
-      roleId: string;
-      status: string;
-    }
-    const response = await api.get<{ assignments: RoleAssignment[] }>(
-      `/identity/users/${userId}/roles`,
-    );
-    // Only find ACTIVE assignments (not REVOKED)
-    const assignment = response?.assignments?.find(
-      (a) => a.roleId === roleId && a.status === 'ACTIVE',
-    );
-    if (!assignment) {
-      throw new Error('Role assignment not found');
-    }
-    return api.delete(`/identity/users/${userId}/roles/${assignment.id}`);
+    // Backend expects roleId, not assignmentId
+    return api.delete(`/identity/users/${userId}/roles/${roleId}`);
   },
 
   async getUserRoles(userId: string): Promise<Role[]> {
