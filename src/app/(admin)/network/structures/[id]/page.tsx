@@ -262,7 +262,7 @@ export default function StructureDetailPage() {
                               : relation.parentStructure?.name}
                           </p>
                           <p className="text-xs text-text-muted mt-0.5">
-                            {t(`relationType${relation.relationType}`)}
+                            {relation.relationType ? t(`relationType${relation.relationType}`) : '-'}
                           </p>
                         </div>
                       </div>
