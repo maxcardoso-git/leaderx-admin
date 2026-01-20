@@ -13,16 +13,17 @@ import {
   NetworkIcon,
 } from '@/components/icons';
 import { structureTypesService } from '@/services/network.service';
-import { rolesService } from '@/services/identity.service';
+import { positionsService, scopesService } from '@/services/settings.service';
 import { StructureType, StructureScope, CreateStructureTypeDto } from '@/types/network';
-import { Role } from '@/types/identity';
+import { Position, Scope } from '@/types/settings';
 
 export default function StructureTypesPage() {
   const t = useTranslations('network');
   const tCommon = useTranslations('common');
 
   const [structureTypes, setStructureTypes] = useState<StructureType[]>([]);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [scopes, setScopes] = useState<Scope[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<StructureType | null>(null);
 
@@ -42,12 +43,15 @@ export default function StructureTypesPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  const scopeOptions = [
-    { value: 'GLOBAL_ALL_COUNTRIES', label: `${t('scopeGlobal')} (${t('level')} 1)`, level: 1 },
-    { value: 'COUNTRY_GROUP', label: `${t('scopeCountryGroup')} (${t('level')} 2)`, level: 2 },
-    { value: 'CITY_GROUP', label: `${t('scopeCityGroup')} (${t('level')} 3)`, level: 3 },
-    { value: 'SINGLE_CITY', label: `${t('scopeSingleCity')} (${t('level')} 4)`, level: 4 },
-  ];
+  // Generate scope options from loaded scopes
+  const scopeOptions = scopes.length > 0
+    ? scopes.map((s) => ({ value: s.code, label: `${s.name} (${t('level')} ${s.level})`, level: s.level }))
+    : [
+        { value: 'GLOBAL_ALL_COUNTRIES', label: `${t('scopeGlobal')} (${t('level')} 1)`, level: 1 },
+        { value: 'COUNTRY_GROUP', label: `${t('scopeCountryGroup')} (${t('level')} 2)`, level: 2 },
+        { value: 'CITY_GROUP', label: `${t('scopeCityGroup')} (${t('level')} 3)`, level: 3 },
+        { value: 'SINGLE_CITY', label: `${t('scopeSingleCity')} (${t('level')} 4)`, level: 4 },
+      ];
 
   useEffect(() => {
     loadData();
@@ -56,16 +60,19 @@ export default function StructureTypesPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [typesResponse, rolesResponse] = await Promise.all([
+      const [typesResponse, positionsResponse, scopesResponse] = await Promise.all([
         structureTypesService.list(),
-        rolesService.list(),
+        positionsService.list(),
+        scopesService.list(),
       ]);
       setStructureTypes(typesResponse.items.length > 0 ? typesResponse.items : mockStructureTypes);
-      setRoles(rolesResponse.items || mockRoles);
+      setPositions(positionsResponse.items || mockPositions);
+      setScopes(scopesResponse.items || []);
     } catch (error) {
       console.error('Failed to load data:', error);
       setStructureTypes(mockStructureTypes);
-      setRoles(mockRoles);
+      setPositions(mockPositions);
+      setScopes([]);
     } finally {
       setLoading(false);
     }
@@ -106,6 +113,7 @@ export default function StructureTypesPage() {
       const updated = await structureTypesService.update(selectedType.id, {
         name: formData.name,
         description: formData.description,
+        leadershipRoleId: formData.leadershipRoleId,
         maxLeaders: formData.maxLeaders,
       });
       setStructureTypes(structureTypes.map((t) => (t.id === selectedType.id ? { ...t, ...updated } : t)));
@@ -118,7 +126,7 @@ export default function StructureTypesPage() {
       setStructureTypes(
         structureTypes.map((t) =>
           t.id === selectedType.id
-            ? { ...t, name: formData.name, description: formData.description, maxLeaders: formData.maxLeaders }
+            ? { ...t, name: formData.name, description: formData.description, leadershipRoleId: formData.leadershipRoleId, maxLeaders: formData.maxLeaders }
             : t
         )
       );
@@ -278,7 +286,7 @@ export default function StructureTypesPage() {
                     <div className="flex items-center gap-2">
                       <ShieldIcon size={14} className="text-text-muted" />
                       <span className="text-sm text-text-primary">
-                        {type.leadershipRole?.name || roles.find((r) => r.id === type.leadershipRoleId)?.name || '-'}
+                        {type.leadershipRole?.name || positions.find((p) => p.id === type.leadershipRoleId)?.name || '-'}
                       </span>
                     </div>
                   </td>
@@ -331,7 +339,7 @@ export default function StructureTypesPage() {
         <StructureTypeForm
           formData={formData}
           setFormData={setFormData}
-          roles={roles}
+          positions={positions}
           scopeOptions={scopeOptions}
           t={t}
         />
@@ -356,7 +364,7 @@ export default function StructureTypesPage() {
         <StructureTypeForm
           formData={formData}
           setFormData={setFormData}
-          roles={roles}
+          positions={positions}
           scopeOptions={scopeOptions}
           t={t}
           isEdit
@@ -392,14 +400,14 @@ export default function StructureTypesPage() {
 function StructureTypeForm({
   formData,
   setFormData,
-  roles,
+  positions,
   scopeOptions,
   t,
   isEdit = false,
 }: {
   formData: CreateStructureTypeDto;
   setFormData: (data: CreateStructureTypeDto) => void;
-  roles: Role[];
+  positions: Position[];
   scopeOptions: { value: string; label: string; level: number }[];
   t: (key: string) => string;
   isEdit?: boolean;
@@ -454,13 +462,12 @@ function StructureTypeForm({
 
       <div>
         <Select
-          label={t('leadershipRole')}
-          options={roles.map((r) => ({ value: r.id, label: r.name }))}
+          label={t('leadershipPosition')}
+          options={positions.map((p) => ({ value: p.id, label: p.name }))}
           value={formData.leadershipRoleId}
           onChange={(e) => setFormData({ ...formData, leadershipRoleId: e.target.value })}
-          disabled={isEdit}
         />
-        <p className="text-xs text-text-muted mt-1.5">{t('leadershipRoleHint')}</p>
+        <p className="text-xs text-text-muted mt-1.5">{t('leadershipPositionHint')}</p>
       </div>
 
       <div>
@@ -551,8 +558,8 @@ const mockStructureTypes: StructureType[] = [
   },
 ];
 
-const mockRoles: Role[] = [
-  { id: 'role-admin', tenantId: 'demo', name: 'Administrador', isSystem: true, permissions: [], createdAt: '', updatedAt: '' },
-  { id: 'role-manager', tenantId: 'demo', name: 'Gerente', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
-  { id: 'role-member', tenantId: 'demo', name: 'Membro', isSystem: false, permissions: [], createdAt: '', updatedAt: '' },
+const mockPositions: Position[] = [
+  { id: 'position-admin', tenantId: 'demo', name: 'Administrador', hierarchyGroup: 'LEADERSHIP', createdAt: '', updatedAt: '' },
+  { id: 'position-manager', tenantId: 'demo', name: 'Gerente', hierarchyGroup: 'LEADERSHIP', createdAt: '', updatedAt: '' },
+  { id: 'position-member', tenantId: 'demo', name: 'Membro', hierarchyGroup: 'OPERATIONAL', createdAt: '', updatedAt: '' },
 ];

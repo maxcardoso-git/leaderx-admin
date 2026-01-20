@@ -240,6 +240,34 @@ export interface UpdateSupplierDto {
 }
 
 // ============================================
+// SCOPES DOMAIN (ESCOPOS DE ESTRUTURA)
+// ============================================
+
+export interface Scope {
+  id: string;
+  tenantId: string;
+  code: string;
+  name: string;
+  description?: string;
+  level: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateScopeDto {
+  code: string;
+  name: string;
+  description?: string;
+  level: number;
+}
+
+export interface UpdateScopeDto {
+  name?: string;
+  description?: string;
+  level?: number;
+}
+
+// ============================================
 // LIST RESPONSE TYPES
 // ============================================
 

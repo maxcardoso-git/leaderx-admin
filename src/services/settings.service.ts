@@ -19,6 +19,9 @@ import {
   Supplier,
   CreateSupplierDto,
   UpdateSupplierDto,
+  Scope,
+  CreateScopeDto,
+  UpdateScopeDto,
   ListResponse,
 } from '@/types/settings';
 
@@ -253,5 +256,40 @@ export const suppliersService = {
     } catch {
       return {};
     }
+  },
+};
+
+// ============================================
+// SCOPES SERVICE (ESCOPOS DE ESTRUTURA)
+// ============================================
+
+export const scopesService = {
+  async list(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<ListResponse<Scope>> {
+    try {
+      const response = await api.get<ListResponse<Scope>>('/governance/scopes', params);
+      return response || { items: [], page: 1, size: 25, total: 0 };
+    } catch {
+      return { items: [], page: 1, size: 25, total: 0 };
+    }
+  },
+
+  async getById(id: string): Promise<Scope> {
+    return api.get<Scope>(`/governance/scopes/${id}`);
+  },
+
+  async create(data: CreateScopeDto): Promise<Scope> {
+    return api.post<Scope>('/governance/scopes', data);
+  },
+
+  async update(id: string, data: UpdateScopeDto): Promise<Scope> {
+    return api.put<Scope>(`/governance/scopes/${id}`, data);
+  },
+
+  async delete(id: string): Promise<void> {
+    return api.delete(`/governance/scopes/${id}`);
   },
 };

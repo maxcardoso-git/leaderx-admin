@@ -120,6 +120,7 @@ const navigationSections: NavSection[] = [
           { key: 'lines', href: '/settings/lines', icon: <LayersIcon size={16} /> },
           { key: 'cycles', href: '/settings/cycles', icon: <RefreshIcon size={16} /> },
           { key: 'suppliers', href: '/settings/suppliers', icon: <TruckIcon size={16} /> },
+          { key: 'scopes', href: '/settings/scopes', icon: <NetworkIcon size={16} /> },
         ],
       },
       {
