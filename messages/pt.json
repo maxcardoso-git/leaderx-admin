@@ -371,6 +371,7 @@
     "structureNamePlaceholder": "Ex: Comunidade Ibérica",
     "createFirstStructure": "Criar Primeira Estrutura",
     "cannotDeleteWithChildren": "Não é possível excluir uma estrutura que possui estruturas filhas. Remova as estruturas filhas primeiro.",
+    "cannotDeleteWithWorkingUnits": "Não é possível excluir esta estrutura pois existem grupos de trabalho vinculados. Remova ou reassocie os grupos primeiro.",
     "children": "filhas",
     "addChild": "Adicionar Estrutura Filha",
     "edit": "Editar",
