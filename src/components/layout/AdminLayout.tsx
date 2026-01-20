@@ -25,7 +25,7 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
         <TopBar />
 
         {/* Page Content with proper spacing */}
-        <main className="flex-1 p-10 overflow-y-auto">
+        <main className="flex-1 py-10 pl-12 pr-10 overflow-y-auto">
           <div className="max-w-[1400px] mx-auto space-y-8">
             {children}
           </div>
