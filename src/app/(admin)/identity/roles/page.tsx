@@ -92,13 +92,27 @@ export default function RolesPage() {
     }
   }, [selectedRole]);
 
+  // Fetch role permissions when a role is selected
   useEffect(() => {
-    if (selectedRole) {
-      const perms = Array.isArray(selectedRole.permissions) ? selectedRole.permissions : [];
-      setEditedPermissions(perms.map((p) => p.id));
-      setHasChanges(false);
-    }
-  }, [selectedRole]);
+    const fetchRolePermissions = async () => {
+      if (selectedRole) {
+        try {
+          // Fetch permissions for this role from the API
+          const rolePermissions = await permissionsService.getByRole(selectedRole.id);
+          setEditedPermissions(rolePermissions.map((p) => p.id));
+
+          // Update the role in our local state with the fetched permissions
+          const updatedRole = { ...selectedRole, permissions: rolePermissions };
+          setRoles(prev => prev.map(r => r.id === selectedRole.id ? updatedRole : r));
+        } catch (error) {
+          console.error('Failed to fetch role permissions:', error);
+          setEditedPermissions([]);
+        }
+        setHasChanges(false);
+      }
+    };
+    fetchRolePermissions();
+  }, [selectedRole?.id]);
 
   const handleSelectRole = (role: Role) => {
     if (hasChanges) {

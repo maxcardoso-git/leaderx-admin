@@ -204,8 +204,22 @@ export const permissionsService = {
 
   async getByRole(roleId: string): Promise<Permission[]> {
     try {
-      const response = await api.get<PermissionsListResponse>(`/identity/roles/${roleId}/permissions`);
-      return (response?.items || []).map(transformPermission);
+      // Role permissions endpoint returns { items: [{ id, effect }] }
+      interface RolePermissionResponse {
+        items: Array<{ id: string; effect: string }>;
+      }
+      const response = await api.get<RolePermissionResponse>(`/identity/roles/${roleId}/permissions`);
+
+      // Get the permission IDs from the role
+      const permissionIds = (response?.items || []).map((p) => p.id);
+
+      // Fetch full permissions list and filter by IDs
+      const allPermissions = await api.get<PermissionsListResponse>('/identity/permissions');
+      const rolePermissions = (allPermissions?.items || [])
+        .filter((p) => permissionIds.includes(p.id))
+        .map(transformPermission);
+
+      return rolePermissions;
     } catch {
       return [];
     }
