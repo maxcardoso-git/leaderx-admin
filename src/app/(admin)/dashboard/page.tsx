@@ -31,14 +31,17 @@ function StatsCard({
   trend?: { value: string; positive: boolean };
 }) {
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] pl-6 pr-5 py-5 group hover:border-white/[0.15] transition-all duration-300">
-      <div className="flex items-start justify-between">
-        <div className="space-y-3 min-w-0">
-          <p className="text-xs font-medium text-white/50 uppercase tracking-wider truncate">
+    <div
+      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-300"
+      style={{ padding: '20px 24px' }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
             {label}
           </p>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-semibold text-white">{value}</span>
+            <span className="text-2xl font-semibold text-white">{value}</span>
             {trend && (
               <span className={`text-xs font-medium ${trend.positive ? 'text-emerald-400' : 'text-rose-400'}`}>
                 {trend.positive ? '+' : ''}{trend.value}
@@ -46,10 +49,10 @@ function StatsCard({
             )}
           </div>
           {subtitle && (
-            <p className="text-sm text-white/40">{subtitle}</p>
+            <p className="text-xs text-white/40">{subtitle}</p>
           )}
         </div>
-        <div className="p-3 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 group-hover:scale-110 transition-all duration-300">
+        <div className="p-2.5 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
           {icon}
         </div>
       </div>
@@ -148,7 +151,7 @@ export default function DashboardPage() {
   const nav = useTranslations('nav');
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       {/* Hero Header */}
       <div className="relative overflow-hidden rounded-2xl">
         {/* Background Gradient */}
@@ -208,15 +211,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '32px' }} className="lg:!grid-cols-3">
         {/* Modules Section */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
             <span className="text-xs text-white/40">4 módulos</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '16px' }} className="md:!grid-cols-2">
             <ModuleCard
               icon={<UsersIcon size={24} />}
               title={nav('identity')}
@@ -265,12 +268,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions Sidebar */}
-        <div className="space-y-6">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">{t('quickActionsSub')}</h2>
           </div>
 
-          <div className="space-y-3">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <QuickActionCard
               icon={<PlusIcon size={18} />}
               label={t('addUser')}
@@ -309,9 +312,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Activity Card */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-5">
-            <h3 className="text-sm font-semibold text-white mb-4">Atividade Recente</h3>
-            <div className="space-y-4">
+          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06]" style={{ padding: '20px' }}>
+            <h3 className="text-sm font-semibold text-white" style={{ marginBottom: '16px' }}>Atividade Recente</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {[
                 { user: 'Maria Silva', action: 'criou usuário', time: '2min' },
                 { user: 'João Santos', action: 'atualizou perfil', time: '15min' },
