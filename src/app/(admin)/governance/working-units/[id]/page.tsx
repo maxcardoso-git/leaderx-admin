@@ -37,13 +37,14 @@ export default function WorkingUnitDetailPage() {
   const [selectedUserId, setSelectedUserId] = useState('');
   const [selectedRole, setSelectedRole] = useState<MembershipRole>('MEMBER');
 
-  const mapStatus = (status: WorkingUnitStatus): { label: string; color: string } => {
-    const mapping: Record<WorkingUnitStatus, { label: string; color: string }> = {
+  const mapStatus = (status: WorkingUnitStatus | string | undefined): { label: string; color: string } => {
+    const mapping: Record<string, { label: string; color: string }> = {
       ACTIVE: { label: t('statusACTIVE'), color: 'text-emerald-400 bg-emerald-400/10' },
       INACTIVE: { label: t('statusINACTIVE'), color: 'text-white/40 bg-white/[0.05]' },
       SUSPENDED: { label: t('statusSUSPENDED'), color: 'text-red-400 bg-red-400/10' },
+      ARCHIVED: { label: t('statusINACTIVE'), color: 'text-white/40 bg-white/[0.05]' },
     };
-    return mapping[status];
+    return mapping[status || ''] || { label: status || 'Unknown', color: 'text-white/40 bg-white/[0.05]' };
   };
 
   const mapMemberStatus = (status: string): 'active' | 'inactive' | 'pending' => {

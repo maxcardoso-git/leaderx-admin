@@ -9,13 +9,14 @@ import { PlusIcon, SearchIcon, EditIcon, TrashIcon, EyeIcon, GroupIcon } from '@
 import { WorkingUnit, WorkingUnitType, WorkingUnitStatus, WorkingUnitStats } from '@/types/governance';
 import { workingUnitsService, governanceStatsService } from '@/services/governance.service';
 
-const mapStatus = (status: WorkingUnitStatus): 'active' | 'inactive' | 'suspended' => {
-  const mapping: Record<WorkingUnitStatus, 'active' | 'inactive' | 'suspended'> = {
+const mapStatus = (status: WorkingUnitStatus | string | undefined): 'active' | 'inactive' | 'suspended' => {
+  const mapping: Record<string, 'active' | 'inactive' | 'suspended'> = {
     ACTIVE: 'active',
     INACTIVE: 'inactive',
     SUSPENDED: 'suspended',
+    ARCHIVED: 'inactive',
   };
-  return mapping[status];
+  return mapping[status || ''] || 'inactive';
 };
 
 type TabType = 'GROUP' | 'NUCLEUS';
