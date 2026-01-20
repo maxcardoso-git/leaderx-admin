@@ -39,8 +39,8 @@ export interface Role {
 
 export interface CreateRoleDto {
   name: string;
+  code: string;
   description?: string;
-  permissionIds: string[];
 }
 
 export interface UpdateRoleDto {

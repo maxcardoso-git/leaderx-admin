@@ -5,6 +5,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { SidebarProvider } from './SidebarContext';
 import { ThemeInjector } from './ThemeInjector';
+import { ToastProvider } from '@/components/ui/Toast';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -40,8 +41,10 @@ function AdminLayoutContent({ children }: AdminLayoutProps) {
 
 export function AdminLayout({ children }: AdminLayoutProps) {
   return (
-    <SidebarProvider>
-      <AdminLayoutContent>{children}</AdminLayoutContent>
-    </SidebarProvider>
+    <ToastProvider>
+      <SidebarProvider>
+        <AdminLayoutContent>{children}</AdminLayoutContent>
+      </SidebarProvider>
+    </ToastProvider>
   );
 }

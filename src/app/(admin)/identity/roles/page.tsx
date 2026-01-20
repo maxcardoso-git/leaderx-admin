@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button, Card, Modal, Input } from '@/components/ui';
+import { Button, Card, Modal, Input, useToast } from '@/components/ui';
 import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon, ChevronRightIcon } from '@/components/icons';
 import { Role, Permission } from '@/types/identity';
 import { rolesService, permissionsService } from '@/services/identity.service';
@@ -23,6 +23,7 @@ export default function RolesPage() {
   const t = useTranslations('roles');
   const tCommon = useTranslations('common');
   const tPermissions = useTranslations('permissions');
+  const { showToast } = useToast();
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
@@ -98,19 +99,22 @@ export default function RolesPage() {
   const handleCreateRole = async () => {
     if (!newRoleName) return;
     try {
+      // Generate a code from the name (lowercase, no spaces, alphanumeric)
+      const code = newRoleName.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_');
       const newRole = await rolesService.create({
         name: newRoleName,
+        code: code,
         description: newRoleDescription,
-        permissionIds: [],
       });
       setRoles([...roles, newRole]);
       setShowCreateModal(false);
       setNewRoleName('');
       setNewRoleDescription('');
       setSelectedRole(newRole);
+      showToast('success', t('roleCreated'));
     } catch (error) {
       console.error('Failed to create role:', error);
-      alert(t('failedToCreateRole'));
+      showToast('error', t('failedToCreateRole'));
     }
   };
 
@@ -140,7 +144,7 @@ export default function RolesPage() {
       setShowEditModal(false);
     } catch (error) {
       console.error('Failed to update role:', error);
-      alert(t('failedToUpdateRole'));
+      showToast('error', t('failedToUpdateRole'));
     } finally {
       setSaving(false);
     }
@@ -166,10 +170,10 @@ export default function RolesPage() {
       setRoles(rolesArray.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
       setSelectedRole(updatedRole);
       setHasChanges(false);
-      alert(t('permissionsSaved'));
+      showToast('success', t('permissionsSaved'));
     } catch (error) {
       console.error('Failed to save permissions:', error);
-      alert(t('failedToSavePermissions'));
+      showToast('error', t('failedToSavePermissions'));
     } finally {
       setSaving(false);
     }
@@ -184,9 +188,10 @@ export default function RolesPage() {
       setRoles(rolesArray.filter((r) => r.id !== selectedRole.id));
       setSelectedRole(null);
       setShowDeleteModal(false);
+      showToast('success', t('roleDeleted'));
     } catch (error) {
       console.error('Failed to delete role:', error);
-      alert(t('failedToDeleteRole'));
+      showToast('error', t('failedToDeleteRole'));
     } finally {
       setDeleting(false);
     }
