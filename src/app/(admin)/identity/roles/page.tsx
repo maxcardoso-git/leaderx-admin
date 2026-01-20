@@ -167,12 +167,12 @@ export default function RolesPage() {
     if (!selectedRole) return;
     setSaving(true);
     try {
-      // Convert permission IDs to permission codes
+      // Convert permission IDs to permission codes (format: RESOURCE.ACTION)
       const permsArray = Array.isArray(permissions) ? permissions : [];
       const permissionsToSave = editedPermissions
         .map((id) => {
           const perm = permsArray.find((p) => p.id === id);
-          return perm ? { permissionCode: `${perm.resource}:${perm.action}`, effect: 'ALLOW' as const } : null;
+          return perm ? { permissionCode: `${perm.resource.toUpperCase()}.${perm.action}`, effect: 'ALLOW' as const } : null;
         })
         .filter((p): p is { permissionCode: string; effect: 'ALLOW' } => p !== null);
 
