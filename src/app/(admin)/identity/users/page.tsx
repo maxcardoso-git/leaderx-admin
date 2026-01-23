@@ -41,6 +41,11 @@ export default function UsersPage() {
   const [isLoadingRoles, setIsLoadingRoles] = useState(false);
   const [isSavingRoles, setIsSavingRoles] = useState(false);
 
+  // Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const statusOptions = [
     { value: '', label: t('allStatus') },
     { value: 'ACTIVE', label: common('active') },
@@ -94,6 +99,31 @@ export default function UsersPage() {
     setShowRolesModal(false);
     setSelectedUser(null);
     setUserRoles([]);
+  };
+
+  const openDeleteModal = (user: User) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setUserToDelete(null);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      await usersService.delete(userToDelete.id);
+      await loadUsers();
+      closeDeleteModal();
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const toggleRole = async (roleId: string) => {
@@ -200,7 +230,7 @@ export default function UsersPage() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              // Handle delete
+              openDeleteModal(user);
             }}
             className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
             title={common('delete')}
@@ -275,6 +305,41 @@ export default function UsersPage() {
           />
         </Card>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={closeDeleteModal}
+        title={t('deleteUser')}
+        footer={
+          <div className="flex gap-3">
+            <Button variant="secondary" onClick={closeDeleteModal} disabled={isDeleting}>
+              {common('cancel')}
+            </Button>
+            <Button variant="danger" onClick={handleDeleteUser} disabled={isDeleting}>
+              {isDeleting ? common('loading') : common('delete')}
+            </Button>
+          </div>
+        }
+      >
+        {userToDelete && (
+          <div className="space-y-4">
+            <p className="text-text-secondary">
+              {t('deleteUserConfirm')} <strong>{userToDelete.fullName}</strong>?
+            </p>
+            <p className="text-text-muted text-sm">
+              {t('actionCannotBeUndone')}
+            </p>
+            <div className="flex items-center gap-3 p-3 bg-white/[0.02] rounded-lg">
+              <Avatar name={userToDelete.fullName} size="md" />
+              <div>
+                <p className="font-medium text-text-primary">{userToDelete.fullName}</p>
+                <p className="text-xs text-text-muted">{userToDelete.email}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* Roles Modal */}
       <Modal
