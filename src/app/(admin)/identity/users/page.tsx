@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Button, Table, StatusPill, Input, Select, Card, Avatar, Pagination, Modal, Checkbox } from '@/components/ui';
+import { Button, Table, StatusPill, Input, Select, Card, Avatar, Pagination, Modal, Checkbox, useToast } from '@/components/ui';
 import { PlusIcon, SearchIcon, FilterIcon, EditIcon, TrashIcon, EyeIcon, ShieldIcon } from '@/components/icons';
 import { User, UserStatus, Role } from '@/types/identity';
 import { usersService, rolesService } from '@/services/identity.service';
@@ -25,6 +25,7 @@ export default function UsersPage() {
   const t = useTranslations('users');
   const common = useTranslations('common');
   const tRoles = useTranslations('roles');
+  const { showToast } = useToast();
 
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -117,10 +118,12 @@ export default function UsersPage() {
     setIsDeleting(true);
     try {
       await usersService.delete(userToDelete.id);
+      showToast('success', t('userDeleted'));
       await loadUsers();
       closeDeleteModal();
     } catch (error) {
       console.error('Failed to delete user:', error);
+      showToast('error', t('failedToDeleteUser'));
     } finally {
       setIsDeleting(false);
     }
