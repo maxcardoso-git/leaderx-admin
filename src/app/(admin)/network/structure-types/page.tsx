@@ -36,7 +36,7 @@ export default function StructureTypesPage() {
   const [formData, setFormData] = useState<CreateStructureTypeDto>({
     name: '',
     description: '',
-    scope: 'SINGLE_CITY',
+    scope: '',
     leadershipRoleId: '',
     maxLeaders: 1,
     color: '#c4a45a',
@@ -44,15 +44,12 @@ export default function StructureTypesPage() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
-  // Generate scope options from loaded scopes
-  const scopeOptions = scopes.length > 0
-    ? scopes.map((s) => ({ value: s.code, label: `${s.name} (${t('level')} ${s.level})`, level: s.level }))
-    : [
-        { value: 'GLOBAL_ALL_COUNTRIES', label: `${t('scopeGlobal')} (${t('level')} 1)`, level: 1 },
-        { value: 'COUNTRY_GROUP', label: `${t('scopeCountryGroup')} (${t('level')} 2)`, level: 2 },
-        { value: 'CITY_GROUP', label: `${t('scopeCityGroup')} (${t('level')} 3)`, level: 3 },
-        { value: 'SINGLE_CITY', label: `${t('scopeSingleCity')} (${t('level')} 4)`, level: 4 },
-      ];
+  // Generate scope options from loaded scopes (database only - no hardcode)
+  const scopeOptions = scopes.map((s) => ({
+    value: s.code,
+    label: `${s.name} (${t('level')} ${s.level})`,
+    level: s.level
+  }));
 
   useEffect(() => {
     loadData();
@@ -80,7 +77,7 @@ export default function StructureTypesPage() {
   };
 
   const handleCreate = async () => {
-    if (!formData.name || !formData.leadershipRoleId) return;
+    if (!formData.name || !formData.scope || !formData.leadershipRoleId) return;
     setSaving(true);
     try {
       const newType = await structureTypesService.create(formData);
@@ -154,7 +151,7 @@ export default function StructureTypesPage() {
     setFormData({
       name: '',
       description: '',
-      scope: 'SINGLE_CITY',
+      scope: '',
       leadershipRoleId: '',
       maxLeaders: 1,
       color: '#c4a45a',
@@ -344,7 +341,7 @@ export default function StructureTypesPage() {
             <Button variant="ghost" onClick={() => setShowCreateModal(false)}>
               {tCommon('cancel')}
             </Button>
-            <Button onClick={handleCreate} disabled={!formData.name || !formData.leadershipRoleId || saving}>
+            <Button onClick={handleCreate} disabled={!formData.name || !formData.scope || !formData.leadershipRoleId || saving}>
               {saving ? t('saving') : tCommon('create')}
             </Button>
           </>
@@ -441,7 +438,10 @@ function StructureTypeForm({
       <div>
         <Select
           label={t('scope')}
-          options={scopeOptions}
+          options={[
+            { value: '', label: t('selectScope') },
+            ...scopeOptions
+          ]}
           value={formData.scope}
           onChange={(e) => setFormData({ ...formData, scope: e.target.value as StructureScope })}
         />

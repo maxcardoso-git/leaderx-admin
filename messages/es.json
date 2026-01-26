@@ -296,6 +296,7 @@
     "level": "Nivel",
     "leadershipRole": "Cargo de Liderazgo",
     "maxLeaders": "Cantidad de Presidentes",
+    "selectScope": "Seleccione el alcance",
     "scopeHint": "Define si la estructura abarca todos los países, un conjunto de países, ciudades o una ciudad específica",
     "hierarchyLevelHint": "Rellenado automáticamente por el alcance seleccionado. Define el orden de visualización en la jerarquía visual (1=superior).",
     "leadershipRoleHint": "Defina qué cargo está asociado con esta composición",

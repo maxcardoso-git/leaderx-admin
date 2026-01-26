@@ -307,6 +307,7 @@
     "leadershipRole": "Cargo de Liderança",
     "leadershipPosition": "Cargo de Liderança",
     "maxLeaders": "Quantidade de Presidentes",
+    "selectScope": "Selecione o escopo",
     "scopeHint": "Define se a estrutura abrange todos os países, um conjunto de países, cidades ou uma cidade específica",
     "hierarchyLevelHint": "Preenchido automaticamente pelo escopo selecionado. Define a ordem de exibição na hierarquia visual (1=topo).",
     "leadershipRoleHint": "Defina qual cargo está associado a esta composição",
