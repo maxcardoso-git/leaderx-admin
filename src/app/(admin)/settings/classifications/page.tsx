@@ -146,8 +146,8 @@ export default function ClassificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
-          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
+          <h1 className="font-heading text-2xl font-semibold text-gray-900">{t('title')}</h1>
+          <p className="text-sm text-gray-500" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
         </div>
         <Button leftIcon={<PlusIcon size={18} />} onClick={openCreateModal}>
           {t('newClassification')}
@@ -180,12 +180,12 @@ export default function ClassificationsPage() {
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: classification.badgeColor }}
                     />
-                    <h3 className="font-medium text-text-primary">{classification.name}</h3>
+                    <h3 className="font-medium text-gray-900">{classification.name}</h3>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => openEditModal(classification)}
-                      className="p-1.5 rounded-lg text-text-muted hover:text-gold hover:bg-background-hover transition-colors"
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-gold hover:bg-gray-100 transition-colors"
                       title={common('edit')}
                     >
                       <EditIcon size={14} />
@@ -195,7 +195,7 @@ export default function ClassificationsPage() {
                         setDeletingClassification(classification);
                         setShowDeleteModal(true);
                       }}
-                      className="p-1.5 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
+                      className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors"
                       title={common('delete')}
                     >
                       <TrashIcon size={14} />
@@ -205,14 +205,14 @@ export default function ClassificationsPage() {
 
                 {/* Description */}
                 {classification.description && (
-                  <p className="text-sm text-text-muted mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-500 mb-3 line-clamp-2">
                     {classification.description}
                   </p>
                 )}
 
                 {/* Category Tag */}
                 <div className="mt-auto">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] border border-white/[0.08] rounded-full text-xs text-text-muted">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 border border-gray-200 rounded-full text-xs text-gray-600">
                     <TagIcon size={12} />
                     {getCategoryName(classification.categoryId)}
                   </span>

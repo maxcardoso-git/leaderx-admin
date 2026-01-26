@@ -146,8 +146,8 @@ export default function CategoriesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
-          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
+          <h1 className="font-heading text-2xl font-semibold text-gray-900">{t('title')}</h1>
+          <p className="text-sm text-gray-500" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
         </div>
         <Button leftIcon={<PlusIcon size={18} />} onClick={openCreateModal}>
           {t('newCategory')}
@@ -179,9 +179,9 @@ export default function CategoriesPage() {
                   </div>
                   <div>
                     <span className="text-xs text-gold/80 font-mono">{category.code}</span>
-                    <h3 className="font-medium text-text-primary">{category.name}</h3>
+                    <h3 className="font-medium text-gray-900">{category.name}</h3>
                     {category.description && (
-                      <p className="text-sm text-text-muted mt-1 line-clamp-2">
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                         {category.description}
                       </p>
                     )}
@@ -190,7 +190,7 @@ export default function CategoriesPage() {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => openEditModal(category)}
-                    className="p-2 rounded-lg text-text-muted hover:text-gold hover:bg-background-hover transition-colors"
+                    className="p-2 rounded-lg text-gray-400 hover:text-gold hover:bg-gray-100 transition-colors"
                     title={common('edit')}
                   >
                     <EditIcon size={16} />
@@ -200,14 +200,14 @@ export default function CategoriesPage() {
                       setDeletingCategory(category);
                       setShowDeleteModal(true);
                     }}
-                    className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
+                    className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-gray-100 transition-colors"
                     title={common('delete')}
                   >
                     <TrashIcon size={16} />
                   </button>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-xs text-text-muted">
+              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
                 <span>
                   {t('progression')}: {getPreviousClassificationName(category.previousCategoryId)}
                 </span>
