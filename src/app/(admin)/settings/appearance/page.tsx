@@ -642,227 +642,275 @@ function ClickableElement({
   );
 }
 
-// Preview Component
+// Preview Component - Simulates actual admin panel structure
 function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selector: string) => void }) {
-  // Scope all CSS selectors to the preview container to avoid conflicts
+  // Scope CSS to preview container
   const scopedCSS = css
-    // Scope body selector to preview
     .replace(/\bbody\s*\{/g, '.preview-scope {')
-    // Scope main selector to preview
-    .replace(/\bmain\s*\{/g, '.preview-scope main {');
+    .replace(/\bmain\s*(?=\{|\s*\.|\s*\[)/g, '.preview-scope main ');
+
+  // Helper for clickable elements
+  const Clickable = ({ selector, children, className = '', style, tag = 'div' }: {
+    selector: string;
+    children: React.ReactNode;
+    className?: string;
+    style?: React.CSSProperties;
+    tag?: keyof React.JSX.IntrinsicElements;
+  }) => (
+    <ClickableElement selector={selector} className={className} style={style} as={tag} onSelect={onSelectCSS}>
+      {children}
+    </ClickableElement>
+  );
 
   return (
     <div className="relative h-full preview-scope">
-      {/* Inject custom CSS with scoped selectors */}
       <style dangerouslySetInnerHTML={{ __html: scopedCSS }} />
 
-      {/* Preview Container - wraps content in main element */}
-      <main
-        className="p-6 min-h-full"
-        style={{ backgroundColor: 'var(--bg-color, #0d1117)' }}
-      >
-        {/* Hero Section */}
-        <div className="text-center mb-8 pb-8" style={{ borderBottom: '1px solid var(--card-border)' }}>
-          {/* Logo */}
-          <div className="logo mb-4">
-            <ClickableElement selector=".logo-text" as="h2" className="logo-text" onSelect={onSelectCSS}>
-              LEADER<span onClick={(e) => { e.stopPropagation(); onSelectCSS('.logo-text span'); }}>X</span>
-            </ClickableElement>
-            <ClickableElement selector=".tagline" as="p" className="tagline" onSelect={onSelectCSS}>
-              exponential leadership
-            </ClickableElement>
-          </div>
+      {/* Main content area - mimics admin layout */}
+      <Clickable selector="main" className="p-6 min-h-full" tag="main">
 
-          {/* Main Title */}
-          <ClickableElement selector=".main-title" as="h1" className="main-title" style={{ fontSize: '2rem', margin: '16px 0' }} onSelect={onSelectCSS}>
-            O Futuro da Liderança <br />
-            <span className="italic-gold" onClick={(e) => { e.stopPropagation(); onSelectCSS('.italic-gold'); }}>está sendo reescrito.</span>
-          </ClickableElement>
-
-          {/* Status Pill */}
-          <ClickableElement selector=".status-pill" className="status-pill" style={{ padding: '8px 20px', fontSize: '0.8rem' }} onSelect={onSelectCSS}>
-            <span className="dot" onClick={(e) => { e.stopPropagation(); onSelectCSS('.dot'); }}></span>
-            Em desenvolvimento por <strong>Hans Werner</strong>
-          </ClickableElement>
+        {/* Page Header */}
+        <div className="mb-6">
+          <Clickable selector=".text-2xl" className="text-2xl font-semibold text-gray-900 mb-2" tag="h1">
+            Página de Exemplo
+          </Clickable>
+          <Clickable selector=".text-gray-500" className="text-sm text-gray-500" tag="p">
+            Subtítulo descritivo da página
+          </Clickable>
         </div>
 
-        {/* Headings Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Títulos
-          </ClickableElement>
-          <ClickableElement selector=".preview-h1" as="h1" className="preview-h1" onSelect={onSelectCSS}>
-            Título Principal (H1)
-          </ClickableElement>
-          <ClickableElement selector=".preview-h2" as="h2" className="preview-h2" onSelect={onSelectCSS}>
-            Título Secundário (H2)
-          </ClickableElement>
-          <ClickableElement selector=".preview-h3" as="h3" className="preview-h3" onSelect={onSelectCSS}>
-            Título Terciário (H3)
-          </ClickableElement>
+        {/* Grid of Cards - mimics dashboard */}
+        <Clickable selector=".grid" className="grid grid-cols-2 gap-4 mb-6">
+          {/* Stat Card 1 */}
+          <Clickable selector="div[class*='rounded']" className="rounded-xl bg-white border border-gray-200 p-4">
+            <Clickable selector=".text-xs" className="text-xs text-gray-500 mb-1">
+              Total de Usuários
+            </Clickable>
+            <Clickable selector=".text-3xl" className="text-3xl font-bold text-gray-900">
+              1,234
+            </Clickable>
+            <Clickable selector=".text-green-500" className="text-xs text-green-500 mt-1">
+              +12% este mês
+            </Clickable>
+          </Clickable>
+
+          {/* Stat Card 2 */}
+          <Clickable selector="div[class*='rounded']" className="rounded-xl bg-white border border-gray-200 p-4">
+            <Clickable selector=".text-xs" className="text-xs text-gray-500 mb-1">
+              Estruturas Ativas
+            </Clickable>
+            <Clickable selector=".text-3xl" className="text-3xl font-bold text-gray-900">
+              56
+            </Clickable>
+            <Clickable selector=".text-gold" className="text-xs text-gold mt-1">
+              5 pendentes
+            </Clickable>
+          </Clickable>
+        </Clickable>
+
+        {/* Module Cards Grid */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Módulos
+        </Clickable>
+
+        <Clickable selector=".grid" className="grid grid-cols-2 gap-4 mb-6">
+          {/* Module Card */}
+          <Clickable selector="div[class*='rounded-2xl']" className="rounded-2xl bg-white border border-gray-200 p-5 hover:border-gold/50 transition-all">
+            <div className="flex items-start gap-3 mb-3">
+              <Clickable selector=".bg-gold" className="p-2 rounded-lg bg-gold/10">
+                <span className="text-gold text-lg">👥</span>
+              </Clickable>
+              <div>
+                <Clickable selector=".font-semibold" className="font-semibold text-gray-900">
+                  Identidade
+                </Clickable>
+                <Clickable selector=".text-sm" className="text-sm text-gray-500">
+                  Gerenciar usuários
+                </Clickable>
+              </div>
+            </div>
+            <Clickable selector=".border-t" className="pt-3 border-t border-gray-100 flex gap-4">
+              <span className="text-sm"><strong className="text-gray-900">42</strong> <span className="text-gray-500">usuários</span></span>
+              <span className="text-sm"><strong className="text-gray-900">3</strong> <span className="text-gray-500">funções</span></span>
+            </Clickable>
+          </Clickable>
+
+          {/* Module Card 2 */}
+          <Clickable selector="div[class*='rounded-2xl']" className="rounded-2xl bg-white border border-gray-200 p-5 hover:border-gold/50 transition-all">
+            <div className="flex items-start gap-3 mb-3">
+              <Clickable selector=".bg-gold" className="p-2 rounded-lg bg-gold/10">
+                <span className="text-gold text-lg">🏢</span>
+              </Clickable>
+              <div>
+                <Clickable selector=".font-semibold" className="font-semibold text-gray-900">
+                  Rede
+                </Clickable>
+                <Clickable selector=".text-sm" className="text-sm text-gray-500">
+                  Estruturas organizacionais
+                </Clickable>
+              </div>
+            </div>
+            <Clickable selector=".border-t" className="pt-3 border-t border-gray-100 flex gap-4">
+              <span className="text-sm"><strong className="text-gray-900">12</strong> <span className="text-gray-500">estruturas</span></span>
+              <span className="text-sm"><strong className="text-gray-900">5</strong> <span className="text-gray-500">tipos</span></span>
+            </Clickable>
+          </Clickable>
+        </Clickable>
+
+        {/* Quick Actions */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Ações Rápidas
+        </Clickable>
+
+        <div className="space-y-3 mb-6">
+          <Clickable selector="div[class*='rounded-xl']" className="flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all">
+            <Clickable selector=".bg-blue-500" className="p-3 rounded-xl bg-blue-500/20">
+              <span className="text-blue-500">➕</span>
+            </Clickable>
+            <div className="flex-1">
+              <Clickable selector=".font-medium" className="font-medium text-gray-900">
+                Adicionar Usuário
+              </Clickable>
+              <Clickable selector=".text-gray-500" className="text-sm text-gray-500">
+                Criar novo membro
+              </Clickable>
+            </div>
+            <span className="text-gray-400">→</span>
+          </Clickable>
+
+          <Clickable selector="div[class*='rounded-xl']" className="flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 transition-all">
+            <Clickable selector=".bg-green-500" className="p-3 rounded-xl bg-green-500/20">
+              <span className="text-green-500">🏗️</span>
+            </Clickable>
+            <div className="flex-1">
+              <Clickable selector=".font-medium" className="font-medium text-gray-900">
+                Nova Estrutura
+              </Clickable>
+              <Clickable selector=".text-gray-500" className="text-sm text-gray-500">
+                Criar estrutura organizacional
+              </Clickable>
+            </div>
+            <span className="text-gray-400">→</span>
+          </Clickable>
         </div>
 
-        {/* Cards Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Cards
-          </ClickableElement>
-          <ClickableElement selector=".preview-card" className="preview-card" onSelect={onSelectCSS}>
-            <ClickableElement selector=".preview-card-title" className="preview-card-title" onSelect={onSelectCSS}>
-              Card de Estatísticas
-            </ClickableElement>
-            <ClickableElement selector=".preview-card-text" className="preview-card-text" onSelect={onSelectCSS}>
-              Visualize métricas importantes em tempo real.
-            </ClickableElement>
-            <ClickableElement selector=".preview-card-stats" className="preview-card-stats" onSelect={onSelectCSS}>
-              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
-                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
-                  1,234
-                </ClickableElement>
-                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
-                  Usuários
-                </ClickableElement>
-              </ClickableElement>
-              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
-                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
-                  56
-                </ClickableElement>
-                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
-                  Grupos
-                </ClickableElement>
-              </ClickableElement>
-              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
-                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
-                  89%
-                </ClickableElement>
-                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
-                  Engajamento
-                </ClickableElement>
-              </ClickableElement>
-            </ClickableElement>
-          </ClickableElement>
+        {/* Buttons */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Botões
+        </Clickable>
+
+        <div className="flex flex-wrap gap-3 mb-6">
+          <Clickable selector="button" className="px-4 py-2 rounded-lg bg-gold text-black font-medium hover:bg-gold-light transition-colors" tag="button">
+            Primário
+          </Clickable>
+          <Clickable selector="button[class*='border']" className="px-4 py-2 rounded-lg bg-transparent border border-gold text-gold font-medium hover:bg-gold/10 transition-colors" tag="button">
+            Outline
+          </Clickable>
+          <Clickable selector="button[class*='ghost']" className="px-4 py-2 rounded-lg bg-transparent text-gray-500 font-medium hover:bg-gray-100 transition-colors" tag="button">
+            Ghost
+          </Clickable>
         </div>
 
-        {/* Buttons Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Botões
-          </ClickableElement>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <ClickableElement selector=".preview-btn-primary" as="button" className="preview-btn preview-btn-primary" onSelect={onSelectCSS}>
-              Primário
-            </ClickableElement>
-            <ClickableElement selector=".preview-btn-secondary" as="button" className="preview-btn preview-btn-secondary" onSelect={onSelectCSS}>
-              Secundário
-            </ClickableElement>
-            <ClickableElement selector=".preview-btn-outline" as="button" className="preview-btn preview-btn-outline" onSelect={onSelectCSS}>
-              Outline
-            </ClickableElement>
-            <ClickableElement selector=".preview-btn-ghost" as="button" className="preview-btn preview-btn-ghost" onSelect={onSelectCSS}>
-              Ghost
-            </ClickableElement>
-          </div>
+        {/* Badges */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Badges / Status
+        </Clickable>
+
+        <div className="flex flex-wrap gap-2 mb-6">
+          <Clickable selector=".bg-green-500" className="px-3 py-1 rounded-full bg-green-500/15 text-green-500 text-xs font-medium" tag="span">
+            Ativo
+          </Clickable>
+          <Clickable selector=".bg-red-500" className="px-3 py-1 rounded-full bg-red-500/15 text-red-500 text-xs font-medium" tag="span">
+            Inativo
+          </Clickable>
+          <Clickable selector=".bg-yellow-500" className="px-3 py-1 rounded-full bg-yellow-500/15 text-yellow-500 text-xs font-medium" tag="span">
+            Pendente
+          </Clickable>
+          <Clickable selector=".bg-gold" className="px-3 py-1 rounded-full bg-gold/15 text-gold text-xs font-medium" tag="span">
+            Premium
+          </Clickable>
         </div>
 
-        {/* Badges Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Badges / Status
-          </ClickableElement>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <ClickableElement selector=".preview-badge-success" as="span" className="preview-badge preview-badge-success" onSelect={onSelectCSS}>
-              Ativo
-            </ClickableElement>
-            <ClickableElement selector=".preview-badge-error" as="span" className="preview-badge preview-badge-error" onSelect={onSelectCSS}>
-              Inativo
-            </ClickableElement>
-            <ClickableElement selector=".preview-badge-warning" as="span" className="preview-badge preview-badge-warning" onSelect={onSelectCSS}>
-              Pendente
-            </ClickableElement>
-            <ClickableElement selector=".preview-badge-gold" as="span" className="preview-badge preview-badge-gold" onSelect={onSelectCSS}>
-              Premium
-            </ClickableElement>
-          </div>
-        </div>
+        {/* Form Inputs */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Formulário
+        </Clickable>
 
-        {/* Form Inputs Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Formulário
-          </ClickableElement>
-          <div style={{ display: 'grid', gap: '16px' }}>
-            <div>
-              <ClickableElement selector=".preview-label" as="label" className="preview-label" onSelect={onSelectCSS}>
-                Nome
-              </ClickableElement>
+        <div className="space-y-4 mb-6">
+          <div>
+            <Clickable selector="label" className="block text-sm font-medium text-gray-900 mb-2" tag="label">
+              Nome
+            </Clickable>
+            <Clickable selector="input" className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-gold focus:outline-none" tag="input">
               <input
                 type="text"
-                className="preview-input cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400"
                 placeholder="Digite seu nome..."
-                onClick={() => onSelectCSS('.preview-input')}
-                title="Clique para localizar: .preview-input"
                 readOnly
+                onClick={(e) => { e.stopPropagation(); onSelectCSS('input'); }}
               />
-            </div>
-            <div>
-              <ClickableElement selector=".preview-label" as="label" className="preview-label" onSelect={onSelectCSS}>
-                Email
-              </ClickableElement>
-              <input
-                type="email"
-                className="preview-input cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
-                placeholder="exemplo@email.com"
-                onClick={() => onSelectCSS('.preview-input')}
-                title="Clique para localizar: .preview-input"
-                readOnly
-              />
-            </div>
+            </Clickable>
+          </div>
+          <div>
+            <Clickable selector="select" className="block" tag="div">
+              <label className="block text-sm font-medium text-gray-900 mb-2">Categoria</label>
+              <select
+                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900"
+                onClick={(e) => { e.stopPropagation(); onSelectCSS('select'); }}
+              >
+                <option>Selecione uma opção</option>
+              </select>
+            </Clickable>
           </div>
         </div>
 
-        {/* Table Section */}
-        <div className="mb-6">
-          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
-            Tabela
-          </ClickableElement>
-          <table
-            className="preview-table cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
-            onClick={() => onSelectCSS('.preview-table')}
-            title="Clique para localizar: .preview-table"
-          >
+        {/* Table */}
+        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+          Tabela
+        </Clickable>
+
+        <Clickable selector="table" className="w-full rounded-xl overflow-hidden border border-gray-200" tag="div">
+          <table className="w-full" onClick={(e) => { e.stopPropagation(); onSelectCSS('table'); }}>
             <thead>
-              <tr>
-                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Nome</th>
-                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Cargo</th>
-                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Status</th>
+              <tr className="bg-gray-50">
+                <Clickable selector="th" className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase" tag="th">
+                  Nome
+                </Clickable>
+                <Clickable selector="th" className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase" tag="th">
+                  Cargo
+                </Clickable>
+                <Clickable selector="th" className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase" tag="th">
+                  Status
+                </Clickable>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>João Silva</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Coordenador</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
-                  <span className="preview-badge preview-badge-success">Ativo</span>
+            <tbody className="bg-white">
+              <tr className="border-t border-gray-100 hover:bg-gray-50">
+                <Clickable selector="td" className="px-4 py-3 text-sm text-gray-900" tag="td">
+                  João Silva
+                </Clickable>
+                <Clickable selector="td" className="px-4 py-3 text-sm text-gray-500" tag="td">
+                  Coordenador
+                </Clickable>
+                <td className="px-4 py-3">
+                  <span className="px-2 py-1 rounded-full bg-green-500/15 text-green-500 text-xs">Ativo</span>
                 </td>
               </tr>
-              <tr>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Maria Santos</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Líder</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
-                  <span className="preview-badge preview-badge-gold">Premium</span>
-                </td>
-              </tr>
-              <tr>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Pedro Oliveira</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Membro</td>
-                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
-                  <span className="preview-badge preview-badge-warning">Pendente</span>
+              <tr className="border-t border-gray-100 hover:bg-gray-50">
+                <Clickable selector="td" className="px-4 py-3 text-sm text-gray-900" tag="td">
+                  Maria Santos
+                </Clickable>
+                <Clickable selector="td" className="px-4 py-3 text-sm text-gray-500" tag="td">
+                  Líder
+                </Clickable>
+                <td className="px-4 py-3">
+                  <span className="px-2 py-1 rounded-full bg-gold/15 text-gold text-xs">Premium</span>
                 </td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </main>
+        </Clickable>
+      </Clickable>
     </div>
   );
 }
