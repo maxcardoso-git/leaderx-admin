@@ -8,6 +8,7 @@ import {
   TrashIcon,
   CheckIcon,
   XIcon,
+  CopyIcon,
 } from '@/components/icons';
 import {
   Cycle,
@@ -103,6 +104,30 @@ export default function CyclesPage() {
     });
   };
 
+  const cloneCycle = (cycle: Cycle) => {
+    setSelectedCycle(null);
+    setIsCreating(true);
+    const phaseBlocks = initializePhaseBlocks();
+    // Copy existing phaseBlocks
+    if (cycle.phaseBlocks) {
+      Object.keys(cycle.phaseBlocks).forEach((phaseKey) => {
+        if (phaseBlocks[phaseKey]) {
+          Object.keys(cycle.phaseBlocks![phaseKey]).forEach((blockKey) => {
+            if (phaseBlocks[phaseKey][blockKey] !== undefined) {
+              phaseBlocks[phaseKey][blockKey] = cycle.phaseBlocks![phaseKey][blockKey];
+            }
+          });
+        }
+      });
+    }
+    setFormData({
+      name: `${cycle.name} (Cópia)`,
+      description: cycle.description || '',
+      isDefault: false,
+      phaseBlocks,
+    });
+  };
+
   const handleSave = async () => {
     if (!formData.name.trim()) return;
 
@@ -186,10 +211,10 @@ export default function CyclesPage() {
               </div>
             ) : (
               cycles.map((cycle) => (
-                <button
+                <div
                   key={cycle.id}
                   onClick={() => selectCycle(cycle)}
-                  className={`w-full text-left p-3 rounded-lg border transition-all ${
+                  className={`relative w-full text-left p-3 rounded-lg border transition-all cursor-pointer ${
                     selectedCycle?.id === cycle.id && !isCreating
                       ? 'bg-gold/10 border-gold/30'
                       : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
@@ -206,18 +231,33 @@ export default function CyclesPage() {
                   <div className="text-[11px] text-text-muted mt-1">
                     {formatDate(cycle.updatedAt || cycle.createdAt)}
                   </div>
-                  {selectedCycle?.id === cycle.id && !isCreating && (
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-1 mt-2 pt-2 border-t border-white/[0.06]">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        cloneCycle(cycle);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-muted hover:text-gold hover:bg-gold/10 rounded transition-colors"
+                      title="Clonar ciclo"
+                    >
+                      <CopyIcon size={12} />
+                      Clonar
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectCycle(cycle);
                         setShowDeleteModal(true);
                       }}
-                      className="absolute right-2 top-2 p-1 text-text-muted hover:text-error transition-colors"
+                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-muted hover:text-error hover:bg-error/10 rounded transition-colors"
+                      title="Excluir ciclo"
                     >
-                      <TrashIcon size={14} />
+                      <TrashIcon size={12} />
+                      Excluir
                     </button>
-                  )}
-                </button>
+                  </div>
+                </div>
               ))
             )}
           </div>
