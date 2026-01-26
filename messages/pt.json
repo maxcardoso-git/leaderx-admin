@@ -568,7 +568,11 @@
       "cycleCreated": "Ciclo criado com sucesso!",
       "cycleUpdated": "Ciclo atualizado com sucesso!",
       "cycleDeleted": "Ciclo excluido com sucesso!",
-      "deleteConfirm": "Tem certeza que deseja excluir este ciclo?"
+      "deleteConfirm": "Tem certeza que deseja excluir este ciclo?",
+      "enabled": "Habilitado",
+      "disabled": "Desabilitado",
+      "block": "Bloco",
+      "saveChanges": "Salvar Alterações"
     },
     "scopes": {
       "title": "Escopos de Estrutura",
