@@ -8,8 +8,6 @@ import { Button, Card, Modal, Select } from '@/components/ui';
 import {
   ChevronLeftIcon,
   NetworkIcon,
-  UsersIcon,
-  EditIcon,
   TrashIcon,
   PlusIcon,
   ShieldIcon,
@@ -262,7 +260,7 @@ export default function StructureDetailPage() {
                               : relation.parentStructure?.name}
                           </p>
                           <p className="text-xs text-text-muted mt-0.5">
-                            {relation.relationType && relation.relationType !== 'undefined'
+                            {relation.relationType
                               ? t(`relationType${relation.relationType}`)
                               : t('relationTypePARENT_CHILD')}
                           </p>
