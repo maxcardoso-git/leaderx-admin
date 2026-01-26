@@ -264,7 +264,7 @@ export default function StructureTypesPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-text-primary">
-                    {type.hierarchyLevel}
+                    {type.hierarchyLevel || scopeOptions.find((o) => o.value === type.scope)?.level || '-'}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">

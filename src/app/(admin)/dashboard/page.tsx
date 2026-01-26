@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import {
@@ -12,9 +13,12 @@ import {
   PlusIcon,
   ChevronRightIcon,
   CalendarIcon,
-  TrophyIcon,
   SettingsIcon,
 } from '@/components/icons';
+import { networkStatsService } from '@/services/network.service';
+import { governanceStatsService } from '@/services/governance.service';
+import { NetworkStats } from '@/types/network';
+import { WorkingUnitStats } from '@/types/governance';
 
 // Stats Card Component
 function StatsCard({
@@ -22,13 +26,13 @@ function StatsCard({
   value,
   subtitle,
   icon,
-  trend,
+  loading,
 }: {
   label: string;
   value: string | number;
   subtitle?: string;
   icon: React.ReactNode;
-  trend?: { value: string; positive: boolean };
+  loading?: boolean;
 }) {
   return (
     <div
@@ -41,11 +45,10 @@ function StatsCard({
             {label}
           </p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold text-white">{value}</span>
-            {trend && (
-              <span className={`text-xs font-medium ${trend.positive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                {trend.positive ? '+' : ''}{trend.value}
-              </span>
+            {loading ? (
+              <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-2xl font-semibold text-white">{value}</span>
             )}
           </div>
           {subtitle && (
@@ -103,6 +106,7 @@ function ModuleCard({
   stats,
   href,
   gradient,
+  loading,
 }: {
   icon: React.ReactNode;
   title: string;
@@ -110,6 +114,7 @@ function ModuleCard({
   stats: { label: string; value: string | number }[];
   href: string;
   gradient: string;
+  loading?: boolean;
 }) {
   return (
     <Link
@@ -136,7 +141,11 @@ function ModuleCard({
         <div className="flex items-center gap-6 pt-4 border-t border-white/[0.06]">
           {stats.map((stat, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span className="text-lg font-semibold text-white">{stat.value}</span>
+              {loading ? (
+                <div className="h-6 w-8 bg-white/10 rounded animate-pulse" />
+              ) : (
+                <span className="text-lg font-semibold text-white">{stat.value}</span>
+              )}
               <span className="text-xs text-white/40">{stat.label}</span>
             </div>
           ))}
@@ -149,6 +158,33 @@ function ModuleCard({
 export default function DashboardPage() {
   const t = useTranslations('dashboard');
   const nav = useTranslations('nav');
+
+  const [networkStats, setNetworkStats] = useState<NetworkStats | null>(null);
+  const [governanceStats, setGovernanceStats] = useState<WorkingUnitStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const [network, governance] = await Promise.all([
+          networkStatsService.getStats().catch(() => null),
+          governanceStatsService.getStats().catch(() => null),
+        ]);
+        setNetworkStats(network);
+        setGovernanceStats(governance);
+      } catch (error) {
+        console.error('Failed to load dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  const totalUnits = governanceStats
+    ? governanceStats.totalGroups + governanceStats.totalNuclei
+    : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -180,31 +216,30 @@ export default function DashboardPage() {
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
             <StatsCard
-              label={t('totalUsers')}
-              value="1,284"
-              subtitle="48 online"
-              icon={<UsersIcon size={20} />}
-              trend={{ value: '12%', positive: true }}
-            />
-            <StatsCard
-              label={t('activeRoles')}
-              value="16"
-              subtitle="3 system"
-              icon={<ShieldIcon size={20} />}
-            />
-            <StatsCard
-              label={t('networkNodes')}
-              value="89"
-              subtitle="12 estruturas"
+              label={t('totalStructures')}
+              value={networkStats?.totalStructures ?? '-'}
+              subtitle={networkStats ? `${networkStats.activeStructures} ${t('active').toLowerCase()}` : undefined}
               icon={<NetworkIcon size={20} />}
-              trend={{ value: '5%', positive: true }}
+              loading={loading}
             />
             <StatsCard
-              label={t('complianceScore')}
-              value="94%"
-              subtitle="Alta"
-              icon={<TrophyIcon size={20} />}
-              trend={{ value: '2%', positive: true }}
+              label={t('structureTypes')}
+              value={networkStats?.structureTypes ?? '-'}
+              icon={<ShieldIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('workingUnits')}
+              value={totalUnits || '-'}
+              subtitle={governanceStats ? `${governanceStats.totalGroups} ${t('groups').toLowerCase()}` : undefined}
+              icon={<GroupIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('totalMembers')}
+              value={governanceStats?.totalMembers ?? '-'}
+              icon={<UsersIcon size={20} />}
+              loading={loading}
             />
           </div>
         </div>
@@ -216,53 +251,54 @@ export default function DashboardPage() {
         <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
-            <span className="text-xs text-white/40">4 módulos</span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '16px' }} className="md:!grid-cols-2">
             <ModuleCard
               icon={<UsersIcon size={24} />}
               title={nav('identity')}
-              description="Usuários, perfis e sessões"
+              description={t('identityDescription')}
               stats={[
-                { label: 'usuários', value: '1.2k' },
-                { label: 'perfis', value: 16 },
+                { label: t('members'), value: governanceStats?.totalMembers ?? '-' },
               ]}
               href="/identity/users"
               gradient="bg-gradient-to-br from-blue-500/10 to-transparent"
+              loading={loading}
             />
             <ModuleCard
               icon={<NetworkIcon size={24} />}
               title={nav('network')}
-              description="Estruturas organizacionais"
+              description={t('networkDescription')}
               stats={[
-                { label: 'estruturas', value: 12 },
-                { label: 'tipos', value: 5 },
+                { label: t('structures'), value: networkStats?.totalStructures ?? '-' },
+                { label: t('types'), value: networkStats?.structureTypes ?? '-' },
               ]}
               href="/network"
               gradient="bg-gradient-to-br from-emerald-500/10 to-transparent"
+              loading={loading}
             />
             <ModuleCard
               icon={<GroupIcon size={24} />}
               title={nav('governance')}
-              description="Unidades e lideranças"
+              description={t('governanceDescription')}
               stats={[
-                { label: 'unidades', value: 24 },
-                { label: 'líderes', value: 18 },
+                { label: t('units'), value: totalUnits || '-' },
+                { label: t('members'), value: governanceStats?.totalMembers ?? '-' },
               ]}
               href="/governance/working-units"
               gradient="bg-gradient-to-br from-violet-500/10 to-transparent"
+              loading={loading}
             />
             <ModuleCard
               icon={<RocketIcon size={24} />}
               title={nav('execution')}
-              description="Eventos e gamificação"
+              description={t('executionDescription')}
               stats={[
-                { label: 'eventos', value: 8 },
-                { label: 'aprovações', value: 3 },
+                { label: t('events'), value: '-' },
               ]}
               href="/execution/events"
               gradient="bg-gradient-to-br from-amber-500/10 to-transparent"
+              loading={loading}
             />
           </div>
         </div>
@@ -277,63 +313,38 @@ export default function DashboardPage() {
             <QuickActionCard
               icon={<PlusIcon size={18} />}
               label={t('addUser')}
-              description="Novo membro"
+              description={t('newMember')}
               href="/identity/users/create"
               color="bg-blue-500/20 text-blue-400"
             />
             <QuickActionCard
               icon={<ShieldIcon size={18} />}
               label={nav('roles')}
-              description="Permissões"
+              description={t('permissions')}
               href="/identity/roles"
               color="bg-emerald-500/20 text-emerald-400"
             />
             <QuickActionCard
               icon={<CalendarIcon size={18} />}
               label={nav('events')}
-              description="Novo evento"
+              description={t('newEvent')}
               href="/execution/events"
               color="bg-violet-500/20 text-violet-400"
             />
             <QuickActionCard
               icon={<BarChartIcon size={18} />}
               label={nav('reports')}
-              description="Métricas"
+              description={t('metrics')}
               href="/reports/engagement"
               color="bg-amber-500/20 text-amber-400"
             />
             <QuickActionCard
               icon={<SettingsIcon size={18} />}
               label={nav('systemSettings')}
-              description="Configurar"
+              description={t('configure')}
               href="/settings/categories"
               color="bg-rose-500/20 text-rose-400"
             />
-          </div>
-
-          {/* Activity Card */}
-          <div className="rounded-xl bg-white/[0.02] border border-white/[0.06]" style={{ padding: '20px' }}>
-            <h3 className="text-sm font-semibold text-white" style={{ marginBottom: '16px' }}>Atividade Recente</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {[
-                { user: 'Maria Silva', action: 'criou usuário', time: '2min' },
-                { user: 'João Santos', action: 'atualizou perfil', time: '15min' },
-                { user: 'Ana Costa', action: 'aprovou', time: '1h' },
-              ].map((activity, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-semibold flex-shrink-0">
-                    {activity.user.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white">
-                      <span className="font-medium">{activity.user}</span>{' '}
-                      <span className="text-white/50">{activity.action}</span>
-                    </p>
-                    <p className="text-xs text-white/30">{activity.time} atrás</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

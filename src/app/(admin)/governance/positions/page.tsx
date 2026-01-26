@@ -225,7 +225,7 @@ export default function PositionsPage() {
                 {groupedPositions[group.id].map((position) => (
                   <div
                     key={position.id}
-                    className="flex items-center justify-between px-4 py-4 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:bg-white/[0.04] hover:border-white/[0.1] transition-all group"
+                    className="flex items-center justify-between px-4 py-4 bg-white/[0.02] border border-white/[0.06] rounded-xl hover:bg-gold/5 hover:border-gold/20 transition-all duration-200 cursor-pointer group"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <GripIcon size={16} className="text-white/20 flex-shrink-0 cursor-grab" />

@@ -347,7 +347,12 @@
     "actionAssignLeader": "Asignar Líder",
     "actionRemoveLeader": "Remover Líder",
     "unknownStructure": "Estructura Desconocida",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "quickActions": "Acciones Rápidas",
+    "createStructureHint": "Crear nueva estructura organizacional",
+    "manageTypes": "Gestionar tipos de estructura",
+    "scopes": "Ámbitos",
+    "configureScopesHint": "Configurar ámbitos geográficos"
   },
   "workingUnits": {
     "title": "Unidades de Trabajo",

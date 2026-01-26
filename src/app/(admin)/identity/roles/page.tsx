@@ -1,11 +1,109 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button, Card, Modal, Input, useToast } from '@/components/ui';
-import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon, ChevronRightIcon } from '@/components/icons';
+import { PlusIcon, EditIcon, TrashIcon, ShieldIcon, UsersIcon, CheckIcon, SaveIcon, ChevronRightIcon, SettingsIcon, GroupIcon } from '@/components/icons';
 import { Role, Permission } from '@/types/identity';
 import { rolesService, permissionsService } from '@/services/identity.service';
+
+// Stats Card Component (same style as Dashboard)
+function StatsCard({
+  label,
+  value,
+  subtitle,
+  icon,
+  loading,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ReactNode;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-300"
+      style={{ padding: '20px 24px' }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+            {label}
+          </p>
+          <div className="flex items-baseline gap-2">
+            {loading ? (
+              <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-2xl font-semibold text-white">{value}</span>
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-xs text-white/40">{subtitle}</p>
+          )}
+        </div>
+        <div className="p-2.5 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quick Action Card Component
+function QuickActionCard({
+  icon,
+  label,
+  description,
+  href,
+  color,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  href?: string;
+  color: string;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
+      <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-white group-hover:text-gold transition-colors">
+          {label}
+        </p>
+        {description && (
+          <p className="text-sm text-white/40 truncate">{description}</p>
+        )}
+      </div>
+      <ChevronRightIcon size={16} className="text-white/30 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300 w-full text-left"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href || '#'}
+      className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300"
+    >
+      {content}
+    </Link>
+  );
+}
 
 // Group permissions by resource
 const groupPermissions = (permissions: Permission[]) => {
@@ -240,6 +338,11 @@ export default function RolesPage() {
 
   const canDelete = !selectedRole?.isSystem && userCount === 0;
 
+  // Calculate stats
+  const systemRoles = roles.filter((r) => r.isSystem).length;
+  const customRoles = roles.length - systemRoles;
+  const totalPermissions = permissions.length;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -249,86 +352,130 @@ export default function RolesPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-light text-text-primary tracking-tight">
-              {t('title')}
-            </h1>
-            <p className="text-text-muted mt-2">
-              {t('subtitle')}
-            </p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f35] via-[#141824] to-[#0d1117]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
+
+        <div className="relative p-8 md:p-10">
+          {/* Top Label & Actions */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+              <span className="text-xs font-medium text-gold uppercase tracking-wider">
+                {t('title')}
+              </span>
+            </div>
+            <Button
+              leftIcon={<PlusIcon size={18} />}
+              onClick={() => setShowCreateModal(true)}
+            >
+              {t('newRole')}
+            </Button>
           </div>
-          <Button
-            leftIcon={<PlusIcon size={18} />}
-            onClick={() => setShowCreateModal(true)}
-          >
-            {t('newRole')}
-          </Button>
+
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-light text-white mb-3">
+            {t('title')}
+          </h1>
+          <p className="text-lg text-white/50 max-w-2xl">
+            {t('subtitle')}
+          </p>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <StatsCard
+              label={t('totalRoles')}
+              value={roles.length || '-'}
+              subtitle={`${customRoles} ${t('custom').toLowerCase()}`}
+              icon={<ShieldIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('systemRoles')}
+              value={systemRoles || '-'}
+              icon={<SettingsIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('customRoles')}
+              value={customRoles || '-'}
+              icon={<GroupIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('totalPermissions')}
+              value={totalPermissions || '-'}
+              icon={<CheckIcon size={20} />}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Main Layout */}
-      <div className="flex gap-8">
+      {/* Main Content Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '32px' }} className="lg:!grid-cols-4">
         {/* Sidebar - Roles List */}
-        <div className="w-80 flex-shrink-0">
-          <div className="sticky top-6">
-            <div className="mb-4">
-              <h2 className="text-sm font-medium text-text-muted uppercase tracking-wider">
-                {t('rolesCount')} ({roles.length})
-              </h2>
-            </div>
-
-            <div className="space-y-2">
-              {roles.map((role) => {
-                const isSelected = selectedRole?.id === role.id;
-                return (
-                  <button
-                    key={role.id}
-                    onClick={() => handleSelectRole(role)}
-                    className={`
-                      w-full text-left p-4 rounded-xl transition-all duration-200
-                      ${isSelected
-                        ? 'bg-background-card border-2 border-gold shadow-lg shadow-gold/5'
-                        : 'bg-background-card/50 border-2 border-transparent hover:bg-background-card hover:border-border'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`
-                        w-10 h-10 rounded-lg flex items-center justify-center
-                        ${isSelected ? 'bg-gold/20 text-gold' : 'bg-background-alt text-text-muted'}
-                      `}>
-                        <ShieldIcon size={20} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium ${isSelected ? 'text-gold' : 'text-text-primary'}`}>
-                            {role.name}
-                          </span>
-                          {role.isSystem && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-background-alt text-text-muted uppercase tracking-wide">
-                              {t('systemRole')}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-text-muted mt-0.5 truncate">
-                          {(role.permissions?.length || 0)} {t('permissions')}
-                        </p>
-                      </div>
-                      <ChevronRightIcon size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90' : ''}`} />
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+        <div className="lg:col-span-1" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('rolesCount')} ({roles.length})</h2>
           </div>
+
+          <Card className="!p-0 overflow-hidden">
+            <div className="p-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-2">
+                {roles.map((role) => {
+                  const isSelected = selectedRole?.id === role.id;
+                  return (
+                    <button
+                      key={role.id}
+                      onClick={() => handleSelectRole(role)}
+                      className={`
+                        w-full text-left p-4 rounded-xl transition-all duration-200
+                        ${isSelected
+                          ? 'bg-gold/10 border border-gold/30'
+                          : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05] hover:border-white/[0.08]'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`
+                          w-10 h-10 rounded-lg flex items-center justify-center
+                          ${isSelected ? 'bg-gold/20 text-gold' : 'bg-white/[0.05] text-text-muted'}
+                        `}>
+                          <ShieldIcon size={20} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium ${isSelected ? 'text-gold' : 'text-text-primary'}`}>
+                              {role.name}
+                            </span>
+                            {role.isSystem && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.05] text-text-muted uppercase tracking-wide">
+                                {t('systemRole')}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-text-muted mt-0.5 truncate">
+                            {(role.permissions?.length || 0)} {t('permissions')}
+                          </p>
+                        </div>
+                        <ChevronRightIcon size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90' : ''}`} />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Main Content - Permissions */}
-        <div className="flex-1 min-w-0">
+        <div className="lg:col-span-3" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {selectedRole ? (
             <div className="space-y-6">
               {/* Role Header Card */}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { Button, Card } from '@/components/ui';
 import {
@@ -12,11 +13,89 @@ import {
   UsersIcon,
   ShieldIcon,
   CheckIcon,
-  ClockIcon,
   GroupIcon,
+  SettingsIcon,
 } from '@/components/icons';
-import { structuresService, networkStatsService, structureTypesService } from '@/services/network.service';
+import { structuresService, networkStatsService } from '@/services/network.service';
 import { NetworkTreeNode, NetworkStats, StructureStatus } from '@/types/network';
+
+// Stats Card Component (same style as Dashboard)
+function StatsCard({
+  label,
+  value,
+  subtitle,
+  icon,
+  loading,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ReactNode;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-300"
+      style={{ padding: '20px 24px' }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+            {label}
+          </p>
+          <div className="flex items-baseline gap-2">
+            {loading ? (
+              <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-2xl font-semibold text-white">{value}</span>
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-xs text-white/40">{subtitle}</p>
+          )}
+        </div>
+        <div className="p-2.5 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quick Action Card Component
+function QuickActionCard({
+  icon,
+  label,
+  description,
+  href,
+  color,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  href: string;
+  color: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300"
+    >
+      <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-white group-hover:text-gold transition-colors">
+          {label}
+        </p>
+        {description && (
+          <p className="text-sm text-white/40 truncate">{description}</p>
+        )}
+      </div>
+      <ChevronRightIcon size={16} className="text-white/30 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+    </Link>
+  );
+}
 
 // Tree Node Component
 function TreeNode({
@@ -45,13 +124,13 @@ function TreeNode({
     <div className="select-none">
       <div
         className={`
-          flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all
+          flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200
           ${isSelected
             ? 'bg-gold/10 border border-gold/30'
-            : 'hover:bg-white/[0.03] border border-transparent'
+            : 'hover:bg-gold/5 hover:border-gold/20 border border-transparent'
           }
         `}
-        style={{ paddingLeft: `${level * 20 + 12}px` }}
+        style={{ paddingLeft: `${level * 24 + 16}px` }}
         onClick={() => onSelect(node.id)}
       >
         {hasChildren ? (
@@ -100,7 +179,7 @@ function TreeNode({
       </div>
 
       {hasChildren && isExpanded && (
-        <div>
+        <div className="mt-1 space-y-1">
           {node.children!.map((child) => (
             <TreeNode
               key={child.id}
@@ -116,36 +195,10 @@ function TreeNode({
   );
 }
 
-// Stats Card Component
-function StatCard({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl p-4">
-      <div className="flex items-center gap-3">
-        <div className={`p-2.5 rounded-lg ${color}`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-2xl font-light text-text-primary">{value}</p>
-          <p className="text-xs text-text-muted">{label}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function NetworkOverviewPage() {
   const router = useRouter();
   const t = useTranslations('network');
+  const nav = useTranslations('nav');
   const tCommon = useTranslations('common');
 
   const [treeData, setTreeData] = useState<NetworkTreeNode[]>([]);
@@ -206,89 +259,108 @@ export default function NetworkOverviewPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-text-muted">{tCommon('loading')}</div>
-      </div>
-    );
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-light text-text-primary tracking-tight">
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f35] via-[#141824] to-[#0d1117]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
+
+        <div className="relative p-8 md:p-10">
+          {/* Top Label */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+              <span className="text-xs font-medium text-gold uppercase tracking-wider">
+                {nav('network')}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => router.push('/network/structure-types')}
+              >
+                {t('structureTypes')}
+              </Button>
+              <Button
+                size="sm"
+                leftIcon={<PlusIcon size={16} />}
+                onClick={() => router.push('/network/structures/create')}
+              >
+                {t('newStructure')}
+              </Button>
+            </div>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-light text-white mb-3">
             {t('title')}
           </h1>
-          <p className="text-text-muted" style={{ marginTop: '8px' }}>
+          <p className="text-lg text-white/50 max-w-2xl">
             {t('subtitle')}
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => router.push('/network/structure-types')}
-          >
-            {t('structureTypes')}
-          </Button>
-          <Button
-            leftIcon={<PlusIcon size={18} />}
-            onClick={() => router.push('/network/structures/create')}
-          >
-            {t('newStructure')}
-          </Button>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
+            <StatsCard
+              label={t('totalStructures')}
+              value={stats?.totalStructures ?? '-'}
+              subtitle={stats ? `${stats.activeStructures} ${tCommon('active').toLowerCase()}` : undefined}
+              icon={<NetworkIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('activeStructures')}
+              value={stats?.activeStructures ?? '-'}
+              icon={<CheckIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('structureTypesCount')}
+              value={stats?.structureTypes ?? '-'}
+              icon={<ShieldIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('workingUnits')}
+              value={stats?.totalWorkingUnits ?? '-'}
+              icon={<GroupIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('leaders')}
+              value={stats?.approvalChains ?? '-'}
+              icon={<UsersIcon size={20} />}
+              loading={loading}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <StatCard
-            icon={<NetworkIcon size={20} className="text-blue-400" />}
-            label={t('totalStructures')}
-            value={stats.totalStructures}
-            color="bg-blue-500/10"
-          />
-          <StatCard
-            icon={<CheckIcon size={20} className="text-emerald-400" />}
-            label={t('activeStructures')}
-            value={stats.activeStructures}
-            color="bg-emerald-500/10"
-          />
-          <StatCard
-            icon={<ShieldIcon size={20} className="text-violet-400" />}
-            label={t('structureTypesCount')}
-            value={stats.structureTypes}
-            color="bg-violet-500/10"
-          />
-          <StatCard
-            icon={<GroupIcon size={20} className="text-gold" />}
-            label={t('workingUnits')}
-            value={stats.totalWorkingUnits || 0}
-            color="bg-gold/10"
-          />
-          <StatCard
-            icon={<UsersIcon size={20} className="text-cyan-400" />}
-            label={t('leaders')}
-            value={stats.approvalChains}
-            color="bg-cyan-500/10"
-          />
-        </div>
-      )}
+      {/* Main Content Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '32px' }} className="lg:!grid-cols-3">
+        {/* Tree View - Takes 2 columns */}
+        <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('networkHierarchy')}</h2>
+          </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Tree View */}
-        <div className="lg:col-span-2">
           <Card className="!p-0 overflow-hidden">
             <div className="p-4 border-b border-white/[0.05]">
-              <h2 className="text-lg font-medium text-text-primary">{t('networkHierarchy')}</h2>
-              <p className="text-sm text-text-muted mt-1">{t('networkHierarchyHint')}</p>
+              <p className="text-sm text-text-muted">{t('networkHierarchyHint')}</p>
             </div>
             <div className="p-4 max-h-[500px] overflow-y-auto">
-              {treeData.length > 0 ? (
+              {loading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="h-12 bg-white/[0.02] rounded-xl animate-pulse" />
+                  ))}
+                </div>
+              ) : treeData.length > 0 ? (
                 <div className="space-y-1">
                   {treeData.map((node) => (
                     <TreeNode
@@ -300,20 +372,25 @@ export default function NetworkOverviewPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 text-text-muted">
-                  {t('noStructures')}
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/[0.03] flex items-center justify-center">
+                    <NetworkIcon size={32} className="text-text-muted" />
+                  </div>
+                  <p className="text-text-muted text-sm">{t('noStructures')}</p>
                 </div>
               )}
             </div>
           </Card>
         </div>
 
-        {/* Selected Structure Panel */}
-        <div>
+        {/* Sidebar */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Structure Details Card */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('structureDetails')}</h2>
+          </div>
+
           <Card className="!p-0 overflow-hidden">
-            <div className="p-4 border-b border-white/[0.05]">
-              <h2 className="text-lg font-medium text-text-primary">{t('structureDetails')}</h2>
-            </div>
             <div className="p-4">
               {selectedStructureId ? (
                 <SelectedStructureInfo
@@ -322,15 +399,44 @@ export default function NetworkOverviewPage() {
                   treeData={treeData}
                 />
               ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/[0.03] flex items-center justify-center">
-                    <NetworkIcon size={32} className="text-text-muted" />
+                <div className="text-center py-8">
+                  <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-white/[0.03] flex items-center justify-center">
+                    <NetworkIcon size={28} className="text-text-muted" />
                   </div>
                   <p className="text-text-muted text-sm">{t('selectStructureHint')}</p>
                 </div>
               )}
             </div>
           </Card>
+
+          {/* Quick Actions */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <QuickActionCard
+              icon={<PlusIcon size={18} />}
+              label={t('newStructure')}
+              description={t('createStructureHint')}
+              href="/network/structures/create"
+              color="bg-emerald-500/20 text-emerald-400"
+            />
+            <QuickActionCard
+              icon={<ShieldIcon size={18} />}
+              label={t('structureTypes')}
+              description={t('manageTypes')}
+              href="/network/structure-types"
+              color="bg-violet-500/20 text-violet-400"
+            />
+            <QuickActionCard
+              icon={<SettingsIcon size={18} />}
+              label={t('scopes')}
+              description={t('configureScopesHint')}
+              href="/settings/scopes"
+              color="bg-amber-500/20 text-amber-400"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -383,7 +489,7 @@ function SelectedStructureInfo({
           <NetworkIcon size={24} />
         </div>
         <div>
-          <h3 className="text-lg font-medium text-text-primary">{node.name}</h3>
+          <h3 className="text-base font-medium text-text-primary">{node.name}</h3>
           <p className="text-sm text-text-muted">{node.type}</p>
         </div>
       </div>

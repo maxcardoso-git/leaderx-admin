@@ -14,6 +14,9 @@ import {
   LayersIcon,
   NetworkIcon,
   XIcon,
+  UsersIcon,
+  GroupIcon,
+  SettingsIcon,
 } from '@/components/icons';
 import { structuresService, structureTypesService } from '@/services/network.service';
 import {
@@ -23,6 +26,103 @@ import {
   UpdateStructureDto,
   NetworkTreeNode,
 } from '@/types/network';
+
+// Stats Card Component (same style as Dashboard)
+function StatsCard({
+  label,
+  value,
+  subtitle,
+  icon,
+  loading,
+}: {
+  label: string;
+  value: string | number;
+  subtitle?: string;
+  icon: React.ReactNode;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-300"
+      style={{ padding: '20px 24px' }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <p className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+            {label}
+          </p>
+          <div className="flex items-baseline gap-2">
+            {loading ? (
+              <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-2xl font-semibold text-white">{value}</span>
+            )}
+          </div>
+          {subtitle && (
+            <p className="text-xs text-white/40">{subtitle}</p>
+          )}
+        </div>
+        <div className="p-2.5 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
+          {icon}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Quick Action Card Component
+function QuickActionCard({
+  icon,
+  label,
+  description,
+  href,
+  color,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  description?: string;
+  href?: string;
+  color: string;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
+      <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
+        {icon}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-medium text-white group-hover:text-gold transition-colors">
+          {label}
+        </p>
+        {description && (
+          <p className="text-sm text-white/40 truncate">{description}</p>
+        )}
+      </div>
+      <ChevronRightIcon size={16} className="text-white/30 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300 w-full text-left"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href || '#'}
+      className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300"
+    >
+      {content}
+    </Link>
+  );
+}
 
 // Tag Input Component for Countries
 function TagInput({
@@ -120,8 +220,8 @@ function TreeNode({
     <div className="select-none">
       <div
         className={`
-          flex items-center gap-2 py-3 px-4 rounded-xl transition-all
-          hover:bg-white/[0.03] group
+          flex items-center gap-2 py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer
+          hover:bg-gold/5 hover:border-gold/20 group border border-transparent
           ${level === 0 ? 'bg-white/[0.02]' : ''}
         `}
         style={{ marginLeft: `${level * 24}px` }}
@@ -521,6 +621,26 @@ export default function StructuresPage() {
     return options;
   };
 
+  // Calculate stats from tree data
+  const countNodesInTree = (nodes: NetworkTreeNode[]): { total: number; active: number; types: Set<string> } => {
+    let total = 0;
+    let active = 0;
+    const types = new Set<string>();
+
+    const count = (nodeList: NetworkTreeNode[]) => {
+      for (const node of nodeList) {
+        total++;
+        if (node.status === 'ACTIVE') active++;
+        if (node.typeName) types.add(node.typeName);
+        if (node.children) count(node.children);
+      }
+    };
+    count(nodes);
+    return { total, active, types };
+  };
+
+  const treeStats = countNodesInTree(treeData);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -531,59 +651,155 @@ export default function StructuresPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Back Link */}
-      <Link
-        href="/network"
-        className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-text-primary transition-colors"
-      >
-        <ChevronLeftIcon size={16} />
-        {t('backToNetwork')}
-      </Link>
+      {/* Hero Header */}
+      <div className="relative overflow-hidden rounded-2xl">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1f35] via-[#141824] to-[#0d1117]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-gold/5 rounded-full blur-3xl" />
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-light text-text-primary tracking-tight">
-            {t('structures')}
-          </h1>
-          <p className="text-text-muted" style={{ marginTop: '8px' }}>
-            {t('structuresSubtitle')}
-          </p>
-        </div>
-        <Button leftIcon={<PlusIcon size={18} />} onClick={() => openCreateModal()}>
-          {t('newStructure')}
-        </Button>
-      </div>
-
-      {/* Tree View */}
-      {treeData.length === 0 ? (
-        <Card padding="xl">
-          <div className="text-center py-12">
-            <LayersIcon size={48} className="mx-auto text-white/20 mb-4" />
-            <p className="text-text-muted">{t('noStructures')}</p>
-            <Button className="mt-4" onClick={() => openCreateModal()}>
-              {t('createFirstStructure')}
+        <div className="relative p-8 md:p-10">
+          {/* Back Link & Actions */}
+          <div className="flex items-center justify-between mb-4">
+            <Link
+              href="/network"
+              className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-gold transition-colors"
+            >
+              <ChevronLeftIcon size={16} />
+              {t('backToNetwork')}
+            </Link>
+            <Button leftIcon={<PlusIcon size={18} />} onClick={() => openCreateModal()}>
+              {t('newStructure')}
             </Button>
           </div>
-        </Card>
-      ) : (
-        <Card className="!p-4">
-          <div className="space-y-1">
-            {treeData.map((node) => (
-              <TreeNode
-                key={node.id}
-                node={node}
-                level={0}
-                onEdit={openEditModal}
-                onDelete={openDeleteModal}
-                onAddChild={(parentId) => openCreateModal(parentId)}
-                expandedNodes={expandedNodes}
-                toggleExpand={toggleExpand}
-              />
-            ))}
+
+          {/* Title */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+            <span className="text-xs font-medium text-gold uppercase tracking-wider">
+              {t('structures')}
+            </span>
           </div>
-        </Card>
-      )}
+          <h1 className="text-4xl md:text-5xl font-light text-white mb-3">
+            {t('structures')}
+          </h1>
+          <p className="text-lg text-white/50 max-w-2xl">
+            {t('structuresSubtitle')}
+          </p>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <StatsCard
+              label={t('totalStructures')}
+              value={treeStats.total || '-'}
+              subtitle={`${treeStats.active} ${tCommon('active').toLowerCase()}`}
+              icon={<NetworkIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('activeStructures')}
+              value={treeStats.active || '-'}
+              icon={<LayersIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('structureTypesCount')}
+              value={structureTypes.length || '-'}
+              icon={<GroupIcon size={20} />}
+              loading={loading}
+            />
+            <StatsCard
+              label={t('rootStructures')}
+              value={treeData.length || '-'}
+              icon={<UsersIcon size={20} />}
+              loading={loading}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '32px' }} className="lg:!grid-cols-3">
+        {/* Tree View - Takes 2 columns */}
+        <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('networkHierarchy')}</h2>
+          </div>
+
+          {treeData.length === 0 ? (
+            <Card className="!p-0 overflow-hidden">
+              <div className="text-center py-12">
+                <LayersIcon size={48} className="mx-auto text-white/20 mb-4" />
+                <p className="text-text-muted">{t('noStructures')}</p>
+                <Button className="mt-4" onClick={() => openCreateModal()}>
+                  {t('createFirstStructure')}
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <Card className="!p-0 overflow-hidden">
+              <div className="p-4 border-b border-white/[0.05]">
+                <p className="text-sm text-text-muted">{t('structuresTreeHint')}</p>
+              </div>
+              <div className="p-4 max-h-[600px] overflow-y-auto">
+                <div className="space-y-1">
+                  {treeData.map((node) => (
+                    <TreeNode
+                      key={node.id}
+                      node={node}
+                      level={0}
+                      onEdit={openEditModal}
+                      onDelete={openDeleteModal}
+                      onAddChild={(parentId) => openCreateModal(parentId)}
+                      expandedNodes={expandedNodes}
+                      toggleExpand={toggleExpand}
+                    />
+                  ))}
+                </div>
+              </div>
+            </Card>
+          )}
+        </div>
+
+        {/* Sidebar - Quick Actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <QuickActionCard
+              icon={<PlusIcon size={18} />}
+              label={t('newStructure')}
+              description={t('createStructureHint')}
+              onClick={() => openCreateModal()}
+              color="bg-emerald-500/20 text-emerald-400"
+            />
+            <QuickActionCard
+              icon={<LayersIcon size={18} />}
+              label={t('structureTypes')}
+              description={t('manageTypes')}
+              href="/network/structure-types"
+              color="bg-violet-500/20 text-violet-400"
+            />
+            <QuickActionCard
+              icon={<SettingsIcon size={18} />}
+              label={t('scopes')}
+              description={t('configureScopesHint')}
+              href="/settings/scopes"
+              color="bg-amber-500/20 text-amber-400"
+            />
+            <QuickActionCard
+              icon={<NetworkIcon size={18} />}
+              label={t('networkOverview')}
+              description={t('viewNetworkHierarchy')}
+              href="/network"
+              color="bg-blue-500/20 text-blue-400"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Create Modal */}
       <Modal
