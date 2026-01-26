@@ -104,28 +104,35 @@ export default function CyclesPage() {
     });
   };
 
-  const cloneCycle = (cycle: Cycle) => {
-    setSelectedCycle(null);
-    setIsCreating(true);
-    const phaseBlocks = initializePhaseBlocks();
-    // Copy existing phaseBlocks
-    if (cycle.phaseBlocks) {
-      Object.keys(cycle.phaseBlocks).forEach((phaseKey) => {
-        if (phaseBlocks[phaseKey]) {
-          Object.keys(cycle.phaseBlocks![phaseKey]).forEach((blockKey) => {
-            if (phaseBlocks[phaseKey][blockKey] !== undefined) {
-              phaseBlocks[phaseKey][blockKey] = cycle.phaseBlocks![phaseKey][blockKey];
-            }
-          });
-        }
+  const cloneCycle = async (cycle: Cycle) => {
+    try {
+      const phaseBlocks = initializePhaseBlocks();
+      // Copy existing phaseBlocks
+      if (cycle.phaseBlocks) {
+        Object.keys(cycle.phaseBlocks).forEach((phaseKey) => {
+          if (phaseBlocks[phaseKey]) {
+            Object.keys(cycle.phaseBlocks![phaseKey]).forEach((blockKey) => {
+              if (phaseBlocks[phaseKey][blockKey] !== undefined) {
+                phaseBlocks[phaseKey][blockKey] = cycle.phaseBlocks![phaseKey][blockKey];
+              }
+            });
+          }
+        });
+      }
+
+      // Create the cloned cycle directly
+      await cyclesService.create({
+        name: `${cycle.name} (Cópia)`,
+        description: cycle.description || '',
+        isDefault: false,
+        phaseBlocks,
       });
+
+      // Reload and the new cycle will appear in the list
+      await loadCycles();
+    } catch (error) {
+      console.error('Failed to clone cycle:', error);
     }
-    setFormData({
-      name: `${cycle.name} (Cópia)`,
-      description: cycle.description || '',
-      isDefault: false,
-      phaseBlocks,
-    });
   };
 
   const handleSave = async () => {
