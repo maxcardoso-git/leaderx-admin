@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { Button, Card, CardHeader } from '@/components/ui';
@@ -589,28 +589,33 @@ function ClickableElement({
   children,
   className,
   style,
-  as: Component = 'div',
+  as: tag = 'div',
   onSelect,
 }: {
   selector: string;
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof React.JSX.IntrinsicElements;
   onSelect: (selector: string) => void;
 }) {
-  return (
-    <Component
-      className={`${className || ''} cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50 hover:outline-offset-2 transition-all`}
-      style={style}
-      onClick={(e: React.MouseEvent) => {
-        e.stopPropagation();
-        onSelect(selector);
-      }}
-      title={`Clique para localizar: ${selector}`}
-    >
-      {children}
-    </Component>
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelect(selector);
+  };
+
+  const combinedClassName = `${className || ''} cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50 hover:outline-offset-2 transition-all`;
+
+  // Use React.createElement to avoid TypeScript issues with dynamic JSX tags
+  return React.createElement(
+    tag,
+    {
+      className: combinedClassName,
+      style,
+      onClick: handleClick,
+      title: `Clique para localizar: ${selector}`,
+    },
+    children
   );
 }
 
