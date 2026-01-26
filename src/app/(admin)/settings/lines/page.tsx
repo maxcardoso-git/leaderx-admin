@@ -3,9 +3,43 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Card, Modal, Input } from '@/components/ui';
-import { PlusIcon, EditIcon, TrashIcon, LayersIcon, CheckIcon } from '@/components/icons';
+import { PlusIcon, EditIcon, TrashIcon, LayersIcon } from '@/components/icons';
 import { Line, CreateLineDto, UpdateLineDto, EVENT_BLOCKS_CATALOG } from '@/types/settings';
 import { linesService } from '@/services/settings.service';
+
+// Toggle Switch Component
+function ToggleSwitch({
+  checked,
+  onChange,
+  label
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onChange}
+      className="flex items-center justify-between w-full px-4 py-3 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] rounded-xl transition-all group"
+    >
+      <span className={`text-sm transition-colors ${checked ? 'text-white' : 'text-white/50'}`}>
+        {label}
+      </span>
+      <div
+        className={`relative w-11 h-6 rounded-full transition-colors ${
+          checked ? 'bg-gold' : 'bg-white/10'
+        }`}
+      >
+        <div
+          className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${
+            checked ? 'left-6' : 'left-1'
+          }`}
+        />
+      </div>
+    </button>
+  );
+}
 
 export default function LinesPage() {
   const t = useTranslations('systemSettings.lines');
@@ -98,7 +132,7 @@ export default function LinesPage() {
     }
   };
 
-  const toggleEventBlock = (blockKey: string) => {
+  const toggleBlock = (blockKey: string) => {
     setFormData({
       ...formData,
       allowedBlocks: {
@@ -126,13 +160,23 @@ export default function LinesPage() {
     {} as Record<string, typeof EVENT_BLOCKS_CATALOG>
   );
 
+  // Define group colors for visual distinction
+  const groupColors: Record<string, string> = {
+    'Essencial': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    'Configuração': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+    'Comercial': 'bg-green-500/10 text-green-400 border-green-500/20',
+    'Operacional': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+    'Financeiro': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    'Marketing': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div className="flex flex-col gap-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-2xl font-semibold text-text-primary">{t('title')}</h1>
-          <p className="text-sm text-text-muted" style={{ marginTop: '8px' }}>{t('subtitle')}</p>
+          <p className="text-sm text-text-muted mt-2">{t('subtitle')}</p>
         </div>
         <Button leftIcon={<PlusIcon size={18} />} onClick={openCreateModal}>
           {t('newLine')}
@@ -141,73 +185,91 @@ export default function LinesPage() {
 
       {/* Lines Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-40 bg-white/[0.02] rounded-xl animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-48 bg-white/[0.02] rounded-xl animate-pulse" />
           ))}
         </div>
       ) : lines.length === 0 ? (
         <Card padding="xl">
-          <div className="text-center py-12">
-            <LayersIcon size={48} className="mx-auto text-white/20 mb-4" />
-            <p className="text-text-muted">{t('noLines')}</p>
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/[0.04] flex items-center justify-center">
+              <LayersIcon size={32} className="text-white/20" />
+            </div>
+            <h3 className="text-lg font-medium text-white/80 mb-2">{t('noLines')}</h3>
+            <p className="text-sm text-text-muted mb-6">Crie uma linha para configurar os blocos permitidos em eventos</p>
+            <Button leftIcon={<PlusIcon size={18} />} onClick={openCreateModal}>
+              {t('newLine')}
+            </Button>
           </div>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {lines.map((line) => (
-            <Card key={line.id} padding="lg" hover>
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-gold/10 rounded-lg">
-                    <LayersIcon size={20} className="text-gold" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-text-primary">{line.name}</h3>
-                    {line.description && (
-                      <p className="text-sm text-text-muted mt-1 line-clamp-2">
-                        {line.description}
+            <Card key={line.id} padding="none" hover className="overflow-hidden">
+              {/* Card Header */}
+              <div className="p-5 border-b border-white/[0.06]">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center">
+                      <LayersIcon size={20} className="text-gold" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-white">{line.name}</h3>
+                      <p className="text-xs text-text-muted mt-0.5">
+                        {getEnabledBlocksCount(line)} blocos ativos
                       </p>
-                    )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => openEditModal(line)}
+                      className="p-2 rounded-lg text-white/40 hover:text-gold hover:bg-white/[0.04] transition-all"
+                      title={common('edit')}
+                    >
+                      <EditIcon size={16} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setDeletingLine(line);
+                        setShowDeleteModal(true);
+                      }}
+                      className="p-2 rounded-lg text-white/40 hover:text-red-400 hover:bg-white/[0.04] transition-all"
+                      title={common('delete')}
+                    >
+                      <TrashIcon size={16} />
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => openEditModal(line)}
-                    className="p-2 rounded-lg text-text-muted hover:text-gold hover:bg-background-hover transition-colors"
-                    title={common('edit')}
-                  >
-                    <EditIcon size={16} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setDeletingLine(line);
-                      setShowDeleteModal(true);
-                    }}
-                    className="p-2 rounded-lg text-text-muted hover:text-error hover:bg-background-hover transition-colors"
-                    title={common('delete')}
-                  >
-                    <TrashIcon size={16} />
-                  </button>
-                </div>
+                {line.description && (
+                  <p className="text-sm text-text-muted mt-3 line-clamp-2">
+                    {line.description}
+                  </p>
+                )}
               </div>
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="flex items-center justify-between text-xs text-text-muted">
-                  <span>{t('enabledBlocks')}</span>
-                  <span className="text-gold font-medium">
-                    {getEnabledBlocksCount(line)} / {EVENT_BLOCKS_CATALOG.length}
-                  </span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {EVENT_BLOCKS_CATALOG.filter((block) => line.allowedBlocks?.[block.key]).map(
-                    (block) => (
+
+              {/* Card Body - Enabled Blocks */}
+              <div className="p-4 bg-white/[0.01]">
+                <div className="flex flex-wrap gap-1.5">
+                  {EVENT_BLOCKS_CATALOG.filter((block) => line.allowedBlocks?.[block.key])
+                    .slice(0, 6)
+                    .map((block) => (
                       <span
                         key={block.key}
-                        className="px-2 py-0.5 text-xs bg-gold/10 text-gold rounded"
+                        className={`px-2 py-1 text-xs rounded-md border ${
+                          groupColors[block.subLabel || 'Outros'] || 'bg-white/5 text-white/60 border-white/10'
+                        }`}
                       >
                         {block.label}
                       </span>
-                    )
+                    ))}
+                  {getEnabledBlocksCount(line) > 6 && (
+                    <span className="px-2 py-1 text-xs rounded-md bg-white/5 text-white/40 border border-white/10">
+                      +{getEnabledBlocksCount(line) - 6}
+                    </span>
+                  )}
+                  {getEnabledBlocksCount(line) === 0 && (
+                    <span className="text-xs text-white/30 italic">Nenhum bloco ativo</span>
                   )}
                 </div>
               </div>
@@ -227,63 +289,72 @@ export default function LinesPage() {
             <Button variant="ghost" onClick={() => setShowModal(false)}>
               {common('cancel')}
             </Button>
-            <Button onClick={handleSave} isLoading={isSaving}>
+            <Button onClick={handleSave} isLoading={isSaving} disabled={!formData.name.trim()}>
               {common('save')}
             </Button>
           </>
         }
       >
         <div className="space-y-6">
-          <Input
-            label={t('name')}
-            placeholder={t('namePlaceholder')}
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-          />
-          <div>
-            <label className="block text-sm text-white/60 mb-2">{t('description')}</label>
-            <textarea
-              className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-white/30 focus:border-gold/50 focus:bg-white/[0.06] focus:outline-none transition-all resize-none"
-              rows={2}
-              placeholder={t('descriptionPlaceholder')}
-              value={formData.description || ''}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          {/* Basic Info Section */}
+          <div className="space-y-4">
+            <Input
+              label={t('name')}
+              placeholder={t('namePlaceholder')}
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
             />
+            <div>
+              <label className="block text-sm text-white/60 mb-2">{t('description')}</label>
+              <textarea
+                className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-white/30 focus:border-gold/50 focus:bg-white/[0.06] focus:outline-none transition-all resize-none"
+                rows={2}
+                placeholder={t('descriptionPlaceholder')}
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
           </div>
 
-          {/* Event Blocks Toggle Matrix */}
+          {/* Divider */}
+          <div className="border-t border-white/[0.06]" />
+
+          {/* Event Blocks Section */}
           <div>
-            <label className="block text-sm text-white/60 mb-4">{t('eventBlocks')}</label>
-            <div className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-medium text-white">{t('eventBlocks')}</h3>
+                <p className="text-xs text-white/40 mt-1">
+                  {Object.values(formData.allowedBlocks || {}).filter(Boolean).length} de {EVENT_BLOCKS_CATALOG.length} blocos ativos
+                </p>
+              </div>
+            </div>
+
+            {/* Blocks Grid by Category */}
+            <div className="space-y-5">
               {Object.entries(groupedBlocks).map(([group, blocks]) => (
-                <div key={group}>
-                  <h4 className="text-xs font-medium text-text-muted uppercase tracking-wider mb-3">
-                    {group}
-                  </h4>
-                  <div className="grid grid-cols-2 gap-2">
+                <div key={group} className="rounded-xl border border-white/[0.06] overflow-hidden">
+                  {/* Group Header */}
+                  <div className={`px-4 py-2.5 border-b border-white/[0.06] ${
+                    groupColors[group]?.split(' ')[0] || 'bg-white/[0.02]'
+                  }`}>
+                    <h4 className={`text-xs font-semibold uppercase tracking-wider ${
+                      groupColors[group]?.split(' ')[1] || 'text-white/60'
+                    }`}>
+                      {group}
+                    </h4>
+                  </div>
+
+                  {/* Group Blocks */}
+                  <div className="p-2 space-y-1 bg-white/[0.01]">
                     {blocks.map((block) => (
-                      <button
+                      <ToggleSwitch
                         key={block.key}
-                        type="button"
-                        onClick={() => toggleEventBlock(block.key)}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg border transition-all text-left ${
-                          formData.allowedBlocks?.[block.key]
-                            ? 'bg-gold/10 border-gold/30 text-white'
-                            : 'bg-white/[0.02] border-white/[0.08] text-text-muted hover:border-white/20'
-                        }`}
-                      >
-                        <div
-                          className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
-                            formData.allowedBlocks?.[block.key]
-                              ? 'bg-gold text-black'
-                              : 'bg-white/10'
-                          }`}
-                        >
-                          {formData.allowedBlocks?.[block.key] && <CheckIcon size={14} />}
-                        </div>
-                        <span className="text-sm">{block.label}</span>
-                      </button>
+                        checked={formData.allowedBlocks?.[block.key] || false}
+                        onChange={() => toggleBlock(block.key)}
+                        label={block.label}
+                      />
                     ))}
                   </div>
                 </div>
