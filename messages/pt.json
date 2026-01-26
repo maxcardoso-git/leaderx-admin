@@ -207,7 +207,12 @@
     "of": "de",
     "removeUsersWarning": "Remova todos os usuários desta função antes de excluí-la.",
     "roleCreated": "Função criada com sucesso!",
-    "roleDeleted": "Função excluída com sucesso!"
+    "roleDeleted": "Função excluída com sucesso!",
+    "totalRoles": "Total de Funções",
+    "custom": "Personalizado",
+    "systemRoles": "Funções do Sistema",
+    "customRoles": "Funções Personalizadas",
+    "totalPermissions": "Total de Permissões"
   },
   "permissions": {
     "Users": "Usuarios",
@@ -378,6 +383,7 @@
     "edit": "Editar",
     "delete": "Excluir",
     "cannotDeleteWithActiveStructures": "Não é possível excluir: existem estruturas ativas deste tipo",
+    "notDefined": "Não definido",
     "iconColor": "Cor do Ícone",
     "iconColorHint": "Define a cor do ícone que representa este tipo de estrutura",
     "quickActions": "Ações Rápidas",

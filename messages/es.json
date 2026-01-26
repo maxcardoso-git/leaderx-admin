@@ -196,7 +196,14 @@
     "failedToDeleteRole": "Error al eliminar rol.",
     "editRole": "Editar Rol",
     "of": "de",
-    "removeUsersWarning": "Elimina todos los usuarios de este rol antes de eliminarlo."
+    "removeUsersWarning": "Elimina todos los usuarios de este rol antes de eliminarlo.",
+    "roleCreated": "¡Rol creado exitosamente!",
+    "roleDeleted": "¡Rol eliminado exitosamente!",
+    "totalRoles": "Total de Roles",
+    "custom": "Personalizado",
+    "systemRoles": "Roles del Sistema",
+    "customRoles": "Roles Personalizados",
+    "totalPermissions": "Total de Permisos"
   },
   "permissions": {
     "Users": "Usuarios",
@@ -356,7 +363,8 @@
     "rootStructures": "Estructuras Raíz",
     "structuresTreeHint": "Navega por la jerarquía de estructuras",
     "networkOverview": "Visión General de la Red",
-    "viewNetworkHierarchy": "Ver jerarquía de la red"
+    "viewNetworkHierarchy": "Ver jerarquía de la red",
+    "notDefined": "No definido"
   },
   "workingUnits": {
     "title": "Unidades de Trabajo",

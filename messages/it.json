@@ -196,7 +196,14 @@
     "failedToDeleteRole": "Errore nell'eliminazione del ruolo.",
     "editRole": "Modifica Ruolo",
     "of": "di",
-    "removeUsersWarning": "Rimuovi tutti gli utenti da questo ruolo prima di eliminarlo."
+    "removeUsersWarning": "Rimuovi tutti gli utenti da questo ruolo prima di eliminarlo.",
+    "roleCreated": "Ruolo creato con successo!",
+    "roleDeleted": "Ruolo eliminato con successo!",
+    "totalRoles": "Totale Ruoli",
+    "custom": "Personalizzato",
+    "systemRoles": "Ruoli di Sistema",
+    "customRoles": "Ruoli Personalizzati",
+    "totalPermissions": "Totale Permessi"
   },
   "permissions": {
     "Users": "Utenti",
@@ -356,7 +363,8 @@
     "rootStructures": "Strutture Radice",
     "structuresTreeHint": "Naviga nella gerarchia delle strutture",
     "networkOverview": "Panoramica della Rete",
-    "viewNetworkHierarchy": "Visualizza gerarchia della rete"
+    "viewNetworkHierarchy": "Visualizza gerarchia della rete",
+    "notDefined": "Non definito"
   },
   "workingUnits": {
     "title": "Unita di Lavoro",

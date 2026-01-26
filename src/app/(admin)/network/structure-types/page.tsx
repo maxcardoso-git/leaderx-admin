@@ -162,9 +162,18 @@ export default function StructureTypesPage() {
   };
 
   const getScopeLabel = (scope?: StructureScope) => {
-    if (!scope) return '-';
+    if (!scope) return null;
     const option = scopeOptions.find((o) => o.value === scope);
     return option?.label || scope;
+  };
+
+  const getLeadershipRoleName = (type: StructureType) => {
+    if (type.leadershipRole?.name) return type.leadershipRole.name;
+    if (type.leadershipRoleId) {
+      const position = positions.find((p) => p.id === type.leadershipRoleId);
+      return position?.name || null;
+    }
+    return null;
   };
 
   if (loading) {
@@ -259,20 +268,32 @@ export default function StructureTypesPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-xs px-2 py-1 rounded-full bg-white/[0.05] text-text-muted">
-                      {getScopeLabel(type.scope)}
-                    </span>
+                    {getScopeLabel(type.scope) ? (
+                      <span className="text-xs px-2 py-1 rounded-full bg-gold/10 text-gold">
+                        {getScopeLabel(type.scope)}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-text-muted italic">{t('notDefined')}</span>
+                    )}
                   </td>
-                  <td className="px-6 py-4 text-sm text-text-primary">
-                    {type.hierarchyLevel || scopeOptions.find((o) => o.value === type.scope)?.level || '-'}
+                  <td className="px-6 py-4 text-sm">
+                    {type.hierarchyLevel || scopeOptions.find((o) => o.value === type.scope)?.level ? (
+                      <span className="text-text-primary font-medium">
+                        {type.hierarchyLevel || scopeOptions.find((o) => o.value === type.scope)?.level}
+                      </span>
+                    ) : (
+                      <span className="text-text-muted italic">{t('notDefined')}</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <ShieldIcon size={14} className="text-text-muted" />
-                      <span className="text-sm text-text-primary">
-                        {type.leadershipRole?.name || positions.find((p) => p.id === type.leadershipRoleId)?.name || '-'}
-                      </span>
-                    </div>
+                    {getLeadershipRoleName(type) ? (
+                      <div className="flex items-center gap-2">
+                        <ShieldIcon size={14} className="text-gold" />
+                        <span className="text-sm text-text-primary">{getLeadershipRoleName(type)}</span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-text-muted italic">{t('notDefined')}</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-text-primary">
                     {type.maxLeaders}

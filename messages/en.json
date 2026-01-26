@@ -195,7 +195,14 @@
     "failedToDeleteRole": "Failed to delete role.",
     "editRole": "Edit Role",
     "of": "of",
-    "removeUsersWarning": "Remove all users from this role before deleting."
+    "removeUsersWarning": "Remove all users from this role before deleting.",
+    "roleCreated": "Role created successfully!",
+    "roleDeleted": "Role deleted successfully!",
+    "totalRoles": "Total Roles",
+    "custom": "Custom",
+    "systemRoles": "System Roles",
+    "customRoles": "Custom Roles",
+    "totalPermissions": "Total Permissions"
   },
   "permissions": {
     "Users": "Users",
@@ -356,7 +363,8 @@
     "rootStructures": "Root Structures",
     "structuresTreeHint": "Navigate through the structure hierarchy",
     "networkOverview": "Network Overview",
-    "viewNetworkHierarchy": "View network hierarchy"
+    "viewNetworkHierarchy": "View network hierarchy",
+    "notDefined": "Not defined"
   },
   "workingUnits": {
     "title": "Working Units",
