@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { Button, Card, CardHeader } from '@/components/ui';
 import { themeService } from '@/services/theme.service';
+import type { editor } from 'monaco-editor';
 
 // Dynamic import Monaco Editor to avoid SSR issues
 const MonacoEditor = dynamic(
@@ -327,6 +328,42 @@ export default function AppearanceSettingsPage() {
   const [errors, setErrors] = useState<CSSValidationError[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+
+  // Find CSS selector in editor and highlight it
+  const findCSSSelector = useCallback((selector: string) => {
+    if (!editorRef.current) return;
+
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    // Search for the selector in the CSS code
+    const searchText = selector.includes('{') ? selector : `${selector}`;
+    const matches = model.findMatches(searchText, false, false, false, null, false);
+
+    if (matches.length > 0) {
+      const match = matches[0];
+      // Scroll to the line and highlight
+      editorRef.current.revealLineInCenter(match.range.startLineNumber);
+      editorRef.current.setSelection(match.range);
+      editorRef.current.focus();
+    } else {
+      // Try searching for just the class/selector name without special characters
+      const simplifiedSelector = selector.replace(/[.#\[\]]/g, '');
+      const simpleMatches = model.findMatches(simplifiedSelector, false, false, false, null, false);
+      if (simpleMatches.length > 0) {
+        const match = simpleMatches[0];
+        editorRef.current.revealLineInCenter(match.range.startLineNumber);
+        editorRef.current.setSelection(match.range);
+        editorRef.current.focus();
+      }
+    }
+  }, []);
+
+  // Handle editor mount
+  const handleEditorMount = useCallback((editor: editor.IStandaloneCodeEditor) => {
+    editorRef.current = editor;
+  }, []);
 
   // Load saved theme on mount
   useEffect(() => {
@@ -509,6 +546,7 @@ export default function AppearanceSettingsPage() {
               defaultLanguage="css"
               value={cssCode}
               onChange={handleCSSChange}
+              onMount={handleEditorMount}
               theme="vs-dark"
               options={{
                 minimap: { enabled: false },
@@ -537,7 +575,7 @@ export default function AppearanceSettingsPage() {
             </p>
           </div>
           <div className="h-[500px] overflow-auto">
-            <StylePreview key={previewKey} css={cssCode} />
+            <StylePreview key={previewKey} css={cssCode} onSelectCSS={findCSSSelector} />
           </div>
         </Card>
       </div>
@@ -545,8 +583,39 @@ export default function AppearanceSettingsPage() {
   );
 }
 
+// Clickable preview element wrapper
+function ClickableElement({
+  selector,
+  children,
+  className,
+  style,
+  as: Component = 'div',
+  onSelect,
+}: {
+  selector: string;
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  as?: keyof JSX.IntrinsicElements;
+  onSelect: (selector: string) => void;
+}) {
+  return (
+    <Component
+      className={`${className || ''} cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50 hover:outline-offset-2 transition-all`}
+      style={style}
+      onClick={(e: React.MouseEvent) => {
+        e.stopPropagation();
+        onSelect(selector);
+      }}
+      title={`Clique para localizar: ${selector}`}
+    >
+      {children}
+    </Component>
+  );
+}
+
 // Preview Component
-function StylePreview({ css }: { css: string }) {
+function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selector: string) => void }) {
   // Scope all CSS selectors to the preview container to avoid conflicts
   const scopedCSS = css
     // Scope body selector to preview
@@ -568,121 +637,199 @@ function StylePreview({ css }: { css: string }) {
         <div className="text-center mb-8 pb-8" style={{ borderBottom: '1px solid var(--card-border)' }}>
           {/* Logo */}
           <div className="logo mb-4">
-            <h2 className="logo-text">
-              LEADER<span>X</span>
-            </h2>
-            <p className="tagline">exponential leadership</p>
+            <ClickableElement selector=".logo-text" as="h2" className="logo-text" onSelect={onSelectCSS}>
+              LEADER<span onClick={(e) => { e.stopPropagation(); onSelectCSS('.logo-text span'); }}>X</span>
+            </ClickableElement>
+            <ClickableElement selector=".tagline" as="p" className="tagline" onSelect={onSelectCSS}>
+              exponential leadership
+            </ClickableElement>
           </div>
 
           {/* Main Title */}
-          <h1 className="main-title" style={{ fontSize: '2rem', margin: '16px 0' }}>
+          <ClickableElement selector=".main-title" as="h1" className="main-title" style={{ fontSize: '2rem', margin: '16px 0' }} onSelect={onSelectCSS}>
             O Futuro da Liderança <br />
-            <span className="italic-gold">está sendo reescrito.</span>
-          </h1>
+            <span className="italic-gold" onClick={(e) => { e.stopPropagation(); onSelectCSS('.italic-gold'); }}>está sendo reescrito.</span>
+          </ClickableElement>
 
           {/* Status Pill */}
-          <div className="status-pill" style={{ padding: '8px 20px', fontSize: '0.8rem' }}>
-            <span className="dot"></span>
+          <ClickableElement selector=".status-pill" className="status-pill" style={{ padding: '8px 20px', fontSize: '0.8rem' }} onSelect={onSelectCSS}>
+            <span className="dot" onClick={(e) => { e.stopPropagation(); onSelectCSS('.dot'); }}></span>
             Em desenvolvimento por <strong>Hans Werner</strong>
-          </div>
+          </ClickableElement>
         </div>
 
         {/* Headings Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Títulos</div>
-          <h1 className="preview-h1">Título Principal (H1)</h1>
-          <h2 className="preview-h2">Título Secundário (H2)</h2>
-          <h3 className="preview-h3">Título Terciário (H3)</h3>
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Títulos
+          </ClickableElement>
+          <ClickableElement selector=".preview-h1" as="h1" className="preview-h1" onSelect={onSelectCSS}>
+            Título Principal (H1)
+          </ClickableElement>
+          <ClickableElement selector=".preview-h2" as="h2" className="preview-h2" onSelect={onSelectCSS}>
+            Título Secundário (H2)
+          </ClickableElement>
+          <ClickableElement selector=".preview-h3" as="h3" className="preview-h3" onSelect={onSelectCSS}>
+            Título Terciário (H3)
+          </ClickableElement>
         </div>
 
         {/* Cards Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Cards</div>
-          <div className="preview-card">
-            <div className="preview-card-title">Card de Estatísticas</div>
-            <div className="preview-card-text">
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Cards
+          </ClickableElement>
+          <ClickableElement selector=".preview-card" className="preview-card" onSelect={onSelectCSS}>
+            <ClickableElement selector=".preview-card-title" className="preview-card-title" onSelect={onSelectCSS}>
+              Card de Estatísticas
+            </ClickableElement>
+            <ClickableElement selector=".preview-card-text" className="preview-card-text" onSelect={onSelectCSS}>
               Visualize métricas importantes em tempo real.
-            </div>
-            <div className="preview-card-stats">
-              <div className="preview-stat">
-                <div className="preview-stat-value">1,234</div>
-                <div className="preview-stat-label">Usuários</div>
-              </div>
-              <div className="preview-stat">
-                <div className="preview-stat-value">56</div>
-                <div className="preview-stat-label">Grupos</div>
-              </div>
-              <div className="preview-stat">
-                <div className="preview-stat-value">89%</div>
-                <div className="preview-stat-label">Engajamento</div>
-              </div>
-            </div>
-          </div>
+            </ClickableElement>
+            <ClickableElement selector=".preview-card-stats" className="preview-card-stats" onSelect={onSelectCSS}>
+              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
+                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
+                  1,234
+                </ClickableElement>
+                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
+                  Usuários
+                </ClickableElement>
+              </ClickableElement>
+              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
+                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
+                  56
+                </ClickableElement>
+                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
+                  Grupos
+                </ClickableElement>
+              </ClickableElement>
+              <ClickableElement selector=".preview-stat" className="preview-stat" onSelect={onSelectCSS}>
+                <ClickableElement selector=".preview-stat-value" className="preview-stat-value" onSelect={onSelectCSS}>
+                  89%
+                </ClickableElement>
+                <ClickableElement selector=".preview-stat-label" className="preview-stat-label" onSelect={onSelectCSS}>
+                  Engajamento
+                </ClickableElement>
+              </ClickableElement>
+            </ClickableElement>
+          </ClickableElement>
         </div>
 
         {/* Buttons Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Botões</div>
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Botões
+          </ClickableElement>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <button className="preview-btn preview-btn-primary">Primário</button>
-            <button className="preview-btn preview-btn-secondary">Secundário</button>
-            <button className="preview-btn preview-btn-outline">Outline</button>
-            <button className="preview-btn preview-btn-ghost">Ghost</button>
+            <ClickableElement selector=".preview-btn-primary" as="button" className="preview-btn preview-btn-primary" onSelect={onSelectCSS}>
+              Primário
+            </ClickableElement>
+            <ClickableElement selector=".preview-btn-secondary" as="button" className="preview-btn preview-btn-secondary" onSelect={onSelectCSS}>
+              Secundário
+            </ClickableElement>
+            <ClickableElement selector=".preview-btn-outline" as="button" className="preview-btn preview-btn-outline" onSelect={onSelectCSS}>
+              Outline
+            </ClickableElement>
+            <ClickableElement selector=".preview-btn-ghost" as="button" className="preview-btn preview-btn-ghost" onSelect={onSelectCSS}>
+              Ghost
+            </ClickableElement>
           </div>
         </div>
 
         {/* Badges Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Badges / Status</div>
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Badges / Status
+          </ClickableElement>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span className="preview-badge preview-badge-success">Ativo</span>
-            <span className="preview-badge preview-badge-error">Inativo</span>
-            <span className="preview-badge preview-badge-warning">Pendente</span>
-            <span className="preview-badge preview-badge-gold">Premium</span>
+            <ClickableElement selector=".preview-badge-success" as="span" className="preview-badge preview-badge-success" onSelect={onSelectCSS}>
+              Ativo
+            </ClickableElement>
+            <ClickableElement selector=".preview-badge-error" as="span" className="preview-badge preview-badge-error" onSelect={onSelectCSS}>
+              Inativo
+            </ClickableElement>
+            <ClickableElement selector=".preview-badge-warning" as="span" className="preview-badge preview-badge-warning" onSelect={onSelectCSS}>
+              Pendente
+            </ClickableElement>
+            <ClickableElement selector=".preview-badge-gold" as="span" className="preview-badge preview-badge-gold" onSelect={onSelectCSS}>
+              Premium
+            </ClickableElement>
           </div>
         </div>
 
         {/* Form Inputs Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Formulário</div>
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Formulário
+          </ClickableElement>
           <div style={{ display: 'grid', gap: '16px' }}>
             <div>
-              <label className="preview-label">Nome</label>
-              <input type="text" className="preview-input" placeholder="Digite seu nome..." />
+              <ClickableElement selector=".preview-label" as="label" className="preview-label" onSelect={onSelectCSS}>
+                Nome
+              </ClickableElement>
+              <input
+                type="text"
+                className="preview-input cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+                placeholder="Digite seu nome..."
+                onClick={() => onSelectCSS('.preview-input')}
+                title="Clique para localizar: .preview-input"
+                readOnly
+              />
             </div>
             <div>
-              <label className="preview-label">Email</label>
-              <input type="email" className="preview-input" placeholder="exemplo@email.com" />
+              <ClickableElement selector=".preview-label" as="label" className="preview-label" onSelect={onSelectCSS}>
+                Email
+              </ClickableElement>
+              <input
+                type="email"
+                className="preview-input cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+                placeholder="exemplo@email.com"
+                onClick={() => onSelectCSS('.preview-input')}
+                title="Clique para localizar: .preview-input"
+                readOnly
+              />
             </div>
           </div>
         </div>
 
         {/* Table Section */}
         <div className="mb-6">
-          <div className="preview-section-title">Tabela</div>
-          <table className="preview-table">
+          <ClickableElement selector=".preview-section-title" className="preview-section-title" onSelect={onSelectCSS}>
+            Tabela
+          </ClickableElement>
+          <table
+            className="preview-table cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+            onClick={() => onSelectCSS('.preview-table')}
+            title="Clique para localizar: .preview-table"
+          >
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>Cargo</th>
-                <th>Status</th>
+                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Nome</th>
+                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Cargo</th>
+                <th onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table th'); }}>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>João Silva</td>
-                <td>Coordenador</td>
-                <td><span className="preview-badge preview-badge-success">Ativo</span></td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>João Silva</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Coordenador</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
+                  <span className="preview-badge preview-badge-success">Ativo</span>
+                </td>
               </tr>
               <tr>
-                <td>Maria Santos</td>
-                <td>Líder</td>
-                <td><span className="preview-badge preview-badge-gold">Premium</span></td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Maria Santos</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Líder</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
+                  <span className="preview-badge preview-badge-gold">Premium</span>
+                </td>
               </tr>
               <tr>
-                <td>Pedro Oliveira</td>
-                <td>Membro</td>
-                <td><span className="preview-badge preview-badge-warning">Pendente</span></td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Pedro Oliveira</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>Membro</td>
+                <td onClick={(e) => { e.stopPropagation(); onSelectCSS('.preview-table td'); }}>
+                  <span className="preview-badge preview-badge-warning">Pendente</span>
+                </td>
               </tr>
             </tbody>
           </table>
