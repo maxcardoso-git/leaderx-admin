@@ -327,37 +327,52 @@ export default function AppearanceSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<CSSValidationError[]>([]);
   const [success, setSuccess] = useState<string | null>(null);
+  const [searchNotFound, setSearchNotFound] = useState<string | null>(null);
   const [previewKey, setPreviewKey] = useState(0);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   // Find CSS selector in editor and highlight it
   const findCSSSelector = useCallback((selector: string) => {
-    if (!editorRef.current) return;
+    if (!editorRef.current) {
+      console.log('Editor ref not available');
+      return;
+    }
 
     const model = editorRef.current.getModel();
-    if (!model) return;
+    if (!model) {
+      console.log('Model not available');
+      return;
+    }
 
-    // Search for the selector in the CSS code
-    const searchText = selector.includes('{') ? selector : `${selector}`;
-    const matches = model.findMatches(searchText, false, false, false, null, false);
+    // Clear previous not found message
+    setSearchNotFound(null);
 
-    if (matches.length > 0) {
-      const match = matches[0];
-      // Scroll to the line and highlight
-      editorRef.current.revealLineInCenter(match.range.startLineNumber);
-      editorRef.current.setSelection(match.range);
-      editorRef.current.focus();
-    } else {
-      // Try searching for just the class/selector name without special characters
-      const simplifiedSelector = selector.replace(/[.#\[\]]/g, '');
-      const simpleMatches = model.findMatches(simplifiedSelector, false, false, false, null, false);
-      if (simpleMatches.length > 0) {
-        const match = simpleMatches[0];
+    // Try multiple search strategies
+    const searchStrategies = [
+      selector,                                    // Exact: .main-title
+      selector.replace(/^\./, ''),                // Without dot: main-title
+      selector.replace(/[.#]/g, ''),              // Without . and #: main-title
+      selector.split('-')[0],                      // First part: main
+    ];
+
+    for (const searchText of searchStrategies) {
+      if (!searchText) continue;
+
+      const matches = model.findMatches(searchText, false, false, false, null, false);
+
+      if (matches.length > 0) {
+        const match = matches[0];
+        // Scroll to the line and highlight
         editorRef.current.revealLineInCenter(match.range.startLineNumber);
         editorRef.current.setSelection(match.range);
         editorRef.current.focus();
+        return;
       }
     }
+
+    // If nothing found, show message
+    setSearchNotFound(selector);
+    setTimeout(() => setSearchNotFound(null), 3000);
   }, []);
 
   // Handle editor mount
@@ -525,6 +540,14 @@ export default function AppearanceSettingsPage() {
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Search Not Found Message */}
+      {searchNotFound && (
+        <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg text-warning text-sm">
+          Seletor <code className="bg-warning/20 px-1 rounded">{searchNotFound}</code> não encontrado no CSS.
+          Adicione a classe ao seu CSS para personalizar este elemento.
         </div>
       )}
 
