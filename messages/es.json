@@ -352,7 +352,11 @@
     "createStructureHint": "Crear nueva estructura organizacional",
     "manageTypes": "Gestionar tipos de estructura",
     "scopes": "Ámbitos",
-    "configureScopesHint": "Configurar ámbitos geográficos"
+    "configureScopesHint": "Configurar ámbitos geográficos",
+    "rootStructures": "Estructuras Raíz",
+    "structuresTreeHint": "Navega por la jerarquía de estructuras",
+    "networkOverview": "Visión General de la Red",
+    "viewNetworkHierarchy": "Ver jerarquía de la red"
   },
   "workingUnits": {
     "title": "Unidades de Trabajo",

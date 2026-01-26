@@ -384,7 +384,11 @@
     "createStructureHint": "Criar nova estrutura organizacional",
     "manageTypes": "Gerenciar tipos de estrutura",
     "scopes": "Escopos",
-    "configureScopesHint": "Configurar escopos geográficos"
+    "configureScopesHint": "Configurar escopos geográficos",
+    "rootStructures": "Estruturas Raiz",
+    "structuresTreeHint": "Navegue pela hierarquia de estruturas",
+    "networkOverview": "Visão Geral da Rede",
+    "viewNetworkHierarchy": "Ver hierarquia da rede"
   },
   "workingUnits": {
     "title": "Unidades de Trabalho",

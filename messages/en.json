@@ -352,7 +352,11 @@
     "createStructureHint": "Create new organizational structure",
     "manageTypes": "Manage structure types",
     "scopes": "Scopes",
-    "configureScopesHint": "Configure geographic scopes"
+    "configureScopesHint": "Configure geographic scopes",
+    "rootStructures": "Root Structures",
+    "structuresTreeHint": "Navigate through the structure hierarchy",
+    "networkOverview": "Network Overview",
+    "viewNetworkHierarchy": "View network hierarchy"
   },
   "workingUnits": {
     "title": "Working Units",
