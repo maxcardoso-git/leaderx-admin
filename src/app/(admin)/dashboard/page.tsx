@@ -80,20 +80,20 @@ function QuickActionCard({
   return (
     <Link
       href={href}
-      className="group flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.12] transition-all duration-300"
+      className="group flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 hover:border-gold/50 hover:shadow-md transition-all duration-300"
     >
       <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="font-medium text-white group-hover:text-gold transition-colors">
+        <p className="font-medium text-gray-900 group-hover:text-gold transition-colors">
           {label}
         </p>
         {description && (
-          <p className="text-sm text-white/40 truncate">{description}</p>
+          <p className="text-sm text-gray-500 truncate">{description}</p>
         )}
       </div>
-      <ChevronRightIcon size={16} className="text-white/30 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+      <ChevronRightIcon size={16} className="text-gray-400 group-hover:text-gold group-hover:translate-x-1 transition-all" />
     </Link>
   );
 }
@@ -119,34 +119,34 @@ function ModuleCard({
   return (
     <Link
       href={href}
-      className="group relative overflow-hidden rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/[0.15] transition-all duration-300"
+      className="group relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-gold/50 hover:shadow-lg transition-all duration-300"
     >
       {/* Gradient Overlay */}
       <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${gradient}`} />
 
       <div className="relative p-6">
         <div className="flex items-start gap-4 mb-4">
-          <div className="p-3 rounded-xl bg-white/[0.05] text-gold">
+          <div className="p-3 rounded-xl bg-gold/10 text-gold">
             {icon}
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-white group-hover:text-gold transition-colors">
+            <h3 className="font-semibold text-gray-900 group-hover:text-gold transition-colors">
               {title}
             </h3>
-            <p className="text-sm text-white/40 mt-1">{description}</p>
+            <p className="text-sm text-gray-500 mt-1">{description}</p>
           </div>
         </div>
 
         {/* Stats Row */}
-        <div className="flex items-center gap-6 pt-4 border-t border-white/[0.06]">
+        <div className="flex items-center gap-6 pt-4 border-t border-gray-100">
           {stats.map((stat, i) => (
             <div key={i} className="flex items-center gap-2">
               {loading ? (
-                <div className="h-6 w-8 bg-white/10 rounded animate-pulse" />
+                <div className="h-6 w-8 bg-gray-100 rounded animate-pulse" />
               ) : (
-                <span className="text-lg font-semibold text-white">{stat.value}</span>
+                <span className="text-lg font-semibold text-gray-900">{stat.value}</span>
               )}
-              <span className="text-xs text-white/40">{stat.label}</span>
+              <span className="text-xs text-gray-500">{stat.label}</span>
             </div>
           ))}
         </div>
@@ -250,7 +250,7 @@ export default function DashboardPage() {
         {/* Modules Section */}
         <div className="lg:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">{t('quickActions')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('quickActions')}</h2>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: '16px' }} className="md:!grid-cols-2">
@@ -306,7 +306,7 @@ export default function DashboardPage() {
         {/* Quick Actions Sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">{t('quickActionsSub')}</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('quickActionsSub')}</h2>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
