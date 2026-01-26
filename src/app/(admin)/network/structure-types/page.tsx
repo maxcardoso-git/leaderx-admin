@@ -36,7 +36,7 @@ export default function StructureTypesPage() {
   const [formData, setFormData] = useState<CreateStructureTypeDto>({
     name: '',
     description: '',
-    scope: '',
+    scope: undefined,
     leadershipRoleId: '',
     maxLeaders: 1,
     color: '#c4a45a',
@@ -151,7 +151,7 @@ export default function StructureTypesPage() {
     setFormData({
       name: '',
       description: '',
-      scope: '',
+      scope: undefined,
       leadershipRoleId: '',
       maxLeaders: 1,
       color: '#c4a45a',
@@ -442,8 +442,8 @@ function StructureTypeForm({
             { value: '', label: t('selectScope') },
             ...scopeOptions
           ]}
-          value={formData.scope}
-          onChange={(e) => setFormData({ ...formData, scope: e.target.value as StructureScope })}
+          value={formData.scope || ''}
+          onChange={(e) => setFormData({ ...formData, scope: e.target.value ? e.target.value as StructureScope : undefined })}
         />
         <p className="text-xs text-text-muted mt-1.5">{t('scopeHint')}</p>
       </div>
