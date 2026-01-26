@@ -142,6 +142,21 @@ export default function LinesPage() {
     });
   };
 
+  const toggleAllBlocks = (enabled: boolean) => {
+    const newBlocks: Record<string, boolean> = {};
+    EVENT_BLOCKS_CATALOG.forEach((block) => {
+      newBlocks[block.key] = enabled;
+    });
+    setFormData({
+      ...formData,
+      allowedBlocks: newBlocks,
+    });
+  };
+
+  const allBlocksEnabled = EVENT_BLOCKS_CATALOG.every(
+    (block) => formData.allowedBlocks?.[block.key]
+  );
+
   const getEnabledBlocksCount = (line: Line) => {
     if (!line.allowedBlocks) return 0;
     return Object.values(line.allowedBlocks).filter(Boolean).length;
@@ -329,6 +344,13 @@ export default function LinesPage() {
                   {Object.values(formData.allowedBlocks || {}).filter(Boolean).length} de {EVENT_BLOCKS_CATALOG.length} blocos ativos
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => toggleAllBlocks(!allBlocksEnabled)}
+                className="text-xs font-medium text-gold hover:text-gold/80 transition-colors px-3 py-1.5 rounded-lg hover:bg-gold/10"
+              >
+                {allBlocksEnabled ? 'Desmarcar todas' : 'Marcar todas'}
+              </button>
             </div>
 
             {/* Blocks Grid by Category */}
