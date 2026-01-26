@@ -22,7 +22,7 @@ export default function LinesPage() {
   const [formData, setFormData] = useState<CreateLineDto>({
     name: '',
     description: '',
-    eventBlocks: {},
+    allowedBlocks: {},
   });
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function LinesPage() {
       setLines(data.items);
     } catch (error) {
       console.error('Failed to load lines:', error);
-      setLines(mockLines);
+      setLines([]);
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,7 @@ export default function LinesPage() {
     EVENT_BLOCKS_CATALOG.forEach((block) => {
       initialBlocks[block.key] = false;
     });
-    setFormData({ name: '', description: '', eventBlocks: initialBlocks });
+    setFormData({ name: '', description: '', allowedBlocks: initialBlocks });
     setShowModal(true);
   };
 
@@ -56,12 +56,12 @@ export default function LinesPage() {
     setEditingLine(line);
     const blocks: Record<string, boolean> = {};
     EVENT_BLOCKS_CATALOG.forEach((block) => {
-      blocks[block.key] = line.eventBlocks?.[block.key] ?? false;
+      blocks[block.key] = line.allowedBlocks?.[block.key] ?? false;
     });
     setFormData({
       name: line.name,
       description: line.description || '',
-      eventBlocks: blocks,
+      allowedBlocks: blocks,
     });
     setShowModal(true);
   };
@@ -101,16 +101,16 @@ export default function LinesPage() {
   const toggleEventBlock = (blockKey: string) => {
     setFormData({
       ...formData,
-      eventBlocks: {
-        ...formData.eventBlocks,
-        [blockKey]: !formData.eventBlocks?.[blockKey],
+      allowedBlocks: {
+        ...formData.allowedBlocks,
+        [blockKey]: !formData.allowedBlocks?.[blockKey],
       },
     });
   };
 
   const getEnabledBlocksCount = (line: Line) => {
-    if (!line.eventBlocks) return 0;
-    return Object.values(line.eventBlocks).filter(Boolean).length;
+    if (!line.allowedBlocks) return 0;
+    return Object.values(line.allowedBlocks).filter(Boolean).length;
   };
 
   // Group blocks by subLabel
@@ -199,7 +199,7 @@ export default function LinesPage() {
                   </span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1">
-                  {EVENT_BLOCKS_CATALOG.filter((block) => line.eventBlocks?.[block.key]).map(
+                  {EVENT_BLOCKS_CATALOG.filter((block) => line.allowedBlocks?.[block.key]).map(
                     (block) => (
                       <span
                         key={block.key}
@@ -268,19 +268,19 @@ export default function LinesPage() {
                         type="button"
                         onClick={() => toggleEventBlock(block.key)}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg border transition-all text-left ${
-                          formData.eventBlocks?.[block.key]
+                          formData.allowedBlocks?.[block.key]
                             ? 'bg-gold/10 border-gold/30 text-white'
                             : 'bg-white/[0.02] border-white/[0.08] text-text-muted hover:border-white/20'
                         }`}
                       >
                         <div
                           className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${
-                            formData.eventBlocks?.[block.key]
+                            formData.allowedBlocks?.[block.key]
                               ? 'bg-gold text-black'
                               : 'bg-white/10'
                           }`}
                         >
-                          {formData.eventBlocks?.[block.key] && <CheckIcon size={14} />}
+                          {formData.allowedBlocks?.[block.key] && <CheckIcon size={14} />}
                         </div>
                         <span className="text-sm">{block.label}</span>
                       </button>
@@ -314,64 +314,3 @@ export default function LinesPage() {
     </div>
   );
 }
-
-// Mock data
-const mockLines: Line[] = [
-  {
-    id: '1',
-    tenantId: 'demo',
-    name: 'Linha Premium',
-    description: 'Eventos de alto padrão com todos os recursos disponíveis',
-    eventBlocks: {
-      INFORMACOES_BASICAS: true,
-      DATAS_E_HORARIOS: true,
-      LOCAL_E_ESTACIONAMENTO: true,
-      PARTICIPANTES: true,
-      ANFITRIAO: true,
-      MESAS_ENGAJAMENTO: true,
-      PROGRAMACAO: true,
-      INGRESSOS: true,
-      HOSPITALIDADE: true,
-      FORNECEDORES: true,
-      VIABILIDADE: true,
-      CAMPANHAS: true,
-      RESUMO_FINANCEIRO: true,
-    },
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '2',
-    tenantId: 'demo',
-    name: 'Linha Básica',
-    description: 'Eventos simples com recursos essenciais',
-    eventBlocks: {
-      INFORMACOES_BASICAS: true,
-      DATAS_E_HORARIOS: true,
-      LOCAL_E_ESTACIONAMENTO: true,
-      PARTICIPANTES: true,
-      INGRESSOS: true,
-    },
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-  {
-    id: '3',
-    tenantId: 'demo',
-    name: 'Linha Corporativa',
-    description: 'Eventos corporativos com foco em networking',
-    eventBlocks: {
-      INFORMACOES_BASICAS: true,
-      DATAS_E_HORARIOS: true,
-      LOCAL_E_ESTACIONAMENTO: true,
-      PARTICIPANTES: true,
-      ANFITRIAO: true,
-      MESAS_ENGAJAMENTO: true,
-      PROGRAMACAO: true,
-      HOSPITALIDADE: true,
-      FORNECEDORES: true,
-    },
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-  },
-];

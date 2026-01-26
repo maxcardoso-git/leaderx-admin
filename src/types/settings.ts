@@ -64,7 +64,7 @@ export interface Line {
   tenantId: string;
   name: string;
   description?: string;
-  eventBlocks?: Record<string, boolean>;
+  allowedBlocks?: Record<string, boolean>;
   createdAt: string;
   updatedAt: string;
 }
@@ -72,13 +72,13 @@ export interface Line {
 export interface CreateLineDto {
   name: string;
   description?: string;
-  eventBlocks?: Record<string, boolean>;
+  allowedBlocks?: Record<string, boolean>;
 }
 
 export interface UpdateLineDto {
   name?: string;
   description?: string;
-  eventBlocks?: Record<string, boolean>;
+  allowedBlocks?: Record<string, boolean>;
 }
 
 // ============================================
