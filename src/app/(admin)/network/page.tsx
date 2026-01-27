@@ -35,26 +35,26 @@ function StatsCard({
 }) {
   return (
     <div
-      className="relative overflow-hidden rounded-xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-300"
+      className="relative overflow-hidden rounded-xl bg-white/90 backdrop-blur-sm border border-white/50 shadow-sm group hover:shadow-md hover:bg-white transition-all duration-300"
       style={{ padding: '20px 24px' }}
     >
       <div className="flex items-start justify-between gap-4">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <p className="text-[11px] font-medium text-white/50 uppercase tracking-wider">
+          <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
             {label}
           </p>
           <div className="flex items-baseline gap-2">
             {loading ? (
-              <div className="h-8 w-16 bg-white/10 rounded animate-pulse" />
+              <div className="h-8 w-16 bg-gray-200 rounded animate-pulse" />
             ) : (
-              <span className="text-2xl font-semibold text-white">{value}</span>
+              <span className="text-2xl font-semibold text-gray-900">{value}</span>
             )}
           </div>
           {subtitle && (
-            <p className="text-xs text-white/40">{subtitle}</p>
+            <p className="text-xs text-gray-500">{subtitle}</p>
           )}
         </div>
-        <div className="p-2.5 rounded-xl bg-white/[0.05] text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
+        <div className="p-2.5 rounded-xl bg-gold/10 text-gold group-hover:bg-gold/20 transition-all duration-300 flex-shrink-0">
           {icon}
         </div>
       </div>
