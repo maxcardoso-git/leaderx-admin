@@ -841,26 +841,24 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
             <Clickable selector="label" className="block text-sm font-medium text-gray-900 mb-2" tag="label">
               Nome
             </Clickable>
-            <Clickable selector="input" className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-gold focus:outline-none" tag="input">
-              <input
-                type="text"
-                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400"
-                placeholder="Digite seu nome..."
-                readOnly
-                onClick={(e) => { e.stopPropagation(); onSelectCSS('input'); }}
-              />
-            </Clickable>
+            <input
+              type="text"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 placeholder:text-gray-400 cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+              placeholder="Digite seu nome..."
+              readOnly
+              onClick={() => onSelectCSS('input')}
+              title="Clique para localizar: input"
+            />
           </div>
           <div>
-            <Clickable selector="select" className="block" tag="div">
-              <label className="block text-sm font-medium text-gray-900 mb-2">Categoria</label>
-              <select
-                className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900"
-                onClick={(e) => { e.stopPropagation(); onSelectCSS('select'); }}
-              >
-                <option>Selecione uma opção</option>
-              </select>
-            </Clickable>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Categoria</label>
+            <select
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 cursor-pointer hover:outline hover:outline-2 hover:outline-gold/50"
+              onClick={() => onSelectCSS('select')}
+              title="Clique para localizar: select"
+            >
+              <option>Selecione uma opção</option>
+            </select>
           </div>
         </div>
 
