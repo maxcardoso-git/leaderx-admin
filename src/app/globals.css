@@ -2,60 +2,87 @@
 
 /* ============================================
    LeaderX Admin Console - Design System
-   Dark Luxury / Premium Tech Theme
+   Light Theme with Gold Accents
    ============================================ */
 
 @theme {
-  /* Color Palette */
-  --color-background: #000000;
-  --color-background-alt: #0a0a0a;
-  --color-background-card: #111111;
-  --color-background-hover: #1a1a1a;
+  /* ===== COLOR PALETTE ===== */
 
+  /* Background Colors - Light Theme */
+  --color-background: #f8f9fa;
+  --color-background-alt: #ffffff;
+  --color-background-card: #ffffff;
+  --color-background-hover: #f3f4f6;
+
+  /* Sidebar - Dark Premium */
+  --color-sidebar: #0a0d14;
+  --color-sidebar-hover: rgba(255, 255, 255, 0.04);
+  --color-sidebar-active: rgba(255, 255, 255, 0.06);
+
+  /* Gold Accent - Premium */
   --color-gold: #c4a45a;
   --color-gold-light: #d4af37;
   --color-gold-dark: #9c8347;
+  --color-gold-gradient-start: #e5c76b;
+  --color-gold-gradient-mid: #d4af37;
+  --color-gold-gradient-end: #9c8347;
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a0a0a0;
-  --color-text-muted: #666666;
+  /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-text-muted: #9ca3af;
+  --color-text-light: #d1d5db;
 
-  --color-border: #333333;
-  --color-border-light: #444444;
+  /* Border Colors */
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-border-dark: #d1d5db;
 
-  --color-success: #22c55e;
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
   --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
   --color-error: #ef4444;
+  --color-error-light: #fee2e2;
   --color-info: #3b82f6;
+  --color-info-light: #dbeafe;
 
-  /* Typography */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-heading: 'Montserrat', system-ui, sans-serif;
-  --font-accent: 'Playfair Display', serif;
+  /* ===== TYPOGRAPHY ===== */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Spacing */
-  --spacing-sidebar: 280px;
+  /* ===== SPACING ===== */
+  --spacing-sidebar: 260px;
+  --spacing-sidebar-collapsed: 72px;
   --spacing-topbar: 64px;
 
-  /* Border Radius */
-  --radius-sm: 4px;
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-gold: 0 0 20px rgba(196, 164, 90, 0.2);
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-gold: 0 4px 14px rgba(196, 164, 90, 0.25);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
 
-  /* Transitions */
+  /* ===== TRANSITIONS ===== */
   --transition-fast: 150ms ease;
-  --transition-normal: 250ms ease;
-  --transition-slow: 350ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
 }
 
-/* Base Styles */
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -65,38 +92,47 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
-  line-height: 1.6;
+  font-size: 0.875rem;
+  line-height: 1.5;
   min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.25;
   color: var(--color-text-primary);
+  letter-spacing: -0.02em;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
+h1 { font-size: 1.875rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
 h5 { font-size: 1rem; }
 h6 { font-size: 0.875rem; }
 
 p {
   color: var(--color-text-secondary);
+  line-height: 1.6;
 }
 
-/* Links */
+/* ============================================
+   LINKS
+   ============================================ */
+
 a {
   color: var(--color-gold);
   text-decoration: none;
@@ -104,53 +140,144 @@ a {
 }
 
 a:hover {
-  color: var(--color-gold-light);
+  color: var(--color-gold-dark);
 }
 
-/* Selection */
+/* ============================================
+   SELECTION
+   ============================================ */
+
 ::selection {
   background: var(--color-gold);
-  color: var(--color-background);
+  color: white;
 }
 
-/* Scrollbar Styling */
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background-alt);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: var(--radius-sm);
+  background: var(--color-border-dark);
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-border-light);
+  background: var(--color-text-muted);
 }
 
-/* Focus Styles */
+/* ============================================
+   FOCUS STYLES
+   ============================================ */
+
 *:focus-visible {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
 
-/* Utility Classes */
-.font-heading {
-  font-family: var(--font-heading);
+/* ============================================
+   FORM ELEMENTS - Global Reset
+   ============================================ */
+
+input, textarea, select {
+  background: var(--color-background-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  padding: 0.625rem 0.875rem;
+  transition: all var(--transition-fast);
+  width: 100%;
 }
 
-.font-accent {
-  font-family: var(--font-accent);
+input:hover, textarea:hover, select:hover {
+  border-color: var(--color-border-dark);
 }
 
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-gold);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(196, 164, 90, 0.15);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+input:disabled, textarea:disabled, select:disabled {
+  background: var(--color-background);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================
+   BUTTONS - Base
+   ============================================ */
+
+button {
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ============================================
+   TABLES
+   ============================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: var(--color-background);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+tr:hover td {
+  background: var(--color-background-hover);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/* Text Gold */
 .text-gold {
   color: var(--color-gold);
 }
 
+/* Gold Gradient Text */
 .text-gold-gradient {
   background: linear-gradient(135deg, var(--color-gold-light), var(--color-gold), var(--color-gold-dark));
   -webkit-background-clip: text;
@@ -158,100 +285,50 @@ a:hover {
   background-clip: text;
 }
 
+/* Gold Gradient Background */
+.bg-gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold-gradient-start), var(--color-gold-gradient-mid), var(--color-gold-gradient-end));
+}
+
+/* Card Styles */
 .bg-card {
   background: var(--color-background-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
 }
 
-.bg-card-hover {
-  transition: all var(--transition-normal);
+/* Font Classes */
+.font-heading {
+  font-family: var(--font-heading);
 }
 
-.bg-card-hover:hover {
-  background: var(--color-background-hover);
-  border-color: var(--color-border-light);
-}
-
+/* Border Gold */
 .border-gold {
   border-color: var(--color-gold);
 }
 
+/* Shadow Gold */
 .shadow-gold {
   box-shadow: var(--shadow-gold);
 }
 
-/* Form Elements */
-input, textarea, select {
-  background: var(--color-background-alt);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-  font-family: var(--font-sans);
-  font-size: 0.875rem;
-  padding: 0.75rem 1rem;
-  transition: all var(--transition-fast);
-  width: 100%;
-}
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 
-input:focus, textarea:focus, select:focus {
-  border-color: var(--color-gold);
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(196, 164, 90, 0.1);
-}
-
-input::placeholder, textarea::placeholder {
-  color: var(--color-text-muted);
-}
-
-/* Button Base */
-button {
-  cursor: pointer;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-/* Table Styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-align: left;
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-td {
-  padding: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-}
-
-tr:hover td {
-  background: var(--color-background-hover);
-}
-
-/* Animation Keyframes */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-@keyframes slideInLeft {
-  from { transform: translateX(-20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+@keyframes slideInUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes slideInUp {
-  from { transform: translateY(20px); opacity: 0; }
+@keyframes slideInDown {
+  from { transform: translateY(-10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -260,56 +337,120 @@ tr:hover td {
   50% { opacity: 0.5; }
 }
 
-.animate-fade-in {
-  animation: fadeIn var(--transition-normal) ease-out;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.animate-slide-in-left {
-  animation: slideInLeft var(--transition-normal) ease-out;
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) ease-out;
 }
 
 .animate-slide-in-up {
   animation: slideInUp var(--transition-normal) ease-out;
 }
 
+.animate-slide-in-down {
+  animation: slideInDown var(--transition-normal) ease-out;
+}
+
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* ============================================
-   Global Page Layout Spacing
+   RESPONSIVE UTILITIES
    ============================================ */
 
-/* Force space-y utilities to work */
+/* Force spacing utilities */
 .space-y-4 > * + * { margin-top: 1rem !important; }
 .space-y-5 > * + * { margin-top: 1.25rem !important; }
 .space-y-6 > * + * { margin-top: 1.5rem !important; }
 .space-y-8 > * + * { margin-top: 2rem !important; }
-.space-y-10 > * + * { margin-top: 2.5rem !important; }
 
-/* Force gap utilities */
+.gap-3 { gap: 0.75rem !important; }
 .gap-4 { gap: 1rem !important; }
+.gap-5 { gap: 1.25rem !important; }
 .gap-6 { gap: 1.5rem !important; }
 .gap-8 { gap: 2rem !important; }
 
-/* Force padding utilities */
+/* Padding */
+.p-4 { padding: 1rem !important; }
 .p-5 { padding: 1.25rem !important; }
 .p-6 { padding: 1.5rem !important; }
 .p-8 { padding: 2rem !important; }
-.p-10 { padding: 2.5rem !important; }
 
 .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+.px-5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
 .px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
-.px-8 { padding-left: 2rem !important; padding-right: 2rem !important; }
 
+.py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
 .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
 .py-5 { padding-top: 1.25rem !important; padding-bottom: 1.25rem !important; }
-.py-6 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
 
+/* Margins */
 .mt-1 { margin-top: 0.25rem !important; }
 .mt-2 { margin-top: 0.5rem !important; }
 .mt-3 { margin-top: 0.75rem !important; }
 .mt-4 { margin-top: 1rem !important; }
+.mt-6 { margin-top: 1.5rem !important; }
+
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 0.75rem !important; }
 .mb-4 { margin-bottom: 1rem !important; }
 .mb-6 { margin-bottom: 1.5rem !important; }
 .mb-8 { margin-bottom: 2rem !important; }
+
+/* ============================================
+   COMPONENT SPECIFIC OVERRIDES
+   ============================================ */
+
+/* Main Content Area */
+main {
+  background: var(--color-background);
+}
+
+/* Cards in main content */
+main .bg-background-card,
+main [class*="bg-white"] {
+  background: var(--color-background-card);
+}
+
+/* Ensure text visibility in light theme */
+main h1, main h2, main h3, main h4, main h5, main h6 {
+  color: var(--color-text-primary);
+}
+
+main p {
+  color: var(--color-text-secondary);
+}
+
+/* Status badges */
+.badge-success {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badge-warning {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+}
+
+.badge-error {
+  background: var(--color-error-light);
+  color: var(--color-error);
+}
+
+.badge-info {
+  background: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.badge-gold {
+  background: rgba(196, 164, 90, 0.15);
+  color: var(--color-gold);
+}

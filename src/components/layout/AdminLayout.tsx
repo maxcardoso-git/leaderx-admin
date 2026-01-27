@@ -4,7 +4,6 @@ import { ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { SidebarProvider } from './SidebarContext';
-import { ThemeInjector } from './ThemeInjector';
 import { ToastProvider } from '@/components/ui/Toast';
 
 interface AdminLayoutProps {
@@ -14,9 +13,6 @@ interface AdminLayoutProps {
 function AdminLayoutContent({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Custom Theme CSS */}
-      <ThemeInjector />
-
       {/* Sidebar - part of the flex layout, pushes content */}
       <Sidebar />
 

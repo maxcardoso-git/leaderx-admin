@@ -49,23 +49,23 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
 
       {/* Modal */}
       <div
-        className={`relative w-full ${sizes[size]} mx-4 bg-background-card border border-border rounded-xl shadow-lg animate-slide-in-up`}
+        className={`relative w-full ${sizes[size]} mx-4 bg-white border border-border rounded-2xl shadow-xl animate-slide-in-up`}
       >
         {/* Header */}
         {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-            <h2 className="font-heading text-lg font-semibold text-text-primary">
+            <h2 className="text-lg font-semibold text-text-primary">
               {title}
             </h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-background-hover transition-colors"
+              className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-gray-100 transition-colors"
             >
               <CloseIcon size={18} />
             </button>
@@ -73,11 +73,11 @@ export function Modal({
         )}
 
         {/* Body */}
-        <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">{children}</div>
+        <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">{children}</div>
 
         {/* Footer */}
         {footer && (
-          <div className="px-6 py-4 border-t border-border flex justify-end gap-3">
+          <div className="px-6 py-4 border-t border-border bg-gray-50 rounded-b-2xl flex justify-end gap-3">
             {footer}
           </div>
         )}

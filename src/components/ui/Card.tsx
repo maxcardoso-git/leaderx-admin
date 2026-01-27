@@ -17,18 +17,18 @@ export function Card({
 }: CardProps) {
   const paddings = {
     none: '',
-    sm: 'p-5',
-    md: 'p-8',
-    lg: 'p-10',
-    xl: 'p-12',
+    sm: 'p-4',
+    md: 'p-6',
+    lg: 'p-8',
+    xl: 'p-10',
   };
 
   return (
     <div
       className={`
-        bg-background-card border border-border rounded-xl
+        bg-white border border-border rounded-2xl shadow-card
         ${paddings[padding]}
-        ${hover ? 'transition-all hover:border-border-light hover:shadow-lg' : ''}
+        ${hover ? 'transition-all duration-200 hover:border-gold/30 hover:shadow-md cursor-pointer' : ''}
         ${className}
       `}
     >
@@ -45,13 +45,13 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, action }: CardHeaderProps) {
   return (
-    <div className="flex items-start justify-between mb-8">
+    <div className="flex items-start justify-between mb-6">
       <div>
-        <h3 className="font-heading text-xl font-semibold text-text-primary">
+        <h3 className="text-lg font-semibold text-text-primary">
           {title}
         </h3>
         {subtitle && (
-          <p className="text-sm text-text-muted mt-2">{subtitle}</p>
+          <p className="text-sm text-text-muted mt-1">{subtitle}</p>
         )}
       </div>
       {action && <div>{action}</div>}
@@ -74,23 +74,23 @@ export function StatCard({ label, value, change, icon }: StatCardProps) {
     <Card padding="lg">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-text-muted mb-2">{label}</p>
-          <p className="text-3xl font-heading font-semibold text-text-primary">
+          <p className="text-sm text-text-muted mb-1">{label}</p>
+          <p className="text-3xl font-semibold text-text-primary">
             {value}
           </p>
           {change && (
             <p
-              className={`text-sm mt-3 flex items-center gap-1 ${
+              className={`text-sm mt-2 flex items-center gap-1 ${
                 change.isPositive ? 'text-success' : 'text-error'
               }`}
             >
               <span>{change.isPositive ? '+' : ''}{change.value}%</span>
-              <span className="text-text-muted">vs last month</span>
+              <span className="text-text-muted">vs último mês</span>
             </p>
           )}
         </div>
         {icon && (
-          <div className="p-4 bg-gold/10 rounded-xl text-gold">
+          <div className="p-3 bg-gold/10 rounded-xl text-gold">
             {icon}
           </div>
         )}
