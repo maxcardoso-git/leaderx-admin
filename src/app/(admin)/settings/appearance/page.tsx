@@ -671,10 +671,10 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
 
         {/* Page Header */}
         <div className="mb-6">
-          <Clickable selector=".text-2xl" className="text-2xl font-semibold text-gray-900 mb-2" tag="h1">
+          <Clickable selector="main h1" className="text-2xl font-semibold text-gray-900 mb-2" tag="h1">
             Página de Exemplo
           </Clickable>
-          <Clickable selector=".text-gray-500" className="text-sm text-gray-500" tag="p">
+          <Clickable selector="main p" className="text-sm text-gray-500" tag="p">
             Subtítulo descritivo da página
           </Clickable>
         </div>
@@ -709,7 +709,7 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
         </Clickable>
 
         {/* Module Cards Grid */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Módulos
         </Clickable>
 
@@ -758,7 +758,7 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
         </Clickable>
 
         {/* Quick Actions */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Ações Rápidas
         </Clickable>
 
@@ -795,24 +795,24 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
         </div>
 
         {/* Buttons */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Botões
         </Clickable>
 
         <div className="flex flex-wrap gap-3 mb-6">
-          <Clickable selector="button" className="px-4 py-2 rounded-lg bg-gold text-black font-medium hover:bg-gold-light transition-colors" tag="button">
-            Primário
+          <Clickable selector="button[class*='bg-gold']" className="px-4 py-2 rounded-lg font-medium transition-colors text-white" style={{ background: 'linear-gradient(135deg, #d4af37, #c4a45a)' }} tag="button">
+            + Adicionar Usuário
           </Clickable>
-          <Clickable selector="button[class*='border']" className="px-4 py-2 rounded-lg bg-transparent border border-gold text-gold font-medium hover:bg-gold/10 transition-colors" tag="button">
-            Outline
+          <Clickable selector="button[class*='border']" className="px-4 py-2 rounded-lg bg-transparent border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition-colors" tag="button">
+            Mais Filtros
           </Clickable>
           <Clickable selector="button[class*='ghost']" className="px-4 py-2 rounded-lg bg-transparent text-gray-500 font-medium hover:bg-gray-100 transition-colors" tag="button">
-            Ghost
+            Cancelar
           </Clickable>
         </div>
 
         {/* Badges */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Badges / Status
         </Clickable>
 
@@ -832,7 +832,7 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
         </div>
 
         {/* Form Inputs */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Formulário
         </Clickable>
 
@@ -863,7 +863,7 @@ function StylePreview({ css, onSelectCSS }: { css: string; onSelectCSS: (selecto
         </div>
 
         {/* Table */}
-        <Clickable selector=".text-lg" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
+        <Clickable selector="main h2" className="text-lg font-semibold text-gray-900 mb-4" tag="h2">
           Tabela
         </Clickable>
 
