@@ -25,6 +25,9 @@ import {
   Classification,
   CreateClassificationDto,
   UpdateClassificationDto,
+  Program,
+  CreateProgramDto,
+  UpdateProgramDto,
   ListResponse,
 } from '@/types/settings';
 
@@ -330,5 +333,42 @@ export const classificationsService = {
 
   async delete(id: string): Promise<void> {
     return api.delete(`/taxonomy/classifications/${id}`);
+  },
+};
+
+// ============================================
+// PROGRAMS SERVICE (PROGRAMAS)
+// ============================================
+
+export const programsService = {
+  async list(params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    categoryId?: string;
+    isActive?: boolean;
+  }): Promise<ListResponse<Program>> {
+    try {
+      const response = await api.get<ListResponse<Program>>('/taxonomy/programs', params);
+      return response || { items: [], page: 1, size: 25, total: 0 };
+    } catch {
+      return { items: [], page: 1, size: 25, total: 0 };
+    }
+  },
+
+  async getById(id: string): Promise<Program> {
+    return api.get<Program>(`/taxonomy/programs/${id}`);
+  },
+
+  async create(data: CreateProgramDto): Promise<Program> {
+    return api.post<Program>('/taxonomy/programs', data);
+  },
+
+  async update(id: string, data: UpdateProgramDto): Promise<Program> {
+    return api.put<Program>(`/taxonomy/programs/${id}`, data);
+  },
+
+  async delete(id: string): Promise<void> {
+    return api.delete(`/taxonomy/programs/${id}`);
   },
 };

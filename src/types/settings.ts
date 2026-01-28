@@ -277,6 +277,38 @@ export interface UpdateClassificationDto {
 }
 
 // ============================================
+// PROGRAMS DOMAIN (PROGRAMAS)
+// ============================================
+
+export interface Program {
+  id: string;
+  tenantId: string;
+  code: string;
+  name: string;
+  description?: string;
+  categoryId?: string;
+  category?: Category;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProgramDto {
+  code: string;
+  name: string;
+  description?: string;
+  categoryId?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateProgramDto {
+  name?: string;
+  description?: string;
+  categoryId?: string;
+  isActive?: boolean;
+}
+
+// ============================================
 // SCOPES DOMAIN (ESCOPOS DE ESTRUTURA)
 // ============================================
 
