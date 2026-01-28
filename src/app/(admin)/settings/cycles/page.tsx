@@ -213,7 +213,7 @@ export default function CyclesPage() {
             {isLoading ? (
               <div className="space-y-2">
                 {[1, 2].map((i) => (
-                  <div key={i} className="h-16 bg-white/[0.02] rounded-lg animate-pulse" />
+                  <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -224,28 +224,28 @@ export default function CyclesPage() {
                   className={`relative w-full text-left p-3 rounded-lg border transition-all cursor-pointer ${
                     selectedCycle?.id === cycle.id && !isCreating
                       ? 'bg-gold/10 border-gold/30'
-                      : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
+                      : 'bg-white border-gray-200 hover:bg-gray-50'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-white">{cycle.name}</span>
+                    <span className="text-sm font-medium text-gray-900">{cycle.name}</span>
                     {cycle.isDefault && (
                       <span className="text-[10px] px-1.5 py-0.5 bg-gold/20 text-gold rounded">
                         {t('default')}
                       </span>
                     )}
                   </div>
-                  <div className="text-[11px] text-text-muted mt-1">
+                  <div className="text-[11px] text-gray-500 mt-1">
                     {formatDate(cycle.updatedAt || cycle.createdAt)}
                   </div>
                   {/* Action buttons */}
-                  <div className="flex items-center gap-1 mt-2 pt-2 border-t border-white/[0.06]">
+                  <div className="flex items-center gap-1 mt-2 pt-2 border-t border-gray-100">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         cloneCycle(cycle);
                       }}
-                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-muted hover:text-gold hover:bg-gold/10 rounded transition-colors"
+                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-gray-500 hover:text-gold hover:bg-gold/10 rounded transition-colors"
                       title="Clonar ciclo"
                     >
                       <CopyIcon size={12} />
@@ -257,7 +257,7 @@ export default function CyclesPage() {
                         selectCycle(cycle);
                         setShowDeleteModal(true);
                       }}
-                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-text-muted hover:text-error hover:bg-error/10 rounded transition-colors"
+                      className="flex items-center gap-1 px-2 py-1 text-[11px] text-gray-500 hover:text-error hover:bg-error/10 rounded transition-colors"
                       title="Excluir ciclo"
                     >
                       <TrashIcon size={12} />
@@ -271,28 +271,28 @@ export default function CyclesPage() {
         </div>
 
         {/* Right Panel - Form + Matrix */}
-        <div className="flex-1 bg-white/[0.02] rounded-xl border border-white/[0.06] p-6">
+        <div className="flex-1 bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           {(selectedCycle || isCreating) ? (
             <div className="space-y-6">
               {/* Form Fields */}
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">
+                  <label className="block text-sm text-gray-600 mb-2">
                     {t('name')} <span className="text-error">*</span>
                   </label>
                   <input
                     type="text"
-                    className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-sm text-white placeholder:text-white/30 focus:border-gold/50 focus:outline-none transition-all"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:border-gold focus:ring-2 focus:ring-gold/15 focus:outline-none transition-all"
                     placeholder={t('namePlaceholder')}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">{t('description')}</label>
-                  <textarea
-                    className="w-full px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-sm text-white placeholder:text-white/30 focus:border-gold/50 focus:outline-none transition-all resize-none"
-                    rows={1}
+                  <label className="block text-sm text-gray-600 mb-2">{t('description')}</label>
+                  <input
+                    type="text"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:border-gold focus:ring-2 focus:ring-gold/15 focus:outline-none transition-all"
                     placeholder={t('descriptionPlaceholder')}
                     value={formData.description || ''}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -301,17 +301,17 @@ export default function CyclesPage() {
               </div>
 
               {/* Default Toggle */}
-              <div className="flex items-center justify-between py-3 border-b border-white/[0.06]">
-                <span className="text-sm text-white">{t('setAsDefault')}</span>
+              <div className="flex items-center justify-between py-3 border-b border-gray-100">
+                <span className="text-sm text-gray-900">{t('setAsDefault')}</span>
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, isDefault: !formData.isDefault })}
                   className={`relative w-12 h-6 rounded-full transition-colors ${
-                    formData.isDefault ? 'bg-gold' : 'bg-white/20'
+                    formData.isDefault ? 'bg-gold' : 'bg-gray-300'
                   }`}
                 >
                   <span
-                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                    className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${
                       formData.isDefault ? 'left-7' : 'left-1'
                     }`}
                   />
@@ -321,8 +321,8 @@ export default function CyclesPage() {
               {/* Phase Blocks Matrix */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <label className="text-sm text-white/60">{t('phaseBlocks')}</label>
-                  <div className="flex items-center gap-4 text-xs">
+                  <label className="text-sm text-gray-600">{t('phaseBlocks')}</label>
+                  <div className="flex items-center gap-4 text-xs text-gray-600">
                     <span className="flex items-center gap-1.5">
                       <span className="w-4 h-4 bg-emerald-500/20 border border-emerald-500/30 rounded flex items-center justify-center">
                         <CheckIcon size={10} className="text-emerald-500" />
@@ -330,8 +330,8 @@ export default function CyclesPage() {
                       {t('enabled')}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <span className="w-4 h-4 bg-white/[0.04] border border-white/[0.08] rounded flex items-center justify-center">
-                        <XIcon size={10} className="text-white/30" />
+                      <span className="w-4 h-4 bg-gray-100 border border-gray-200 rounded flex items-center justify-center">
+                        <XIcon size={10} className="text-gray-400" />
                       </span>
                       {t('disabled')}
                     </span>
@@ -342,13 +342,13 @@ export default function CyclesPage() {
                   <table className="w-full border-collapse">
                     <thead>
                       <tr>
-                        <th className="text-left text-xs font-medium text-text-muted uppercase tracking-wider p-3 bg-white/[0.02] border border-white/[0.06] min-w-[180px]">
+                        <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider p-3 bg-gray-50 border border-gray-200 min-w-[180px]">
                           {t('block')}
                         </th>
                         {CYCLE_PHASES_CATALOG.map((phase) => (
                           <th
                             key={phase.key}
-                            className="text-center text-xs font-medium text-text-muted p-3 bg-white/[0.02] border border-white/[0.06] min-w-[80px]"
+                            className="text-center text-xs font-medium text-gray-500 p-3 bg-gray-50 border border-gray-200 min-w-[80px]"
                           >
                             <div className="whitespace-nowrap">{phase.label}</div>
                           </th>
@@ -357,20 +357,20 @@ export default function CyclesPage() {
                     </thead>
                     <tbody>
                       {CYCLE_BLOCKS_CATALOG.map((block) => (
-                        <tr key={block.key} className="hover:bg-white/[0.01]">
-                          <td className="p-3 border border-white/[0.06]">
+                        <tr key={block.key} className="hover:bg-gray-50">
+                          <td className="p-3 border border-gray-200 bg-white">
                             <div className="flex items-center gap-2">
-                              <span className="text-white/30 cursor-move">⋮⋮</span>
+                              <span className="text-gray-300 cursor-move">⋮⋮</span>
                               <div>
-                                <div className="text-sm text-white">{block.label}</div>
-                                <div className="text-[10px] text-text-muted">{block.group}</div>
+                                <div className="text-sm text-gray-900">{block.label}</div>
+                                <div className="text-[10px] text-gray-500">{block.group}</div>
                               </div>
                             </div>
                           </td>
                           {CYCLE_PHASES_CATALOG.map((phase) => (
                             <td
                               key={phase.key}
-                              className="p-3 border border-white/[0.06] text-center"
+                              className="p-3 border border-gray-200 text-center bg-white"
                             >
                               <button
                                 type="button"
@@ -378,7 +378,7 @@ export default function CyclesPage() {
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center mx-auto transition-all ${
                                   formData.phaseBlocks?.[phase.key]?.[block.key]
                                     ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-500'
-                                    : 'bg-white/[0.04] border border-white/[0.08] text-white/30 hover:border-white/20'
+                                    : 'bg-gray-100 border border-gray-200 text-gray-400 hover:border-gray-300'
                                 }`}
                               >
                                 {formData.phaseBlocks?.[phase.key]?.[block.key] ? (
@@ -397,14 +397,14 @@ export default function CyclesPage() {
               </div>
 
               {/* Save Button */}
-              <div className="flex justify-end pt-4 border-t border-white/[0.06]">
+              <div className="flex justify-end pt-4 border-t border-gray-100">
                 <Button onClick={handleSave} isLoading={isSaving} disabled={!formData.name.trim()}>
                   {t('saveChanges')}
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full text-text-muted">
+            <div className="flex items-center justify-center h-full text-gray-500">
               {t('selectCycle')}
             </div>
           )}
@@ -427,7 +427,7 @@ export default function CyclesPage() {
           </>
         }
       >
-        <p className="text-white/60">{t('deleteConfirm')}</p>
+        <p className="text-gray-600">{t('deleteConfirm')}</p>
       </Modal>
     </div>
   );
